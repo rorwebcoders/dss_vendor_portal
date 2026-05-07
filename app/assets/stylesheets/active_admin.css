@@ -350,3 +350,91 @@ body.logged_out #login .buttons {
   content: "";
   display: table;
 }
+
+/* Fix classic ActiveAdmin index/sidebar spacing so controls do not collide. */
+.with_sidebar #main_content_wrapper {
+  padding-right: 24px;
+  width: calc(100% - 370px);
+}
+
+.with_sidebar #sidebar {
+  width: 342px;
+}
+
+.index_as_table {
+  overflow-x: auto;
+}
+
+table.index_table td.col-actions,
+table.index_table td.actions,
+table.index_table .actions {
+  white-space: nowrap;
+}
+
+table.index_table td.col-actions a,
+table.index_table td.actions a,
+table.index_table .actions a {
+  margin-right: 8px;
+}
+
+#sidebar .sidebar_section {
+  overflow: hidden;
+}
+
+#sidebar .filter_form .filter_form_field,
+#sidebar .filter_form li,
+#sidebar .inputs li {
+  clear: both;
+  margin-bottom: 10px;
+}
+
+#sidebar .filter_form label,
+#sidebar .inputs label {
+  display: block;
+  margin: 0 0 4px;
+  min-width: 0;
+}
+
+#sidebar input[type="text"],
+#sidebar input[type="email"],
+#sidebar input[type="password"],
+#sidebar input[type="number"],
+#sidebar textarea,
+#sidebar select {
+  max-width: 100%;
+  min-width: 0;
+}
+
+#sidebar .filter_form input[type="text"],
+#sidebar .filter_form input[type="search"],
+#sidebar .filter_form input[type="email"],
+#sidebar .filter_form input[type="number"],
+#sidebar .filter_form textarea {
+  width: 100%;
+}
+
+#sidebar .filter_form .select_and_search select,
+#sidebar .filter_form .select_and_search input,
+#sidebar .filter_form .select_and_search .select2-container {
+  display: inline-block;
+  vertical-align: top;
+}
+
+#sidebar .filter_form .select_and_search select {
+  margin-right: 3%;
+  width: 44%;
+}
+
+#sidebar .filter_form .select_and_search input {
+  width: 53%;
+}
+
+#sidebar .filter_form .buttons,
+#sidebar .filter_form .actions {
+  margin-top: 8px;
+}
+
+#sidebar .filter_form .buttons input[type="submit"],
+#sidebar .filter_form .actions input[type="submit"] {
+  margin-right: 8px;
+}
