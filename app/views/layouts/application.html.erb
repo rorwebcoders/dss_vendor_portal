@@ -53,52 +53,58 @@
             </ul>
           <% end %>
 
-          <button class="btn btn-icon btn-outline-secondary" type="button" data-theme-toggle aria-label="Switch to dark mode" title="Switch to dark mode">
-            <svg data-theme-icon="sun" hidden class="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="4"></circle>
-              <path d="M12 2v2"></path>
-              <path d="M12 20v2"></path>
-              <path d="m4.93 4.93 1.41 1.41"></path>
-              <path d="m17.66 17.66 1.41 1.41"></path>
-              <path d="M2 12h2"></path>
-              <path d="M20 12h2"></path>
-              <path d="m6.34 17.66-1.41 1.41"></path>
-              <path d="m19.07 4.93-1.41 1.41"></path>
-            </svg>
-            <svg data-theme-icon="moon" class="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M20.99 13.13A8.5 8.5 0 1 1 10.87 3.01 7 7 0 0 0 20.99 13.13Z"></path>
-            </svg>
-          </button>
+          <div class="portal-actions d-flex align-items-center gap-2 ms-auto">
+            <button class="btn btn-icon btn-outline-secondary" type="button" data-theme-toggle aria-label="Switch to dark mode" title="Switch to dark mode">
+              <svg data-theme-icon="sun" hidden class="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v2"></path>
+                <path d="M12 20v2"></path>
+                <path d="m4.93 4.93 1.41 1.41"></path>
+                <path d="m17.66 17.66 1.41 1.41"></path>
+                <path d="M2 12h2"></path>
+                <path d="M20 12h2"></path>
+                <path d="m6.34 17.66-1.41 1.41"></path>
+                <path d="m19.07 4.93-1.41 1.41"></path>
+              </svg>
+              <svg data-theme-icon="moon" class="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20.99 13.13A8.5 8.5 0 1 1 10.87 3.01 7 7 0 0 0 20.99 13.13Z"></path>
+              </svg>
+            </button>
 
-          <% if user_signed_in? %>
-            <details class="account-menu position-relative">
-              <summary class="btn btn-icon btn-outline-secondary" aria-label="My Account" title="My Account">
-                <svg class="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M20 21a8 8 0 0 0-16 0"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-              </summary>
-              <div class="account-menu-panel dropdown-menu-end shadow-sm bg-body border rounded-3 p-2">
-                <div class="dropdown-header"><%= current_user.display_name %></div>
-                <%= link_to "Edit profile", edit_account_path, class: "dropdown-item rounded-2" %>
-                <div class="dropdown-divider"></div>
-                <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "dropdown-item text-danger rounded-2", form_class: "m-0" %>
-              </div>
-            </details>
-          <% else %>
-            <%= link_to "Sign in", new_user_session_path, class: "btn btn-primary btn-sm rounded-pill px-3" %>
-          <% end %>
+            <% if user_signed_in? %>
+              <details class="account-menu position-relative">
+                <summary class="btn btn-icon btn-outline-secondary" aria-label="My Account" title="My Account">
+                  <svg class="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20 21a8 8 0 0 0-16 0"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                </summary>
+                <div class="account-menu-panel dropdown-menu-end shadow-sm bg-body border rounded-3 p-2">
+                  <div class="dropdown-header"><%= current_user.display_name %></div>
+                  <%= link_to "Edit profile", edit_account_path, class: "dropdown-item rounded-2" %>
+                  <div class="dropdown-divider"></div>
+                  <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "dropdown-item text-danger rounded-2", form_class: "m-0" %>
+                </div>
+              </details>
+            <% else %>
+              <%= link_to "Sign in", new_user_session_path, class: "btn btn-primary btn-sm rounded-pill px-3" %>
+            <% end %>
+          </div>
         </div>
       </nav>
 
-      <div class="portal-pagebar bg-body border-bottom">
-        <div class="container py-3">
-          <h1 class="h4 mb-1"><%= content_for(:page_title) || content_for(:title) || "DSS Vendor Portal" %></h1>
-          <% if content_for?(:page_subtitle) %>
-            <p class="text-muted mb-0"><%= content_for(:page_subtitle) %></p>
-          <% end %>
+      <% if content_for?(:page_title) || content_for?(:page_subtitle) %>
+        <div class="portal-pagebar bg-body border-bottom">
+          <div class="container py-3">
+            <% if content_for?(:page_title) %>
+              <h1 class="h4 mb-1"><%= content_for(:page_title) %></h1>
+            <% end %>
+            <% if content_for?(:page_subtitle) %>
+              <p class="text-muted mb-0"><%= content_for(:page_subtitle) %></p>
+            <% end %>
+          </div>
         </div>
-      </div>
+      <% end %>
     </header>
 
     <main class="container py-4">
