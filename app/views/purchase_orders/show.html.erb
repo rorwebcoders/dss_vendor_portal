@@ -1,0 +1,54 @@
+<div class="mb-4">
+  <%= link_to "← Back to Purchase Orders", purchase_orders_path, class: "btn btn-outline-secondary btn-sm" %>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header bg-dark text-white">
+    <h1 class="h4 mb-0">Purchase Order <%= @purchase_order.po_number %></h1>
+  </div>
+  <div class="card-body">
+    <dl class="row mb-0">
+      <dt class="col-sm-3">Dealer</dt>
+      <dd class="col-sm-9"><%= @purchase_order.dealer.name %></dd>
+
+      <dt class="col-sm-3">PO ID</dt>
+      <dd class="col-sm-9"><%= @purchase_order.po_id %></dd>
+
+      <dt class="col-sm-3">PO Type</dt>
+      <dd class="col-sm-9"><%= @purchase_order.po_type %></dd>
+
+      <dt class="col-sm-3">Created</dt>
+      <dd class="col-sm-9"><%= l(@purchase_order.created_at, format: :long) %></dd>
+    </dl>
+  </div>
+</div>
+
+<h2 class="h5 mb-3">Line Items</h2>
+<% if @line_items.any? %>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>SKU</th>
+          <th>Brand</th>
+          <th>Title</th>
+          <th class="text-end">Quantity</th>
+          <th class="text-end">Cost</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @line_items.each do |line_item| %>
+          <tr>
+            <td><%= line_item.sku %></td>
+            <td><%= line_item.brand %></td>
+            <td><%= line_item.title %></td>
+            <td class="text-end"><%= line_item.quantity %></td>
+            <td class="text-end"><%= number_to_currency(line_item.cost) if line_item.cost.present? %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <div class="alert alert-info">No line items have been added to this purchase order.</div>
+<% end %>
