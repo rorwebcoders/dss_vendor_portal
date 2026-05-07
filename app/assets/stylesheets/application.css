@@ -38,6 +38,26 @@
   width: 1.05rem;
 }
 
+.account-menu > summary {
+  list-style: none;
+}
+
+.account-menu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.account-menu-panel {
+  min-width: 12rem;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  z-index: 1040;
+}
+
+.account-menu:not([open]) .account-menu-panel {
+  display: none;
+}
+
 .portal-tabs .nav-link {
   align-items: center;
   border: 1px solid transparent;
@@ -95,7 +115,12 @@
     min-height: auto;
   }
 
+  .portal-tabs {
+    width: 100%;
+  }
+
   .portal-tabs .nav-link {
+    justify-content: center;
     width: 100%;
   }
 }
