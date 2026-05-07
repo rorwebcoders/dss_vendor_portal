@@ -1,0 +1,190 @@
+/* Minimal ActiveAdmin stylesheet for Propshaft-based Rails apps.
+ * ActiveAdmin 4 expects an active_admin.css asset to exist; this file keeps
+ * the admin login and CRUD screens usable without relying on Sprockets assets.
+ */
+:root {
+  --aa-bg: #f5f7fa;
+  --aa-panel: #ffffff;
+  --aa-border: #d8dee8;
+  --aa-text: #1f2937;
+  --aa-muted: #6b7280;
+  --aa-primary: #1f5eff;
+  --aa-primary-dark: #1648c7;
+  --aa-danger: #b91c1c;
+}
+
+body.active_admin,
+body.logged_out {
+  margin: 0;
+  background: var(--aa-bg);
+  color: var(--aa-text);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+a { color: var(--aa-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+#header,
+.header {
+  background: #111827;
+  color: #fff;
+  padding: 12px 24px;
+}
+
+#header a,
+.header a { color: #fff; }
+
+#title_bar,
+.title_bar,
+#active_admin_content,
+#footer {
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 18px 24px;
+}
+
+#title_bar h2,
+.title_bar h2 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.panel,
+.attributes_table,
+.index_as_table,
+form .inputs,
+body.logged_out #content_wrapper {
+  background: var(--aa-panel);
+  border: 1px solid var(--aa-border);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 8%);
+  margin-bottom: 18px;
+  padding: 18px;
+}
+
+body.logged_out #content_wrapper {
+  max-width: 420px;
+  margin: 80px auto;
+}
+
+body.logged_out h2 {
+  margin-top: 0;
+  text-align: center;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  border-bottom: 1px solid var(--aa-border);
+  padding: 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: #eef2f7;
+  font-weight: 700;
+}
+
+tr:nth-child(even) td { background: #fafbfc; }
+
+form fieldset {
+  border: 0;
+  margin: 0 0 16px;
+  padding: 0;
+}
+
+form ol,
+form ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+form li {
+  margin-bottom: 14px;
+}
+
+label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+  border: 1px solid var(--aa-border);
+  border-radius: 6px;
+  box-sizing: border-box;
+  font: inherit;
+  max-width: 100%;
+  padding: 8px 10px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select { width: 100%; }
+
+input[type="submit"],
+.button,
+a.button,
+.action_item a,
+.actions a {
+  background: var(--aa-primary);
+  border: 0;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-weight: 700;
+  padding: 8px 12px;
+  text-decoration: none;
+}
+
+input[type="submit"]:hover,
+.button:hover,
+a.button:hover,
+.action_item a:hover,
+.actions a:hover {
+  background: var(--aa-primary-dark);
+  text-decoration: none;
+}
+
+.error,
+.errors,
+.inline-errors,
+.flash_alert {
+  color: var(--aa-danger);
+}
+
+.flash,
+.flash_notice,
+.flash_alert,
+.flash_error {
+  border-radius: 6px;
+  margin: 0 auto 16px;
+  max-width: 1200px;
+  padding: 10px 14px;
+}
+
+.flash_notice { background: #dcfce7; color: #166534; }
+.flash_alert,
+.flash_error { background: #fee2e2; color: var(--aa-danger); }
+
+.pagination,
+.scopes,
+.action_items {
+  margin-bottom: 16px;
+}
