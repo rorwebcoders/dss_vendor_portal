@@ -3,6 +3,9 @@
     <h1 class="mb-1">Purchase Orders</h1>
     <p class="text-muted mb-0">Showing orders for your currently assigned dealers.</p>
   </div>
+  <% if @total_purchase_orders.to_i.positive? %>
+    <span class="badge text-bg-secondary rounded-pill align-self-start align-self-md-center"><%= @total_purchase_orders %> total</span>
+  <% end %>
 </div>
 
 <% if @purchase_orders.any? %>
