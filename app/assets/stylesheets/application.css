@@ -10,27 +10,26 @@
  */
 
 .portal-header {
-  backdrop-filter: blur(16px);
   box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
   z-index: 1030;
 }
 
-.portal-navbar {
-  min-height: 72px;
+.portal-utility {
+  background: #0f4c8a;
 }
 
-.portal-brand-mark {
-  align-items: center;
-  background: linear-gradient(135deg, #2563eb, #0ea5e9);
-  border-radius: 14px;
+.portal-utility-link {
   color: #fff;
-  display: inline-flex;
-  font-size: 0.8rem;
-  font-weight: 700;
-  height: 40px;
-  justify-content: center;
-  letter-spacing: 0.04em;
-  width: 40px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.portal-utility-link:hover {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.portal-navbar {
+  min-height: 74px;
 }
 
 .portal-user-chip {
@@ -44,6 +43,10 @@
   padding: 0.55rem 0.8rem;
 }
 
+.portal-user-chip:hover {
+  color: var(--bs-body-color);
+}
+
 .btn-icon {
   align-items: center;
   border-radius: 999px;
@@ -54,22 +57,10 @@
   width: 2.25rem;
 }
 
-.theme-icon {
+.theme-icon,
+.portal-tab-svg {
   height: 1.05rem;
   width: 1.05rem;
-}
-
-[data-bs-theme="light"] .theme-icon-sun,
-[data-bs-theme="dark"] .theme-icon-moon {
-  display: none;
-}
-
-.portal-tabbar {
-  overflow-x: auto;
-}
-
-.portal-tabs {
-  padding: 0.65rem 0;
 }
 
 .portal-tabs .nav-link {
@@ -95,18 +86,6 @@
   color: var(--bs-primary-text-emphasis);
 }
 
-.portal-tab-icon {
-  align-items: center;
-  background: var(--bs-body-bg);
-  border: 1px solid currentColor;
-  border-radius: 999px;
-  display: inline-flex;
-  font-size: 0.7rem;
-  height: 1.45rem;
-  justify-content: center;
-  width: 1.45rem;
-}
-
 .dealer-login-page {
   align-items: center;
   display: flex;
@@ -119,4 +98,15 @@
 
 .dealer-login-card {
   background: var(--bs-body-bg);
+}
+
+@media (max-width: 991.98px) {
+  .portal-navbar {
+    min-height: auto;
+  }
+
+  .portal-tabs .nav-link,
+  .portal-user-chip {
+    width: 100%;
+  }
 }

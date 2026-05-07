@@ -32,12 +32,19 @@ const setTheme = (theme) => {
 }
 
 const refreshThemeToggle = () => {
-  const nextTheme = currentTheme() === "dark" ? "light" : "dark"
+  const theme = currentTheme()
+  const nextTheme = theme === "dark" ? "light" : "dark"
   const label = `Switch to ${nextTheme} mode`
 
   document.querySelectorAll("[data-theme-toggle]").forEach((toggle) => {
     toggle.setAttribute("aria-label", label)
     toggle.setAttribute("title", label)
+
+    const sunIcon = toggle.querySelector('[data-theme-icon="sun"]')
+    const moonIcon = toggle.querySelector('[data-theme-icon="moon"]')
+
+    if (sunIcon) sunIcon.hidden = theme !== "dark"
+    if (moonIcon) moonIcon.hidden = theme === "dark"
   })
 }
 
