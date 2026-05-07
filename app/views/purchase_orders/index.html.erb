@@ -1,0 +1,39 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h1 class="mb-1">Purchase Orders</h1>
+    <p class="text-muted mb-0">Showing orders for your currently assigned dealers.</p>
+  </div>
+</div>
+
+<% if @purchase_orders.any? %>
+  <div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>PO Number</th>
+          <th>PO ID</th>
+          <th>Type</th>
+          <th>Dealer</th>
+          <th>Created</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @purchase_orders.each do |purchase_order| %>
+          <tr>
+            <td><%= purchase_order.po_number %></td>
+            <td><%= purchase_order.po_id %></td>
+            <td><%= purchase_order.po_type %></td>
+            <td><%= purchase_order.dealer.name %></td>
+            <td><%= l(purchase_order.created_at, format: :short) %></td>
+            <td class="text-end"><%= link_to "View", purchase_order_path(purchase_order), class: "btn btn-sm btn-primary" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <div class="alert alert-info">
+    No purchase orders are available for your current dealer assignments.
+  </div>
+<% end %>
