@@ -39,21 +39,26 @@
   </div>
 
   <% if @total_pages > 1 %>
-    <nav class="mt-4" aria-label="Purchase order pages">
-      <ul class="pagination justify-content-end flex-wrap gap-1">
-        <li class="page-item <%= "disabled" if @current_page == 1 %>">
-          <%= link_to "Previous", purchase_orders_path(page: @current_page - 1), class: "page-link" %>
-        </li>
-        <% (1..@total_pages).each do |page| %>
-          <li class="page-item <%= "active" if page == @current_page %>">
-            <%= link_to page, purchase_orders_path(page: page), class: "page-link" %>
+    <div class="d-flex flex-column flex-md-row justify-content-md-end align-items-md-center gap-3 mt-4">
+      <% if @total_purchase_orders.to_i.positive? %>
+        <span class="badge text-bg-secondary rounded-pill align-self-start align-self-md-center"><%= @total_purchase_orders %> total</span>
+      <% end %>
+      <nav aria-label="Purchase order pages">
+        <ul class="pagination flex-wrap gap-1 mb-0">
+          <li class="page-item <%= "disabled" if @current_page == 1 %>">
+            <%= link_to "Previous", purchase_orders_path(page: @current_page - 1), class: "page-link" %>
           </li>
-        <% end %>
-        <li class="page-item <%= "disabled" if @current_page == @total_pages %>">
-          <%= link_to "Next", purchase_orders_path(page: @current_page + 1), class: "page-link" %>
-        </li>
-      </ul>
-    </nav>
+          <% (1..@total_pages).each do |page| %>
+            <li class="page-item <%= "active" if page == @current_page %>">
+              <%= link_to page, purchase_orders_path(page: page), class: "page-link" %>
+            </li>
+          <% end %>
+          <li class="page-item <%= "disabled" if @current_page == @total_pages %>">
+            <%= link_to "Next", purchase_orders_path(page: @current_page + 1), class: "page-link" %>
+          </li>
+        </ul>
+      </nav>
+    </div>
   <% end %>
 <% else %>
   <div class="alert alert-info">

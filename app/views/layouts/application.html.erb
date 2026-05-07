@@ -84,7 +84,6 @@
 
       <div class="portal-datebar bg-body border-bottom">
         <div class="container d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 py-2 small text-secondary">
-          <span><%= Date.current.strftime("%A, %B %-d, %Y") %></span>
           <% if user_signed_in? %>
             <ul class="nav portal-tabs gap-2">
               <li class="nav-item">
@@ -95,6 +94,7 @@
           <% else %>
             <span>Dealer portal access</span>
           <% end %>
+          <span class="portal-date"><%= Date.current.strftime("%A, %B %-d, %Y") %></span>
         </div>
       </div>
     </header>
