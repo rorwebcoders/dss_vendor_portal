@@ -41,8 +41,17 @@
   <body class="bg-body-tertiary text-body">
     <header class="portal-header sticky-top">
       <nav class="navbar portal-navbar bg-body border-bottom">
-        <div class="container d-flex align-items-center gap-3">
-          <%= link_to "DSS Vendor Portal", root_path, class: "navbar-brand fw-semibold me-auto" %>
+        <div class="container d-flex flex-wrap align-items-center gap-2 gap-md-3">
+          <%= link_to "DSS Vendor Portal", root_path, class: "navbar-brand fw-semibold me-auto me-lg-3" %>
+
+          <% if user_signed_in? %>
+            <ul class="nav portal-tabs order-3 order-lg-0 mt-2 mt-lg-0 me-lg-auto gap-2">
+              <li class="nav-item">
+                <% purchase_orders_icon = raw('<svg class="portal-tab-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h9l5 5v15H6z"></path><path d="M14 2v6h6"></path><path d="M9 13h6"></path><path d="M9 17h6"></path></svg>') %>
+                <%= link_to safe_join([purchase_orders_icon, content_tag(:span, "Purchase Orders")]), purchase_orders_path, class: ["nav-link", (controller_name == "purchase_orders" ? "active" : nil)].compact.join(" ") %>
+              </li>
+            </ul>
+          <% end %>
 
           <button class="btn btn-icon btn-outline-secondary" type="button" data-theme-toggle aria-label="Switch to dark mode" title="Switch to dark mode">
             <svg data-theme-icon="sun" hidden class="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -82,19 +91,12 @@
         </div>
       </nav>
 
-      <div class="portal-datebar bg-body border-bottom">
-        <div class="container d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 py-2 small text-secondary">
-          <% if user_signed_in? %>
-            <ul class="nav portal-tabs gap-2">
-              <li class="nav-item">
-                <% purchase_orders_icon = raw('<svg class="portal-tab-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h9l5 5v15H6z"></path><path d="M14 2v6h6"></path><path d="M9 13h6"></path><path d="M9 17h6"></path></svg>') %>
-                <%= link_to safe_join([purchase_orders_icon, content_tag(:span, "Purchase Orders")]), purchase_orders_path, class: ["nav-link", (controller_name == "purchase_orders" ? "active" : nil)].compact.join(" ") %>
-              </li>
-            </ul>
-          <% else %>
-            <span>Dealer portal access</span>
+      <div class="portal-pagebar bg-body border-bottom">
+        <div class="container py-3">
+          <h1 class="h4 mb-1"><%= content_for(:page_title) || content_for(:title) || "DSS Vendor Portal" %></h1>
+          <% if content_for?(:page_subtitle) %>
+            <p class="text-muted mb-0"><%= content_for(:page_subtitle) %></p>
           <% end %>
-          <span class="portal-date"><%= Date.current.strftime("%A, %B %-d, %Y") %></span>
         </div>
       </div>
     </header>

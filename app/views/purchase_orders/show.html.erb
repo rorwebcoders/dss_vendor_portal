@@ -1,3 +1,6 @@
+<% content_for :page_title, "Purchase Order #{@purchase_order.po_number}" %>
+<% content_for :page_subtitle, @purchase_order.dealer.name %>
+
 <div class="mb-4">
   <%= link_to "← Back to Purchase Orders", purchase_orders_path, class: "btn btn-outline-secondary btn-sm" %>
 </div>
