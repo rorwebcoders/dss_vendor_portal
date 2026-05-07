@@ -1,0 +1,29 @@
+// Minimal login-only cleanup for ActiveAdmin's default Devise page.
+// This keeps the default ActiveAdmin theme, but removes the extra Formtastic
+// fieldset boxes that make the login form look double-bordered.
+
+body.logged_out #login fieldset {
+  border: 0;
+  box-shadow: none;
+  margin: 0;
+  padding: 0;
+}
+
+body.logged_out #login fieldset.inputs,
+body.logged_out #login fieldset.actions,
+body.logged_out #login fieldset.buttons {
+  background: transparent;
+}
+
+body.logged_out #login fieldset.inputs ol {
+  padding: 0;
+}
+
+body.logged_out #login fieldset.inputs li {
+  margin-bottom: 18px;
+}
+
+body.logged_out #login fieldset.actions,
+body.logged_out #login fieldset.buttons {
+  padding-top: 0;
+}
