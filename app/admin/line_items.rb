@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 ActiveAdmin.register LineItem do
+  menu false
+
   permit_params :purchase_order_id, :sku, :brand, :title, :quantity, :cost
 
   includes purchase_order: :dealer

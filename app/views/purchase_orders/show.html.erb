@@ -3,7 +3,7 @@
 </div>
 
 <div class="card mb-4">
-  <div class="card-header bg-dark text-white">
+  <div class="card-header bg-body-tertiary">
     <h1 class="h4 mb-0">Purchase Order <%= @purchase_order.po_number %></h1>
   </div>
   <div class="card-body">
@@ -27,7 +27,7 @@
 <% if @line_items.any? %>
   <div class="table-responsive">
     <table class="table table-bordered table-striped align-middle">
-      <thead class="table-light">
+      <thead>
         <tr>
           <th>SKU</th>
           <th>Brand</th>

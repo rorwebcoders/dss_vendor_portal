@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html data-bs-theme="light">
   <head>
     <title><%= content_for(:title) || "DSS Vendor Portal" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -7,6 +7,22 @@
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+
+    <script>
+      (() => {
+        const storageKey = "dss-vendor-portal-theme"
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+        let storedTheme
+
+        try {
+          storedTheme = localStorage.getItem(storageKey)
+        } catch {
+          storedTheme = null
+        }
+
+        document.documentElement.setAttribute("data-bs-theme", storedTheme || systemTheme)
+      })()
+    </script>
 
     <%= yield :head %>
 
@@ -22,32 +38,81 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-      <div class="container">
-        <%= link_to "DSS Vendor Portal", root_path, class: "navbar-brand" %>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="mainNavbar">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+  <body class="bg-body-tertiary text-body">
+    <header class="portal-header sticky-top">
+      <nav class="navbar navbar-expand-lg portal-navbar bg-body border-bottom">
+        <div class="container">
+          <%= link_to "DSS Vendor Portal", root_path, class: "navbar-brand fw-semibold" %>
+
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <div class="collapse navbar-collapse" id="mainNavbar">
             <% if user_signed_in? %>
-              <li class="nav-item"><%= link_to "Purchase Orders", purchase_orders_path, class: "nav-link" %></li>
+              <ul class="navbar-nav portal-tabs me-lg-auto my-3 my-lg-0 gap-lg-2">
+                <li class="nav-item">
+                  <% purchase_orders_icon = raw('<svg class="portal-tab-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h9l5 5v15H6z"></path><path d="M14 2v6h6"></path><path d="M9 13h6"></path><path d="M9 17h6"></path></svg>') %>
+                  <%= link_to safe_join([purchase_orders_icon, content_tag(:span, "Purchase Orders")]), purchase_orders_path, class: ["nav-link", (controller_name == "purchase_orders" ? "active" : nil)].compact.join(" ") %>
+                </li>
+              </ul>
             <% end %>
-          </ul>
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-            <% if user_signed_in? %>
-              <li class="nav-item"><span class="navbar-text me-3"><%= current_user.email %></span></li>
-              <li class="nav-item"><%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-outline-light btn-sm" %></li>
-            <% else %>
-              <li class="nav-item"><%= link_to "Sign in", new_user_session_path, class: "btn btn-outline-light btn-sm" %></li>
-            <% end %>
-          </ul>
+
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-2 mb-2 mb-lg-0">
+              <li class="nav-item">
+                <button class="btn btn-icon btn-outline-secondary" type="button" data-theme-toggle aria-label="Switch to dark mode" title="Switch to dark mode">
+                  <svg data-theme-icon="sun" hidden class="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4"></circle>
+                    <path d="M12 2v2"></path>
+                    <path d="M12 20v2"></path>
+                    <path d="m4.93 4.93 1.41 1.41"></path>
+                    <path d="m17.66 17.66 1.41 1.41"></path>
+                    <path d="M2 12h2"></path>
+                    <path d="M20 12h2"></path>
+                    <path d="m6.34 17.66-1.41 1.41"></path>
+                    <path d="m19.07 4.93-1.41 1.41"></path>
+                  </svg>
+                  <svg data-theme-icon="moon" class="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20.99 13.13A8.5 8.5 0 1 1 10.87 3.01 7 7 0 0 0 20.99 13.13Z"></path>
+                  </svg>
+                </button>
+              </li>
+              <% if user_signed_in? %>
+                <li class="nav-item dropdown">
+                  <button class="btn btn-icon btn-outline-secondary" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" aria-label="My Account" title="My Account">
+                    <svg class="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M20 21a8 8 0 0 0-16 0"></path>
+                      <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                    <li><h6 class="dropdown-header"><%= current_user.display_name %></h6></li>
+                    <li><%= link_to "Edit profile", edit_account_path, class: "dropdown-item" %></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><%= button_to "Logout", destroy_user_session_path, method: :delete, class: "dropdown-item text-danger", form_class: "m-0" %></li>
+                  </ul>
+                </li>
+              <% else %>
+                <li class="nav-item"><%= link_to "Sign in", new_user_session_path, class: "btn btn-primary btn-sm rounded-pill px-3" %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <div class="portal-datebar bg-body border-bottom">
+        <div class="container d-flex flex-column flex-sm-row justify-content-between gap-1 py-2 small text-secondary">
+          <span><%= Date.current.strftime("%A, %B %-d, %Y") %></span>
+          <% if user_signed_in? %>
+            <span>Purchase order access for assigned dealers</span>
+          <% else %>
+            <span>Dealer portal access</span>
+          <% end %>
         </div>
       </div>
-    </nav>
+    </header>
 
-    <main class="container">
+    <main class="container py-4">
       <% if notice.present? %>
         <div class="alert alert-success"><%= notice %></div>
       <% end %>
