@@ -1,0 +1,440 @@
+/* Legacy ActiveAdmin-style admin chrome.
+ * Keeps /admin on the classic ActiveAdmin look instead of the v4 sidebar UI.
+ */
+html {
+  background: #e8e8e8;
+}
+
+body.active_admin,
+body.logged_out {
+  background: #e8e8e8;
+  color: #323537;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+a {
+  color: #38678b;
+  text-decoration: underline;
+}
+
+a:hover {
+  color: #002f5f;
+}
+
+#header {
+  background: linear-gradient(#6a7176, #4d5256);
+  border-bottom: 1px solid #44484b;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  min-height: 42px;
+  padding: 0 28px;
+}
+
+#site_title {
+  color: #fff;
+  float: left;
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 42px;
+  margin: 0 28px 0 0;
+  text-shadow: 0 1px 0 #000;
+}
+
+#tabs,
+#tabs ul,
+#utility_nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#tabs li,
+#utility_nav li {
+  display: inline-block;
+}
+
+#tabs a,
+#utility_nav a {
+  color: #f7f7f7;
+  display: inline-block;
+  line-height: 42px;
+  padding: 0 12px;
+  text-decoration: none;
+  text-shadow: 0 1px 0 #000;
+}
+
+#tabs .current a,
+#tabs a:hover,
+#utility_nav a:hover {
+  background: rgba(0, 0, 0, 0.18);
+}
+
+#utility_nav {
+  float: right;
+}
+
+#title_bar {
+  background: #efefef;
+  border-bottom: 1px solid #cdcdcd;
+  box-shadow: inset 0 1px 0 #fff;
+  padding: 18px 30px;
+}
+
+#title_bar h2 {
+  color: #323537;
+  font-size: 26px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.breadcrumb {
+  color: #777;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.action_items {
+  float: right;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.action_items li {
+  display: inline-block;
+}
+
+#active_admin_content {
+  box-sizing: border-box;
+  padding: 24px 30px;
+}
+
+.with_sidebar #main_content_wrapper {
+  float: left;
+  width: calc(100% - 320px);
+}
+
+.with_sidebar #sidebar {
+  float: right;
+  width: 290px;
+}
+
+#main_content_wrapper,
+#sidebar,
+#footer {
+  box-sizing: border-box;
+}
+
+.panel,
+.index_as_table,
+.attributes_table,
+.active_admin form fieldset,
+.sidebar_section,
+.blank_slate_container,
+.paginated_collection {
+  background: #fff;
+  border: 1px solid #c7c7c7;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  margin-bottom: 20px;
+}
+
+.panel > h3,
+.sidebar_section > h3,
+.active_admin form fieldset > legend span,
+body.logged_out #login h2 {
+  background: linear-gradient(#6a7176, #4d5256);
+  color: #fff;
+  display: block;
+  font-size: 13px;
+  font-weight: bold;
+  margin: 0;
+  padding: 8px 12px;
+  text-shadow: 0 1px 0 #000;
+}
+
+.panel_contents,
+.attributes_table table,
+.active_admin form fieldset ol,
+.sidebar_section .panel_contents {
+  padding: 18px;
+}
+
+table.index_table,
+.attributes_table table,
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table.index_table th,
+table.index_table td,
+.attributes_table th,
+.attributes_table td,
+table th,
+table td {
+  border-bottom: 1px solid #e6e6e6;
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+table.index_table th,
+table th {
+  background: #f4f4f4;
+  color: #555;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+table.index_table tr:nth-child(even) td,
+table tr:nth-child(even) td {
+  background: #fafafa;
+}
+
+.pagination_information,
+.download_links,
+.pagination {
+  background: #fff;
+  border-top: 1px solid #e6e6e6;
+  padding: 10px 12px;
+}
+
+.batch_actions_selector,
+.scopes,
+.table_tools {
+  margin-bottom: 12px;
+}
+
+.button,
+a.button,
+input[type="submit"],
+.action_item a,
+.batch_action,
+.clear_filters_btn {
+  background: linear-gradient(#ffffff, #e7e7e7);
+  border: 1px solid #b7b7b7;
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 #fff;
+  color: #333;
+  cursor: pointer;
+  display: inline-block;
+  font-weight: bold;
+  line-height: 1;
+  padding: 8px 14px;
+  text-decoration: none;
+  text-shadow: 0 1px 0 #fff;
+}
+
+.button:hover,
+a.button:hover,
+input[type="submit"]:hover,
+.action_item a:hover {
+  background: linear-gradient(#f7f7f7, #d9d9d9);
+  color: #111;
+}
+
+.active_admin form ol,
+.active_admin form ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.active_admin form li {
+  margin-bottom: 16px;
+}
+
+.active_admin label {
+  color: #5e6469;
+  display: inline-block;
+  font-weight: bold;
+  margin-right: 18px;
+  min-width: 110px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+  border: 1px solid #c9d0d6;
+  border-radius: 3px;
+  box-sizing: border-box;
+  font: inherit;
+  padding: 8px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea {
+  min-width: 280px;
+}
+
+.flash,
+.flash_notice,
+.flash_alert,
+.flash_error {
+  font-weight: bold;
+  margin: 18px auto 0;
+  max-width: 860px;
+  padding: 10px 14px;
+}
+
+.flash_notice {
+  background: #dff0d8;
+  border: 1px solid #b2dba1;
+  color: #3c763d;
+}
+
+.flash_alert,
+.flash_error {
+  background: #f2dede;
+  border: 1px solid #dca7a7;
+  color: #a94442;
+}
+
+body.logged_out #wrapper {
+  margin: 80px auto 0;
+  width: 590px;
+}
+
+body.logged_out #content_wrapper,
+body.logged_out #login {
+  background: #fff;
+  border: 1px solid #c7c7c7;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22);
+}
+
+body.logged_out #content_wrapper {
+  padding: 0;
+}
+
+body.logged_out #login form,
+body.logged_out #login .panel_contents {
+  padding: 35px;
+}
+
+body.logged_out #login label {
+  font-size: 16px;
+  min-width: 100px;
+}
+
+body.logged_out #login input[type="email"],
+body.logged_out #login input[type="password"] {
+  min-width: 365px;
+}
+
+body.logged_out #login .actions,
+body.logged_out #login .buttons {
+  margin-left: 118px;
+}
+
+#footer {
+  border-top: 1px solid #cdcdcd;
+  clear: both;
+  color: #777;
+  margin: 40px 30px 0;
+  padding: 18px 0;
+  text-align: center;
+}
+
+.clearfix::after,
+#active_admin_content::after,
+#header::after {
+  clear: both;
+  content: "";
+  display: table;
+}
+
+/* Fix classic ActiveAdmin index/sidebar spacing so controls do not collide. */
+.with_sidebar #main_content_wrapper {
+  padding-right: 24px;
+  width: calc(100% - 370px);
+}
+
+.with_sidebar #sidebar {
+  width: 342px;
+}
+
+.index_as_table {
+  overflow-x: auto;
+}
+
+table.index_table td.col-actions,
+table.index_table td.actions,
+table.index_table .actions {
+  white-space: nowrap;
+}
+
+table.index_table td.col-actions a,
+table.index_table td.actions a,
+table.index_table .actions a {
+  margin-right: 8px;
+}
+
+#sidebar .sidebar_section {
+  overflow: hidden;
+}
+
+#sidebar .filter_form .filter_form_field,
+#sidebar .filter_form li,
+#sidebar .inputs li {
+  clear: both;
+  margin-bottom: 10px;
+}
+
+#sidebar .filter_form label,
+#sidebar .inputs label {
+  display: block;
+  margin: 0 0 4px;
+  min-width: 0;
+}
+
+#sidebar input[type="text"],
+#sidebar input[type="email"],
+#sidebar input[type="password"],
+#sidebar input[type="number"],
+#sidebar textarea,
+#sidebar select {
+  max-width: 100%;
+  min-width: 0;
+}
+
+#sidebar .filter_form input[type="text"],
+#sidebar .filter_form input[type="search"],
+#sidebar .filter_form input[type="email"],
+#sidebar .filter_form input[type="number"],
+#sidebar .filter_form textarea {
+  width: 100%;
+}
+
+#sidebar .filter_form .select_and_search select,
+#sidebar .filter_form .select_and_search input,
+#sidebar .filter_form .select_and_search .select2-container {
+  display: inline-block;
+  vertical-align: top;
+}
+
+#sidebar .filter_form .select_and_search select {
+  margin-right: 3%;
+  width: 44%;
+}
+
+#sidebar .filter_form .select_and_search input {
+  width: 53%;
+}
+
+#sidebar .filter_form .buttons,
+#sidebar .filter_form .actions {
+  margin-top: 8px;
+}
+
+#sidebar .filter_form .buttons input[type="submit"],
+#sidebar .filter_form .actions input[type="submit"] {
+  margin-right: 8px;
+}
