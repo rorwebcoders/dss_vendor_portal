@@ -2,8 +2,14 @@ class PurchaseOrdersController < ApplicationController
   before_action :authenticate_user!
   before_action :set_accessible_purchase_order, only: :show
 
+  PER_PAGE = 10
+
   def index
-    @purchase_orders = current_user.accessible_purchase_orders.includes(:dealer).order(created_at: :desc)
+    purchase_orders = current_user.accessible_purchase_orders.includes(:dealer).order(created_at: :desc)
+    @total_purchase_orders = purchase_orders.count
+    @total_pages = (@total_purchase_orders / PER_PAGE.to_f).ceil
+    @current_page = [[params[:page].to_i, 1].max, [@total_pages, 1].max].min
+    @purchase_orders = purchase_orders.offset((@current_page - 1) * PER_PAGE).limit(PER_PAGE)
   end
 
   def show
