@@ -4,6 +4,14 @@ class User < ApplicationRecord
   has_many :dealer_memberships, dependent: :destroy
   has_many :dealers, through: :dealer_memberships
 
+  def display_name
+    email
+  end
+
+  def to_s
+    display_name
+  end
+
   def accessible_purchase_orders
     PurchaseOrder.for_dealers(dealer_ids)
   end
