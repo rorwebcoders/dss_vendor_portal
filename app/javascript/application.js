@@ -4,40 +4,58 @@ import "controllers"
 
 const themeStorageKey = "dss-vendor-portal-theme"
 
-const preferredTheme = () => {
-  const savedTheme = localStorage.getItem(themeStorageKey)
-
-  if (savedTheme) return savedTheme
-
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+const storedTheme = () => {
+  try {
+    return localStorage.getItem(themeStorageKey)
+  } catch {
+    return null
+  }
 }
+
+const saveTheme = (theme) => {
+  try {
+    localStorage.setItem(themeStorageKey, theme)
+  } catch {
+    // Theme persistence is optional when storage is unavailable.
+  }
+}
+
+const systemTheme = () => (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+
+const preferredTheme = () => storedTheme() || systemTheme()
+
+const currentTheme = () => document.documentElement.getAttribute("data-bs-theme") || preferredTheme()
 
 const setTheme = (theme) => {
   document.documentElement.setAttribute("data-bs-theme", theme)
-  localStorage.setItem(themeStorageKey, theme)
+  saveTheme(theme)
 }
 
 const refreshThemeToggle = () => {
-  const theme = document.documentElement.getAttribute("data-bs-theme") || preferredTheme()
+  const nextTheme = currentTheme() === "dark" ? "light" : "dark"
+  const label = `Switch to ${nextTheme} mode`
 
   document.querySelectorAll("[data-theme-toggle]").forEach((toggle) => {
-    toggle.textContent = theme === "dark" ? "Light mode" : "Dark mode"
+    toggle.setAttribute("aria-label", label)
+    toggle.setAttribute("title", label)
   })
 }
 
-const initializeTheme = () => {
+const bindThemeToggles = () => {
   setTheme(preferredTheme())
   refreshThemeToggle()
-}
-
-document.addEventListener("turbo:load", () => {
-  initializeTheme()
 
   document.querySelectorAll("[data-theme-toggle]").forEach((toggle) => {
+    if (toggle.dataset.themeToggleBound === "true") return
+
+    toggle.dataset.themeToggleBound = "true"
     toggle.addEventListener("click", () => {
-      const currentTheme = document.documentElement.getAttribute("data-bs-theme") || "light"
-      setTheme(currentTheme === "dark" ? "light" : "dark")
+      setTheme(currentTheme() === "dark" ? "light" : "dark")
       refreshThemeToggle()
     })
   })
-})
+}
+
+setTheme(preferredTheme())
+document.addEventListener("DOMContentLoaded", bindThemeToggles)
+document.addEventListener("turbo:load", bindThemeToggles)

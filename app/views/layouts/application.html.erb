@@ -8,6 +8,22 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <script>
+      (() => {
+        const storageKey = "dss-vendor-portal-theme"
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+        let storedTheme
+
+        try {
+          storedTheme = localStorage.getItem(storageKey)
+        } catch {
+          storedTheme = null
+        }
+
+        document.documentElement.setAttribute("data-bs-theme", storedTheme || systemTheme)
+      })()
+    </script>
+
     <%= yield :head %>
 
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
@@ -22,24 +38,45 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-body text-body">
-    <header class="portal-header border-bottom bg-body">
-      <nav class="navbar navbar-expand-lg">
+  <body class="bg-body-tertiary text-body">
+    <header class="portal-header sticky-top">
+      <nav class="navbar navbar-expand-lg portal-navbar bg-body border-bottom">
         <div class="container">
-          <%= link_to "DSS Vendor Portal", root_path, class: "navbar-brand" %>
+          <%= link_to safe_join([content_tag(:span, "DSS", class: "portal-brand-mark"), content_tag(:span, "DSS Vendor Portal")]), root_path, class: "navbar-brand d-flex align-items-center gap-2 fw-semibold" %>
+
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
+
           <div class="collapse navbar-collapse" id="mainNavbar">
             <ul class="navbar-nav ms-auto align-items-lg-center gap-2 mb-2 mb-lg-0">
+              <% if user_signed_in? %>
+                <li class="nav-item">
+                  <span class="portal-user-chip"><%= current_user.email %></span>
+                </li>
+              <% end %>
               <li class="nav-item">
-                <button class="btn btn-outline-secondary btn-sm" type="button" data-theme-toggle aria-label="Toggle light and dark mode">Dark mode</button>
+                <button class="btn btn-icon btn-outline-secondary" type="button" data-theme-toggle aria-label="Switch to dark mode" title="Switch to dark mode">
+                  <svg class="theme-icon theme-icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4"></circle>
+                    <path d="M12 2v2"></path>
+                    <path d="M12 20v2"></path>
+                    <path d="m4.93 4.93 1.41 1.41"></path>
+                    <path d="m17.66 17.66 1.41 1.41"></path>
+                    <path d="M2 12h2"></path>
+                    <path d="M20 12h2"></path>
+                    <path d="m6.34 17.66-1.41 1.41"></path>
+                    <path d="m19.07 4.93-1.41 1.41"></path>
+                  </svg>
+                  <svg class="theme-icon theme-icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20.99 13.13A8.5 8.5 0 1 1 10.87 3.01 7 7 0 0 0 20.99 13.13Z"></path>
+                  </svg>
+                </button>
               </li>
               <% if user_signed_in? %>
-                <li class="nav-item"><span class="navbar-text"><%= current_user.email %></span></li>
-                <li class="nav-item"><%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-outline-secondary btn-sm" %></li>
+                <li class="nav-item"><%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-outline-secondary btn-sm rounded-pill px-3" %></li>
               <% else %>
-                <li class="nav-item"><%= link_to "Sign in", new_user_session_path, class: "btn btn-outline-secondary btn-sm" %></li>
+                <li class="nav-item"><%= link_to "Sign in", new_user_session_path, class: "btn btn-primary btn-sm rounded-pill px-3" %></li>
               <% end %>
             </ul>
           </div>
@@ -47,11 +84,11 @@
       </nav>
 
       <% if user_signed_in? %>
-        <div class="portal-tabs border-top">
+        <div class="portal-tabbar bg-body border-bottom">
           <div class="container">
-            <ul class="nav nav-tabs border-0">
+            <ul class="nav portal-tabs gap-2">
               <li class="nav-item">
-                <%= link_to "Purchase Orders", purchase_orders_path, class: ["nav-link", (controller_name == "purchase_orders" ? "active" : nil)].compact.join(" ") %>
+                <%= link_to safe_join([content_tag(:span, "PO", class: "portal-tab-icon", aria: { hidden: true }), content_tag(:span, "Purchase Orders")]), purchase_orders_path, class: ["nav-link", (controller_name == "purchase_orders" ? "active" : nil)].compact.join(" ") %>
               </li>
             </ul>
           </div>
