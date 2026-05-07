@@ -1,3 +1,3 @@
-// Minimal ActiveAdmin JavaScript entrypoint for Propshaft.
-// ActiveAdmin expects active_admin.js to be resolvable even when no custom
-// admin JavaScript behavior is required.
+// ActiveAdmin legacy asset entrypoint for Propshaft.
+// ActiveAdmin supplies the admin behavior; this file makes the expected
+// active_admin.js asset resolvable in this Rails/Propshaft app.

@@ -1,120 +1,258 @@
-/* Minimal ActiveAdmin stylesheet for Propshaft-based Rails apps.
- * ActiveAdmin 4 expects an active_admin.css asset to exist; this file keeps
- * the admin login and CRUD screens usable without relying on Sprockets assets.
+/* Legacy ActiveAdmin-style admin chrome.
+ * Keeps /admin on the classic ActiveAdmin look instead of the v4 sidebar UI.
  */
-:root {
-  --aa-bg: #f5f7fa;
-  --aa-panel: #ffffff;
-  --aa-border: #d8dee8;
-  --aa-text: #1f2937;
-  --aa-muted: #6b7280;
-  --aa-primary: #1f5eff;
-  --aa-primary-dark: #1648c7;
-  --aa-danger: #b91c1c;
+html {
+  background: #e8e8e8;
 }
 
 body.active_admin,
 body.logged_out {
+  background: #e8e8e8;
+  color: #323537;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
   margin: 0;
-  background: var(--aa-bg);
-  color: var(--aa-text);
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 14px;
-  line-height: 1.4;
 }
 
-a { color: var(--aa-primary); text-decoration: none; }
-a:hover { text-decoration: underline; }
+a {
+  color: #38678b;
+  text-decoration: underline;
+}
 
-#header,
-.header {
-  background: #111827;
+a:hover {
+  color: #002f5f;
+}
+
+#header {
+  background: linear-gradient(#6a7176, #4d5256);
+  border-bottom: 1px solid #44484b;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  min-height: 42px;
+  padding: 0 28px;
+}
+
+#site_title {
   color: #fff;
-  padding: 12px 24px;
+  float: left;
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 42px;
+  margin: 0 28px 0 0;
+  text-shadow: 0 1px 0 #000;
 }
 
-#header a,
-.header a { color: #fff; }
-
-#title_bar,
-.title_bar,
-#active_admin_content,
-#footer {
-  margin: 0 auto;
-  max-width: 1200px;
-  padding: 18px 24px;
-}
-
-#title_bar h2,
-.title_bar h2 {
-  margin: 0;
-  font-size: 26px;
-}
-
-.panel,
-.attributes_table,
-.index_as_table,
-form .inputs,
-body.logged_out #content_wrapper {
-  background: var(--aa-panel);
-  border: 1px solid var(--aa-border);
-  border-radius: 8px;
-  box-shadow: 0 1px 2px rgb(15 23 42 / 8%);
-  margin-bottom: 18px;
-  padding: 18px;
-}
-
-body.logged_out #content_wrapper {
-  max-width: 420px;
-  margin: 80px auto;
-}
-
-body.logged_out h2 {
-  margin-top: 0;
-  text-align: center;
-}
-
-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-th,
-td {
-  border-bottom: 1px solid var(--aa-border);
-  padding: 10px;
-  text-align: left;
-  vertical-align: top;
-}
-
-th {
-  background: #eef2f7;
-  font-weight: 700;
-}
-
-tr:nth-child(even) td { background: #fafbfc; }
-
-form fieldset {
-  border: 0;
-  margin: 0 0 16px;
-  padding: 0;
-}
-
-form ol,
-form ul {
+#tabs,
+#tabs ul,
+#utility_nav {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-form li {
-  margin-bottom: 14px;
+#tabs li,
+#utility_nav li {
+  display: inline-block;
 }
 
-label {
+#tabs a,
+#utility_nav a {
+  color: #f7f7f7;
+  display: inline-block;
+  line-height: 42px;
+  padding: 0 12px;
+  text-decoration: none;
+  text-shadow: 0 1px 0 #000;
+}
+
+#tabs .current a,
+#tabs a:hover,
+#utility_nav a:hover {
+  background: rgba(0, 0, 0, 0.18);
+}
+
+#utility_nav {
+  float: right;
+}
+
+#title_bar {
+  background: #efefef;
+  border-bottom: 1px solid #cdcdcd;
+  box-shadow: inset 0 1px 0 #fff;
+  padding: 18px 30px;
+}
+
+#title_bar h2 {
+  color: #323537;
+  font-size: 26px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.breadcrumb {
+  color: #777;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.action_items {
+  float: right;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.action_items li {
+  display: inline-block;
+}
+
+#active_admin_content {
+  box-sizing: border-box;
+  padding: 24px 30px;
+}
+
+.with_sidebar #main_content_wrapper {
+  float: left;
+  width: calc(100% - 320px);
+}
+
+.with_sidebar #sidebar {
+  float: right;
+  width: 290px;
+}
+
+#main_content_wrapper,
+#sidebar,
+#footer {
+  box-sizing: border-box;
+}
+
+.panel,
+.index_as_table,
+.attributes_table,
+.active_admin form fieldset,
+.sidebar_section,
+.blank_slate_container,
+.paginated_collection {
+  background: #fff;
+  border: 1px solid #c7c7c7;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  margin-bottom: 20px;
+}
+
+.panel > h3,
+.sidebar_section > h3,
+.active_admin form fieldset > legend span,
+body.logged_out #login h2 {
+  background: linear-gradient(#6a7176, #4d5256);
+  color: #fff;
   display: block;
-  font-weight: 700;
-  margin-bottom: 5px;
+  font-size: 13px;
+  font-weight: bold;
+  margin: 0;
+  padding: 8px 12px;
+  text-shadow: 0 1px 0 #000;
+}
+
+.panel_contents,
+.attributes_table table,
+.active_admin form fieldset ol,
+.sidebar_section .panel_contents {
+  padding: 18px;
+}
+
+table.index_table,
+.attributes_table table,
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table.index_table th,
+table.index_table td,
+.attributes_table th,
+.attributes_table td,
+table th,
+table td {
+  border-bottom: 1px solid #e6e6e6;
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+table.index_table th,
+table th {
+  background: #f4f4f4;
+  color: #555;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+table.index_table tr:nth-child(even) td,
+table tr:nth-child(even) td {
+  background: #fafafa;
+}
+
+.pagination_information,
+.download_links,
+.pagination {
+  background: #fff;
+  border-top: 1px solid #e6e6e6;
+  padding: 10px 12px;
+}
+
+.batch_actions_selector,
+.scopes,
+.table_tools {
+  margin-bottom: 12px;
+}
+
+.button,
+a.button,
+input[type="submit"],
+.action_item a,
+.batch_action,
+.clear_filters_btn {
+  background: linear-gradient(#ffffff, #e7e7e7);
+  border: 1px solid #b7b7b7;
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 #fff;
+  color: #333;
+  cursor: pointer;
+  display: inline-block;
+  font-weight: bold;
+  line-height: 1;
+  padding: 8px 14px;
+  text-decoration: none;
+  text-shadow: 0 1px 0 #fff;
+}
+
+.button:hover,
+a.button:hover,
+input[type="submit"]:hover,
+.action_item a:hover {
+  background: linear-gradient(#f7f7f7, #d9d9d9);
+  color: #111;
+}
+
+.active_admin form ol,
+.active_admin form ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.active_admin form li {
+  margin-bottom: 16px;
+}
+
+.active_admin label {
+  color: #5e6469;
+  display: inline-block;
+  font-weight: bold;
+  margin-right: 18px;
+  min-width: 110px;
 }
 
 input[type="text"],
@@ -123,68 +261,92 @@ input[type="password"],
 input[type="number"],
 textarea,
 select {
-  border: 1px solid var(--aa-border);
-  border-radius: 6px;
+  border: 1px solid #c9d0d6;
+  border-radius: 3px;
   box-sizing: border-box;
   font: inherit;
-  max-width: 100%;
-  padding: 8px 10px;
+  padding: 8px;
 }
 
 input[type="text"],
 input[type="email"],
 input[type="password"],
-textarea,
-select { width: 100%; }
-
-input[type="submit"],
-.button,
-a.button,
-.action_item a,
-.actions a {
-  background: var(--aa-primary);
-  border: 0;
-  border-radius: 6px;
-  color: #fff;
-  cursor: pointer;
-  display: inline-block;
-  font-weight: 700;
-  padding: 8px 12px;
-  text-decoration: none;
-}
-
-input[type="submit"]:hover,
-.button:hover,
-a.button:hover,
-.action_item a:hover,
-.actions a:hover {
-  background: var(--aa-primary-dark);
-  text-decoration: none;
-}
-
-.error,
-.errors,
-.inline-errors,
-.flash_alert {
-  color: var(--aa-danger);
+textarea {
+  min-width: 280px;
 }
 
 .flash,
 .flash_notice,
 .flash_alert,
 .flash_error {
-  border-radius: 6px;
-  margin: 0 auto 16px;
-  max-width: 1200px;
+  font-weight: bold;
+  margin: 18px auto 0;
+  max-width: 860px;
   padding: 10px 14px;
 }
 
-.flash_notice { background: #dcfce7; color: #166534; }
-.flash_alert,
-.flash_error { background: #fee2e2; color: var(--aa-danger); }
+.flash_notice {
+  background: #dff0d8;
+  border: 1px solid #b2dba1;
+  color: #3c763d;
+}
 
-.pagination,
-.scopes,
-.action_items {
-  margin-bottom: 16px;
+.flash_alert,
+.flash_error {
+  background: #f2dede;
+  border: 1px solid #dca7a7;
+  color: #a94442;
+}
+
+body.logged_out #wrapper {
+  margin: 80px auto 0;
+  width: 590px;
+}
+
+body.logged_out #content_wrapper,
+body.logged_out #login {
+  background: #fff;
+  border: 1px solid #c7c7c7;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22);
+}
+
+body.logged_out #content_wrapper {
+  padding: 0;
+}
+
+body.logged_out #login form,
+body.logged_out #login .panel_contents {
+  padding: 35px;
+}
+
+body.logged_out #login label {
+  font-size: 16px;
+  min-width: 100px;
+}
+
+body.logged_out #login input[type="email"],
+body.logged_out #login input[type="password"] {
+  min-width: 365px;
+}
+
+body.logged_out #login .actions,
+body.logged_out #login .buttons {
+  margin-left: 118px;
+}
+
+#footer {
+  border-top: 1px solid #cdcdcd;
+  clear: both;
+  color: #777;
+  margin: 40px 30px 0;
+  padding: 18px 0;
+  text-align: center;
+}
+
+.clearfix::after,
+#active_admin_content::after,
+#header::after {
+  clear: both;
+  content: "";
+  display: table;
 }
