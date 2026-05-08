@@ -92,19 +92,40 @@
 }
 
 .purchase-orders-card {
-  border: 1px solid var(--bs-border-color);
-  border-radius: 0.75rem;
+  border: 1px solid rgba(var(--bs-border-color-rgb), 0.75);
+  border-radius: 1rem;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
   overflow: hidden;
 }
 
+.purchase-orders-card .table-responsive {
+  border-radius: inherit;
+}
+
 .purchase-orders-table {
+  --bs-table-bg: transparent;
+  --bs-table-hover-bg: rgba(var(--bs-primary-rgb), 0.04);
   margin-bottom: 0;
 }
 
-.purchase-orders-table th,
-.purchase-orders-table td {
-  border-color: var(--bs-border-color);
+.purchase-orders-table thead th {
+  background: var(--bs-tertiary-bg);
+  border: 1px solid rgba(var(--bs-border-color-rgb), 0.85);
+  color: var(--bs-secondary-color);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.9rem 1rem;
+  text-transform: uppercase;
 }
+
+.purchase-orders-table tbody td {
+  border: 1px solid rgba(var(--bs-border-color-rgb), 0.85);
+  color: var(--bs-body-color);
+  padding: 1rem;
+  vertical-align: middle;
+}
+
 
 .dealer-login-page {
   align-items: center;
@@ -132,5 +153,157 @@
   .portal-tabs .nav-link {
     justify-content: center;
     width: 100%;
+  }
+}
+
+.purchase-orders-toolbar {
+  align-items: center;
+  background: rgba(var(--bs-body-bg-rgb), 0.92);
+  border: 1px solid rgba(var(--bs-border-color-rgb), 0.75);
+  border-radius: 1rem;
+  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.06);
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 0.75rem 0.9rem;
+}
+
+.purchase-orders-toolbar-copy {
+  min-width: 0;
+}
+
+.purchase-orders-search {
+  flex: 0 1 18rem;
+  max-width: 100%;
+}
+
+.purchase-orders-search .input-group {
+  border-radius: 999px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.purchase-orders-search .input-group-text,
+.purchase-orders-search .form-control,
+.purchase-orders-search .btn {
+  border-color: var(--bs-border-color);
+}
+
+.purchase-orders-search .input-group-text {
+  background: var(--bs-body-bg);
+  border-bottom-left-radius: 999px;
+  border-right: 0;
+  border-top-left-radius: 999px;
+  color: var(--bs-secondary-color);
+  padding-left: 0.75rem;
+}
+
+.purchase-orders-search .form-control {
+  border-left: 0;
+  min-height: 2rem;
+}
+
+.purchase-orders-search .btn:last-child {
+  border-bottom-right-radius: 999px;
+  border-top-right-radius: 999px;
+}
+
+.purchase-orders-search-icon {
+  height: 0.9rem;
+  width: 0.9rem;
+}
+
+.purchase-orders-sort-link {
+  align-items: center;
+  color: inherit;
+  display: inline-flex;
+  gap: 0.35rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.purchase-orders-sort-link:hover,
+.purchase-orders-sort-link.active {
+  color: var(--bs-primary);
+}
+
+.purchase-orders-sort-indicator {
+  color: var(--bs-primary);
+  font-size: 0.72rem;
+  line-height: 1;
+}
+
+.purchase-order-status {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.75rem;
+  font-weight: 700;
+  gap: 0.35rem;
+  line-height: 1;
+  padding: 0.38rem 0.65rem;
+}
+
+.purchase-order-status::before {
+  border-radius: 50%;
+  content: "";
+  height: 0.45rem;
+  width: 0.45rem;
+}
+
+.purchase-order-status--accepted {
+  background: var(--bs-success-bg-subtle);
+  border-color: var(--bs-success-border-subtle);
+  color: var(--bs-success-text-emphasis);
+}
+
+.purchase-order-status--accepted::before {
+  background: var(--bs-success);
+}
+
+.purchase-order-status--pending {
+  background: var(--bs-warning-bg-subtle);
+  border-color: var(--bs-warning-border-subtle);
+  color: var(--bs-warning-text-emphasis);
+}
+
+.purchase-order-status--pending::before {
+  background: var(--bs-warning);
+}
+
+.purchase-order-status--rejected {
+  background: var(--bs-danger-bg-subtle);
+  border-color: var(--bs-danger-border-subtle);
+  color: var(--bs-danger-text-emphasis);
+}
+
+.purchase-order-status--rejected::before {
+  background: var(--bs-danger);
+}
+
+.purchase-order-status--unknown {
+  background: var(--bs-secondary-bg);
+  border-color: var(--bs-border-color);
+  color: var(--bs-secondary-color);
+}
+
+.purchase-order-status--unknown::before {
+  background: var(--bs-secondary-color);
+}
+
+.purchase-orders-pagination .page-link {
+  border-radius: 0.7rem;
+  min-width: 2.35rem;
+  text-align: center;
+}
+
+@media (max-width: 767.98px) {
+  .purchase-orders-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .purchase-orders-search {
+    flex-basis: auto;
   }
 }
