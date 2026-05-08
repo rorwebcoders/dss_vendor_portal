@@ -16,10 +16,6 @@ module ApplicationHelper
   end
 
   def purchase_order_status_badge_class(status)
-    {
-      "accepted" => "text-bg-success",
-      "pending" => "text-bg-warning",
-      "rejected" => "text-bg-danger"
-    }.fetch(status, "text-bg-secondary")
+    ["purchase-order-status", "purchase-order-status--#{status.presence || "unknown"}"].join(" ")
   end
 end
