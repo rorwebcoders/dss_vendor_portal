@@ -16,7 +16,13 @@ ActiveAdmin.register PurchaseOrder do
     column :po_number
     column :po_id
     column :po_type
-    column("Response") { |purchase_order| status_tag(purchase_order.dealer_response.titleize) }
+    column("Response") do |purchase_order|
+      if purchase_order.dealer_response.present?
+        status_tag(purchase_order.dealer_response.titleize)
+      else
+        status_tag("Empty")
+      end
+    end
     column("Dealer") { |purchase_order| purchase_order.dealer&.name || status_tag("Unassigned") }
     column :created_at
     actions
@@ -36,7 +42,13 @@ ActiveAdmin.register PurchaseOrder do
       row :po_id
       row :po_number
       row :po_type
-      row("Response") { |purchase_order| status_tag(purchase_order.dealer_response.titleize) }
+      row("Response") do |purchase_order|
+        if purchase_order.dealer_response.present?
+          status_tag(purchase_order.dealer_response.titleize)
+        else
+          status_tag("Empty")
+        end
+      end
       row :created_at
       row :updated_at
     end
@@ -59,7 +71,10 @@ ActiveAdmin.register PurchaseOrder do
       f.input :po_id
       f.input :po_number
       f.input :po_type
-      f.input :dealer_response, as: :select, collection: PurchaseOrder::DEALER_RESPONSES.map { |response| [response.titleize, response] }
+      f.input :dealer_response,
+              as: :select,
+              collection: PurchaseOrder::DEALER_RESPONSES.map { |response| [response.titleize, response] },
+              include_blank: "Empty"
     end
 
     f.inputs "Line Items" do
