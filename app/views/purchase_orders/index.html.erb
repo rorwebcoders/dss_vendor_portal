@@ -1,4 +1,9 @@
-<div class="purchase-orders-search-row mb-3">
+<div class="purchase-orders-toolbar mb-3">
+  <div class="purchase-orders-toolbar-copy">
+    <p class="text-uppercase text-primary fw-semibold small mb-1">Dealer PO list</p>
+    <p class="text-muted small mb-0">Search and sort purchase orders assigned to your dealers.</p>
+  </div>
+
   <%= form_with url: purchase_orders_path, method: :get, local: true, class: "purchase-orders-search" do |form| %>
     <%= form.hidden_field :sort, value: @sort_column %>
     <%= form.hidden_field :direction, value: @sort_direction %>
