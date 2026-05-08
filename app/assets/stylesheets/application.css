@@ -134,3 +134,28 @@
     width: 100%;
   }
 }
+
+.purchase-orders-toolbar {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.purchase-orders-sort-link {
+  align-items: center;
+  color: inherit;
+  display: inline-flex;
+  gap: 0.35rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.purchase-orders-sort-link:hover,
+.purchase-orders-sort-link.active {
+  color: var(--bs-primary);
+}
+
+.purchase-orders-sort-indicator {
+  color: var(--bs-secondary-color);
+  font-size: 0.75rem;
+}
