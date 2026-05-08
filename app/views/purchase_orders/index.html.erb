@@ -2,6 +2,11 @@
 <% content_for :page_subtitle, "Showing orders for your currently assigned dealers." %>
 
 <div class="purchase-orders-toolbar mb-3">
+  <div class="purchase-orders-toolbar-copy">
+    <p class="text-uppercase text-primary fw-semibold small mb-1">Dealer PO list</p>
+    <p class="text-muted small mb-0">Search and sort purchase orders assigned to your dealers.</p>
+  </div>
+
   <%= form_with url: purchase_orders_path, method: :get, local: true, class: "purchase-orders-search" do |form| %>
     <%= form.hidden_field :sort, value: @sort_column %>
     <%= form.hidden_field :direction, value: @sort_direction %>
@@ -13,18 +18,13 @@
           <path d="m21 21-4.3-4.3"></path>
         </svg>
       </span>
-      <%= form.search_field :q, value: @query, class: "form-control", placeholder: "Search POs", autocomplete: "off" %>
-      <%= form.submit "Search", class: "btn btn-primary" %>
+      <%= form.search_field :q, value: @query, class: "form-control", placeholder: "Search", autocomplete: "off" %>
+      <%= form.submit "Go", class: "btn btn-primary" %>
       <% if @query.present? %>
         <%= link_to "Clear", purchase_orders_path(sort: @sort_column, direction: @sort_direction), class: "btn btn-outline-secondary" %>
       <% end %>
     </div>
   <% end %>
-
-  <div class="purchase-orders-toolbar-copy">
-    <p class="text-uppercase text-primary fw-semibold small mb-1">Dealer PO list</p>
-    <p class="text-muted small mb-0">Search and sort purchase orders assigned to your dealers.</p>
-  </div>
 </div>
 
 <% if @purchase_orders.any? %>
