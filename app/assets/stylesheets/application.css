@@ -110,7 +110,7 @@
 
 .purchase-orders-table thead th {
   background: var(--bs-tertiary-bg);
-  border-bottom: 1px solid var(--bs-border-color);
+  border: 1px solid rgba(var(--bs-border-color-rgb), 0.85);
   color: var(--bs-secondary-color);
   font-size: 0.75rem;
   font-weight: 700;
@@ -120,15 +120,12 @@
 }
 
 .purchase-orders-table tbody td {
-  border-color: rgba(var(--bs-border-color-rgb), 0.7);
+  border: 1px solid rgba(var(--bs-border-color-rgb), 0.85);
   color: var(--bs-body-color);
   padding: 1rem;
   vertical-align: middle;
 }
 
-.purchase-orders-table tbody tr:last-child td {
-  border-bottom: 0;
-}
 
 .dealer-login-page {
   align-items: center;
@@ -176,7 +173,7 @@
 }
 
 .purchase-orders-search {
-  flex: 0 1 24rem;
+  flex: 0 1 18rem;
   max-width: 100%;
 }
 

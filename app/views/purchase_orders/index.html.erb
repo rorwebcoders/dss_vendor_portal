@@ -30,7 +30,7 @@
 <% if @purchase_orders.any? %>
   <div class="purchase-orders-card bg-body shadow-sm">
     <div class="table-responsive">
-      <table class="table table-hover align-middle purchase-orders-table">
+      <table class="table table-bordered table-hover align-middle purchase-orders-table">
         <thead>
           <tr>
             <th scope="col"><%= purchase_order_sort_link("po_number", "PO Number") %></th>
