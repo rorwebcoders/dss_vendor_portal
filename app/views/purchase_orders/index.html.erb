@@ -1,18 +1,35 @@
 <% content_for :page_title, "Purchase Orders" %>
 <% content_for :page_subtitle, "Showing orders for your currently assigned dealers." %>
 
+<div class="purchase-orders-toolbar bg-body shadow-sm mb-3">
+  <%= form_with url: purchase_orders_path, method: :get, local: true, class: "row g-2 align-items-center" do |form| %>
+    <%= form.hidden_field :sort, value: @sort_column %>
+    <%= form.hidden_field :direction, value: @sort_direction %>
+    <div class="col-12 col-md">
+      <%= form.label :q, "Search purchase orders", class: "form-label visually-hidden" %>
+      <%= form.search_field :q, value: @query, class: "form-control", placeholder: "Search by PO number, PO ID, type, dealer, or status", autocomplete: "off" %>
+    </div>
+    <div class="col-12 col-md-auto d-flex gap-2">
+      <%= form.submit "Search", class: "btn btn-primary" %>
+      <% if @query.present? %>
+        <%= link_to "Clear", purchase_orders_path(sort: @sort_column, direction: @sort_direction), class: "btn btn-outline-secondary" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
 <% if @purchase_orders.any? %>
   <div class="purchase-orders-card bg-body shadow-sm">
     <div class="table-responsive">
       <table class="table table-bordered table-striped table-hover align-middle purchase-orders-table">
         <thead>
           <tr>
-            <th>PO Number</th>
-            <th>PO ID</th>
-            <th>Type</th>
-            <th>Dealer</th>
-            <th>Status</th>
-            <th>Created</th>
+            <th><%= purchase_order_sort_link("po_number", "PO Number") %></th>
+            <th><%= purchase_order_sort_link("po_id", "PO ID") %></th>
+            <th><%= purchase_order_sort_link("po_type", "Type") %></th>
+            <th><%= purchase_order_sort_link("dealer", "Dealer") %></th>
+            <th><%= purchase_order_sort_link("status", "Status") %></th>
+            <th><%= purchase_order_sort_link("created", "Created") %></th>
             <th></th>
           </tr>
         </thead>
@@ -23,7 +40,7 @@
               <td><%= purchase_order.po_id %></td>
               <td><%= purchase_order.po_type %></td>
               <td><%= purchase_order.dealer&.name || "Unassigned" %></td>
-              <td><span class="badge text-bg-secondary"><%= purchase_order.dealer_response.titleize %></span></td>
+              <td><span class="badge <%= purchase_order_status_badge_class(purchase_order.dealer_response) %>"><%= purchase_order.dealer_response.titleize %></span></td>
               <td><%= l(purchase_order.created_at, format: :short) %></td>
               <td class="text-end"><%= link_to "View", purchase_order_path(purchase_order), class: "btn btn-sm btn-primary" %></td>
             </tr>
@@ -41,15 +58,15 @@
       <nav aria-label="Purchase order pages">
         <ul class="pagination flex-wrap gap-1 mb-0">
           <li class="page-item <%= "disabled" if @current_page == 1 %>">
-            <%= link_to "Previous", purchase_orders_path(page: @current_page - 1), class: "page-link" %>
+            <%= link_to "Previous", purchase_orders_path(q: @query.presence, sort: @sort_column, direction: @sort_direction, page: @current_page - 1), class: "page-link" %>
           </li>
           <% (1..@total_pages).each do |page| %>
             <li class="page-item <%= "active" if page == @current_page %>">
-              <%= link_to page, purchase_orders_path(page: page), class: "page-link" %>
+              <%= link_to page, purchase_orders_path(q: @query.presence, sort: @sort_column, direction: @sort_direction, page: page), class: "page-link" %>
             </li>
           <% end %>
           <li class="page-item <%= "disabled" if @current_page == @total_pages %>">
-            <%= link_to "Next", purchase_orders_path(page: @current_page + 1), class: "page-link" %>
+            <%= link_to "Next", purchase_orders_path(q: @query.presence, sort: @sort_column, direction: @sort_direction, page: @current_page + 1), class: "page-link" %>
           </li>
         </ul>
       </nav>
@@ -57,6 +74,10 @@
   <% end %>
 <% else %>
   <div class="alert alert-info">
-    No purchase orders are available for your current dealer assignments.
+    <% if @query.present? %>
+      No purchase orders match “<%= @query %>”.
+    <% else %>
+      No purchase orders are available for your current dealer assignments.
+    <% end %>
   </div>
 <% end %>
