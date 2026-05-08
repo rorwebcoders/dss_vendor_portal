@@ -12,7 +12,7 @@ ActiveAdmin.register PurchaseOrder do
     column :po_number
     column :po_id
     column :po_type
-    column :dealer
+    column("Dealer") { |purchase_order| purchase_order.dealer&.name || status_tag("Unassigned") }
     column :created_at
     actions
   end
@@ -26,7 +26,7 @@ ActiveAdmin.register PurchaseOrder do
   show do
     attributes_table do
       row :id
-      row :dealer
+      row("Dealer") { |purchase_order| purchase_order.dealer&.name || status_tag("Unassigned") }
       row :po_id
       row :po_number
       row :po_type
@@ -48,7 +48,7 @@ ActiveAdmin.register PurchaseOrder do
 
   form do |f|
     f.inputs "Purchase Order Details" do
-      f.input :dealer, collection: Dealer.order(:name)
+      f.input :dealer, collection: Dealer.order(:name), include_blank: "Unassigned"
       f.input :po_id
       f.input :po_number
       f.input :po_type

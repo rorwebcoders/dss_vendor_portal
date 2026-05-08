@@ -11,7 +11,7 @@ ActiveAdmin.register LineItem do
     selectable_column
     id_column
     column :purchase_order
-    column("Dealer") { |line_item| line_item.purchase_order.dealer.name }
+    column("Dealer") { |line_item| line_item.purchase_order.dealer&.name || status_tag("Unassigned") }
     column :sku
     column :brand
     column :title
@@ -27,7 +27,7 @@ ActiveAdmin.register LineItem do
 
   form do |f|
     f.inputs do
-      f.input :purchase_order, collection: PurchaseOrder.includes(:dealer).order(:po_number).map { |po| ["#{po.po_number} - #{po.dealer.name}", po.id] }
+      f.input :purchase_order, collection: PurchaseOrder.includes(:dealer).order(:po_number).map { |po| ["#{po.po_number} - #{po.dealer&.name || 'Unassigned'}", po.id] }
       f.input :sku
       f.input :brand
       f.input :title

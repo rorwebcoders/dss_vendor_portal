@@ -1,10 +1,9 @@
 class PurchaseOrder < ApplicationRecord
-  belongs_to :dealer
+  belongs_to :dealer, optional: true
   has_many :line_items, dependent: :destroy
 
   accepts_nested_attributes_for :line_items, allow_destroy: true
 
-  validates :dealer, presence: true
   validates :po_number, presence: true
 
   scope :for_dealers, ->(dealer_ids) { where(dealer_id: dealer_ids) }
