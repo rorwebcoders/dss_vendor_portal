@@ -69,10 +69,14 @@
           <li class="page-item <%= "disabled" if @current_page == 1 %>">
             <%= link_to "Previous", purchase_orders_path(q: @query.presence, sort: @sort_column, direction: @sort_direction, page: @current_page - 1), class: "page-link" %>
           </li>
-          <% (1..@total_pages).each do |page| %>
-            <li class="page-item <%= "active" if page == @current_page %>">
-              <%= link_to page, purchase_orders_path(q: @query.presence, sort: @sort_column, direction: @sort_direction, page: page), class: "page-link" %>
-            </li>
+          <% purchase_order_pagination_pages(@current_page, @total_pages).each do |page| %>
+            <% if page == :gap %>
+              <li class="page-item disabled" aria-hidden="true"><span class="page-link">…</span></li>
+            <% else %>
+              <li class="page-item <%= "active" if page == @current_page %>">
+                <%= link_to page, purchase_orders_path(q: @query.presence, sort: @sort_column, direction: @sort_direction, page: page), class: "page-link" %>
+              </li>
+            <% end %>
           <% end %>
           <li class="page-item <%= "disabled" if @current_page == @total_pages %>">
             <%= link_to "Next", purchase_orders_path(q: @query.presence, sort: @sort_column, direction: @sort_direction, page: @current_page + 1), class: "page-link" %>
