@@ -1,15 +1,18 @@
+<% content_for :page_title, "Purchase Order #{@purchase_order.po_number}" %>
+<% content_for :page_subtitle, @purchase_order.dealer&.name || "Unassigned" %>
+
 <div class="mb-4">
   <%= link_to "← Back to Purchase Orders", purchase_orders_path, class: "btn btn-outline-secondary btn-sm" %>
 </div>
 
 <div class="card mb-4">
-  <div class="card-header bg-dark text-white">
+  <div class="card-header bg-body-tertiary">
     <h1 class="h4 mb-0">Purchase Order <%= @purchase_order.po_number %></h1>
   </div>
   <div class="card-body">
     <dl class="row mb-0">
       <dt class="col-sm-3">Dealer</dt>
-      <dd class="col-sm-9"><%= @purchase_order.dealer.name %></dd>
+      <dd class="col-sm-9"><%= @purchase_order.dealer&.name || "Unassigned" %></dd>
 
       <dt class="col-sm-3">PO ID</dt>
       <dd class="col-sm-9"><%= @purchase_order.po_id %></dd>
@@ -27,7 +30,7 @@
 <% if @line_items.any? %>
   <div class="table-responsive">
     <table class="table table-bordered table-striped align-middle">
-      <thead class="table-light">
+      <thead>
         <tr>
           <th>SKU</th>
           <th>Brand</th>
