@@ -20,10 +20,19 @@
       <dt class="col-sm-3">PO Type</dt>
       <dd class="col-sm-9"><%= @purchase_order.po_type %></dd>
 
+      <dt class="col-sm-3">Status</dt>
+      <dd class="col-sm-9"><span class="badge text-bg-secondary"><%= @purchase_order.dealer_response.titleize %></span></dd>
+
       <dt class="col-sm-3">Created</dt>
       <dd class="col-sm-9"><%= l(@purchase_order.created_at, format: :long) %></dd>
     </dl>
   </div>
+  <% if @purchase_order.pending_dealer_response? %>
+    <div class="card-footer d-flex flex-column flex-sm-row gap-2 justify-content-end">
+      <%= button_to "Reject PO", reject_purchase_order_path(@purchase_order), method: :patch, class: "btn btn-outline-danger", form: { data: { turbo_confirm: "Reject this purchase order and move it to unassigned?" } } %>
+      <%= button_to "Accept PO", accept_purchase_order_path(@purchase_order), method: :patch, class: "btn btn-success" %>
+    </div>
+  <% end %>
 </div>
 
 <h2 class="h5 mb-3">Line Items</h2>

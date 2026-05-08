@@ -11,6 +11,7 @@
             <th>PO ID</th>
             <th>Type</th>
             <th>Dealer</th>
+            <th>Status</th>
             <th>Created</th>
             <th></th>
           </tr>
@@ -22,6 +23,7 @@
               <td><%= purchase_order.po_id %></td>
               <td><%= purchase_order.po_type %></td>
               <td><%= purchase_order.dealer&.name || "Unassigned" %></td>
+              <td><span class="badge text-bg-secondary"><%= purchase_order.dealer_response.titleize %></span></td>
               <td><%= l(purchase_order.created_at, format: :short) %></td>
               <td class="text-end"><%= link_to "View", purchase_order_path(purchase_order), class: "btn btn-sm btn-primary" %></td>
             </tr>

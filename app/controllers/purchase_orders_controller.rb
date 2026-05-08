@@ -1,6 +1,8 @@
 class PurchaseOrdersController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_accessible_purchase_order, only: :show
+  before_action :set_accessible_purchase_order, only: %i[show accept reject]
+
+  PER_PAGE = 10
 
   PER_PAGE = 10
 
@@ -14,6 +16,16 @@ class PurchaseOrdersController < ApplicationController
 
   def show
     @line_items = @purchase_order.line_items.order(:id)
+  end
+
+  def accept
+    @purchase_order.accept_by_dealer!
+    redirect_to purchase_order_path(@purchase_order), notice: "Purchase order accepted."
+  end
+
+  def reject
+    @purchase_order.reject_by_dealer!
+    redirect_to purchase_orders_path, notice: "Purchase order rejected and moved to unassigned."
   end
 
   private

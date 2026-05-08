@@ -4,7 +4,12 @@ Rails.application.routes.draw do
   devise_for :users, skip: [:registrations], controllers: { sessions: "users/sessions" }
 
   resource :account, only: [:edit, :update]
-  resources :purchase_orders, only: [:index, :show]
+  resources :purchase_orders, only: [:index, :show] do
+    member do
+      patch :accept
+      patch :reject
+    end
+  end
 
   authenticated :user do
     root "purchase_orders#index", as: :authenticated_root
