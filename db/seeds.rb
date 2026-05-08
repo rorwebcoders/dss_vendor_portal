@@ -1,3 +1,5 @@
+require "set"
+
 # This file should ensure the existence of records required to run the application in every environment (production,
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 
@@ -121,3 +123,36 @@ line_items_by_po.each do |po_number, items|
     end.update!(attributes)
   end
 end
+
+performance_po_count = ENV.fetch("SEED_PERFORMANCE_PO_COUNT", 50_000).to_i
+performance_po_dealers = [metro_dealer, north_dealer, south_dealer]
+performance_po_types = %w[b_order stock_order special_order emergency_order warranty_order]
+performance_po_responses = PurchaseOrder::DEALER_RESPONSES
+performance_po_prefix = "PERF"
+existing_performance_po_numbers = PurchaseOrder.where("po_number LIKE ?", "#{performance_po_prefix}-%").pluck(:po_number).to_set
+now = Time.current
+performance_purchase_orders = []
+
+performance_po_count.times do |index|
+  sequence = index + 1
+  po_number = "#{performance_po_prefix}-#{sequence.to_s.rjust(5, '0')}"
+  next if existing_performance_po_numbers.include?(po_number)
+
+  dealer = performance_po_dealers[index % performance_po_dealers.size]
+
+  performance_purchase_orders << {
+    dealer_id: dealer.id,
+    po_id: 900_000 + sequence,
+    po_number:,
+    po_type: performance_po_types[index % performance_po_types.size],
+    dealer_response: performance_po_responses[index % performance_po_responses.size],
+    created_at: now - index.minutes,
+    updated_at: now
+  }
+end
+
+performance_purchase_orders.each_slice(1_000) do |batch|
+  PurchaseOrder.insert_all(batch)
+end
+
+puts "Seeded #{performance_po_count} performance purchase order combinations (#{performance_purchase_orders.size} inserted)."
