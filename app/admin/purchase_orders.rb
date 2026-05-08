@@ -6,6 +6,10 @@ ActiveAdmin.register PurchaseOrder do
 
   includes :dealer
 
+  scope :all, default: true
+  scope("Assigned") { |purchase_orders| purchase_orders.where.not(dealer_id: nil) }
+  scope("Unassigned") { |purchase_orders| purchase_orders.where(dealer_id: nil) }
+
   index do
     selectable_column
     id_column
