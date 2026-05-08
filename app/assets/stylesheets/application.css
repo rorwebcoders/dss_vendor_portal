@@ -164,7 +164,7 @@
   box-shadow: 0 12px 34px rgba(15, 23, 42, 0.06);
   display: flex;
   gap: 1rem;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding: 0.75rem 0.9rem;
 }
 
@@ -173,8 +173,9 @@
 }
 
 .purchase-orders-search {
-  flex: 0 1 18rem;
+  flex: 0 1 auto;
   max-width: 100%;
+  width: 16rem;
 }
 
 .purchase-orders-search .input-group {
@@ -304,6 +305,6 @@
   }
 
   .purchase-orders-search {
-    flex-basis: auto;
+    width: 16rem;
   }
 }
