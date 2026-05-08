@@ -1,31 +1,57 @@
 <% content_for :page_title, "Purchase Orders" %>
 <% content_for :page_subtitle, "Showing orders for your currently assigned dealers." %>
 
+<div class="purchase-orders-toolbar mb-3">
+  <div class="purchase-orders-toolbar-copy">
+    <p class="text-uppercase text-primary fw-semibold small mb-1">Dealer PO list</p>
+    <p class="text-muted small mb-0">Search and sort purchase orders assigned to your dealers.</p>
+  </div>
+
+  <%= form_with url: purchase_orders_path, method: :get, local: true, class: "purchase-orders-search" do |form| %>
+    <%= form.hidden_field :sort, value: @sort_column %>
+    <%= form.hidden_field :direction, value: @sort_direction %>
+    <%= form.label :q, "Search purchase orders", class: "form-label visually-hidden" %>
+    <div class="input-group input-group-sm">
+      <span class="input-group-text" aria-hidden="true">
+        <svg class="purchase-orders-search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </svg>
+      </span>
+      <%= form.search_field :q, value: @query, class: "form-control", placeholder: "Search", autocomplete: "off" %>
+      <%= form.submit "Go", class: "btn btn-primary" %>
+      <% if @query.present? %>
+        <%= link_to "Clear", purchase_orders_path(sort: @sort_column, direction: @sort_direction), class: "btn btn-outline-secondary" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
 <% if @purchase_orders.any? %>
   <div class="purchase-orders-card bg-body shadow-sm">
     <div class="table-responsive">
-      <table class="table table-bordered table-striped table-hover align-middle purchase-orders-table">
+      <table class="table table-bordered table-hover align-middle purchase-orders-table">
         <thead>
           <tr>
-            <th>PO Number</th>
-            <th>PO ID</th>
-            <th>Type</th>
-            <th>Dealer</th>
-            <th>Status</th>
-            <th>Created</th>
-            <th></th>
+            <th scope="col"><%= purchase_order_sort_link("po_number", "PO Number") %></th>
+            <th scope="col"><%= purchase_order_sort_link("po_id", "PO ID") %></th>
+            <th scope="col"><%= purchase_order_sort_link("po_type", "Type") %></th>
+            <th scope="col"><%= purchase_order_sort_link("dealer", "Dealer") %></th>
+            <th scope="col"><%= purchase_order_sort_link("status", "Status") %></th>
+            <th scope="col"><%= purchase_order_sort_link("created", "Created") %></th>
+            <th scope="col"><span class="visually-hidden">Actions</span></th>
           </tr>
         </thead>
         <tbody>
           <% @purchase_orders.each do |purchase_order| %>
             <tr>
-              <td><%= purchase_order.po_number %></td>
+              <td class="fw-semibold text-body"><%= purchase_order.po_number %></td>
               <td><%= purchase_order.po_id %></td>
               <td><%= purchase_order.po_type %></td>
               <td><%= purchase_order.dealer&.name || "Unassigned" %></td>
-              <td><span class="badge text-bg-secondary"><%= purchase_order.dealer_response.titleize %></span></td>
+              <td><span class="<%= purchase_order_status_badge_class(purchase_order.dealer_response) %>"><%= purchase_order.dealer_response.titleize %></span></td>
               <td><%= l(purchase_order.created_at, format: :short) %></td>
-              <td class="text-end"><%= link_to "View", purchase_order_path(purchase_order), class: "btn btn-sm btn-primary" %></td>
+              <td class="text-end"><%= link_to "View", purchase_order_path(purchase_order), class: "btn btn-sm btn-primary rounded-pill px-3" %></td>
             </tr>
           <% end %>
         </tbody>
@@ -34,22 +60,22 @@
   </div>
 
   <% if @total_pages > 1 %>
-    <div class="d-flex flex-column flex-md-row justify-content-md-end align-items-md-center gap-3 mt-4">
+    <div class="purchase-orders-pagination d-flex flex-column flex-md-row justify-content-md-end align-items-md-center gap-3 mt-4">
       <% if @total_purchase_orders.to_i.positive? %>
         <span class="badge text-bg-secondary rounded-pill align-self-start align-self-md-center"><%= @total_purchase_orders %> total</span>
       <% end %>
       <nav aria-label="Purchase order pages">
         <ul class="pagination flex-wrap gap-1 mb-0">
           <li class="page-item <%= "disabled" if @current_page == 1 %>">
-            <%= link_to "Previous", purchase_orders_path(page: @current_page - 1), class: "page-link" %>
+            <%= link_to "Previous", purchase_orders_path(q: @query.presence, sort: @sort_column, direction: @sort_direction, page: @current_page - 1), class: "page-link" %>
           </li>
           <% (1..@total_pages).each do |page| %>
             <li class="page-item <%= "active" if page == @current_page %>">
-              <%= link_to page, purchase_orders_path(page: page), class: "page-link" %>
+              <%= link_to page, purchase_orders_path(q: @query.presence, sort: @sort_column, direction: @sort_direction, page: page), class: "page-link" %>
             </li>
           <% end %>
           <li class="page-item <%= "disabled" if @current_page == @total_pages %>">
-            <%= link_to "Next", purchase_orders_path(page: @current_page + 1), class: "page-link" %>
+            <%= link_to "Next", purchase_orders_path(q: @query.presence, sort: @sort_column, direction: @sort_direction, page: @current_page + 1), class: "page-link" %>
           </li>
         </ul>
       </nav>
@@ -57,6 +83,10 @@
   <% end %>
 <% else %>
   <div class="alert alert-info">
-    No purchase orders are available for your current dealer assignments.
+    <% if @query.present? %>
+      No purchase orders match “<%= @query %>”.
+    <% else %>
+      No purchase orders are available for your current dealer assignments.
+    <% end %>
   </div>
 <% end %>
