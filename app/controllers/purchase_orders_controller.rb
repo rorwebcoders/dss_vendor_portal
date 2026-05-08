@@ -4,6 +4,8 @@ class PurchaseOrdersController < ApplicationController
 
   PER_PAGE = 10
 
+  PER_PAGE = 10
+
   def index
     purchase_orders = current_user.accessible_purchase_orders.includes(:dealer).order(created_at: :desc)
     @total_purchase_orders = purchase_orders.count
