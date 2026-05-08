@@ -44,7 +44,7 @@ class PurchaseOrdersController < ApplicationController
 
   def reject
     @purchase_order.reject_by_dealer!
-    redirect_to purchase_orders_path, notice: "Purchase order rejected and moved to unassigned."
+    redirect_to purchase_orders_path, notice: "Purchase order rejected, unassigned, and cleared for reassignment."
   end
 
   private

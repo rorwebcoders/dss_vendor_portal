@@ -49,7 +49,11 @@
               <td><%= purchase_order.po_id %></td>
               <td><%= purchase_order.po_type %></td>
               <td><%= purchase_order.dealer&.name || "Unassigned" %></td>
-              <td><span class="<%= purchase_order_status_badge_class(purchase_order.dealer_response) %>"><%= purchase_order.dealer_response.titleize %></span></td>
+              <td>
+                <span class="<%= purchase_order_status_badge_class(purchase_order.dealer_response) %>">
+                  <%= purchase_order.dealer_response&.titleize || "Empty" %>
+                </span>
+              </td>
               <td><%= l(purchase_order.created_at, format: :short) %></td>
               <td class="text-end"><%= link_to "View", purchase_order_path(purchase_order), class: "btn btn-sm btn-primary rounded-pill px-3" %></td>
             </tr>
