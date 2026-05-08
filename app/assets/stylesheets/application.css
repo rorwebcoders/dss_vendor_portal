@@ -156,20 +156,9 @@
   }
 }
 
-.purchase-orders-toolbar {
-  align-items: center;
-  background: rgba(var(--bs-body-bg-rgb), 0.92);
-  border: 1px solid rgba(var(--bs-border-color-rgb), 0.75);
-  border-radius: 1rem;
-  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.06);
+.purchase-orders-search-row {
   display: flex;
-  gap: 1rem;
-  justify-content: space-between;
-  padding: 0.75rem 0.9rem;
-}
-
-.purchase-orders-toolbar-copy {
-  min-width: 0;
+  justify-content: flex-end;
 }
 
 .purchase-orders-search {
@@ -301,11 +290,6 @@
 }
 
 @media (max-width: 767.98px) {
-  .purchase-orders-toolbar {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
   .purchase-orders-search {
     align-self: flex-end;
     margin-left: auto;
