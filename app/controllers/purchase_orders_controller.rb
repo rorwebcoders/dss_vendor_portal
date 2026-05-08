@@ -1,13 +1,29 @@
 class PurchaseOrdersController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_accessible_purchase_order, only: :show
+  before_action :set_accessible_purchase_order, only: %i[show accept reject]
+
+  PER_PAGE = 10
 
   def index
-    @purchase_orders = current_user.accessible_purchase_orders.includes(:dealer).order(created_at: :desc)
+    purchase_orders = current_user.accessible_purchase_orders.includes(:dealer).order(created_at: :desc)
+    @total_purchase_orders = purchase_orders.count
+    @total_pages = (@total_purchase_orders / PER_PAGE.to_f).ceil
+    @current_page = [[params[:page].to_i, 1].max, [@total_pages, 1].max].min
+    @purchase_orders = purchase_orders.offset((@current_page - 1) * PER_PAGE).limit(PER_PAGE)
   end
 
   def show
     @line_items = @purchase_order.line_items.order(:id)
+  end
+
+  def accept
+    @purchase_order.accept_by_dealer!
+    redirect_to purchase_order_path(@purchase_order), notice: "Purchase order accepted."
+  end
+
+  def reject
+    @purchase_order.reject_by_dealer!
+    redirect_to purchase_orders_path, notice: "Purchase order rejected and moved to unassigned."
   end
 
   private

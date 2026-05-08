@@ -8,13 +8,15 @@ admin.password_confirmation = "password"
 admin.save!
 
 users = [
-  { email: "multi.dealer@example.com", password: "password" },
-  { email: "single.dealer@example.com", password: "password" },
-  { email: "unassigned@example.com", password: "password" }
+  { email: "multi.dealer@example.com", first_name: "Morgan", last_name: "Dealer", password: "password" },
+  { email: "single.dealer@example.com", first_name: "Sam", last_name: "Seller", password: "password" },
+  { email: "unassigned@example.com", first_name: "Uma", last_name: "Unassigned", password: "password" }
 ].index_by { |user| user[:email] }
 
 users.each_value do |attributes|
   user = User.find_or_initialize_by(email: attributes[:email])
+  user.first_name = attributes[:first_name]
+  user.last_name = attributes[:last_name]
   user.password = attributes[:password] if user.new_record?
   user.password_confirmation = attributes[:password] if user.new_record?
   user.save!
@@ -68,6 +70,17 @@ purchase_orders = [
   { dealer: south_dealer, po_id: 682450, po_number: "SCM-101924-D", po_type: "special_order" }
 ]
 
+14.times do |index|
+  dealer = index.even? ? metro_dealer : north_dealer
+  prefix = dealer.abbreviation
+  purchase_orders << {
+    dealer:,
+    po_id: 700_000 + index,
+    po_number: "#{prefix}-20#{(index + 1).to_s.rjust(2, '0')}-SEED",
+    po_type: index.even? ? "stock_order" : "b_order"
+  }
+end
+
 purchase_orders.each do |attributes|
   PurchaseOrder.find_or_create_by!(po_number: attributes[:po_number]) do |purchase_order|
     purchase_order.assign_attributes(attributes)
@@ -92,6 +105,13 @@ line_items_by_po = {
     { sku: "RAD-8801", brand: "Koyo", title: "Radiator", quantity: 2, cost: 155.30 }
   ]
 }
+
+purchase_orders.each do |purchase_order_attributes|
+  line_items_by_po[purchase_order_attributes[:po_number]] ||= [
+    { sku: "SKU-#{purchase_order_attributes[:po_id]}-A", brand: "DSS", title: "Seeded Service Part", quantity: 2, cost: 19.95 },
+    { sku: "SKU-#{purchase_order_attributes[:po_id]}-B", brand: "DSS", title: "Seeded Accessory Part", quantity: 1, cost: 34.50 }
+  ]
+end
 
 line_items_by_po.each do |po_number, items|
   purchase_order = PurchaseOrder.find_by!(po_number:)

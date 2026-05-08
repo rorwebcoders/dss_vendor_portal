@@ -3,7 +3,13 @@ Rails.application.routes.draw do
   ActiveAdmin.routes(self)
   devise_for :users, skip: [:registrations], controllers: { sessions: "users/sessions" }
 
-  resources :purchase_orders, only: [:index, :show]
+  resource :account, only: [:edit, :update]
+  resources :purchase_orders, only: [:index, :show] do
+    member do
+      patch :accept
+      patch :reject
+    end
+  end
 
   authenticated :user do
     root "purchase_orders#index", as: :authenticated_root
