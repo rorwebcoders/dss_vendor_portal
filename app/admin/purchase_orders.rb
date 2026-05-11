@@ -13,6 +13,9 @@ ActiveAdmin.register PurchaseOrder do
   index do
     selectable_column
     id_column
+    column("Status") do |purchase_order|
+      status_tag(purchase_order.status.titleize)
+    end
     column :po_number
     column :po_id
     column :po_type

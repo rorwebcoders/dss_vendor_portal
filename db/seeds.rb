@@ -84,7 +84,7 @@ purchase_orders = [
 end
 
 purchase_orders.each do |attributes|
-  PurchaseOrder.find_or_create_by!(po_number: attributes[:po_number]) do |purchase_order|
+  PurchaseOrder.find_or_create_by!(po_number: attributes[:po_number], status: :pending) do |purchase_order|
     purchase_order.assign_attributes(attributes)
   end.update!(attributes)
 end
