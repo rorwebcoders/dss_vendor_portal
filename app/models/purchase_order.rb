@@ -12,7 +12,7 @@ class PurchaseOrder < ApplicationRecord
   before_validation :sync_dealer_response_with_assignment
   after_update :run_dealer_response_callback, if: :saved_change_to_dealer_response?
 
-  enum :status, { pending: 0, processing: 1, error: 2, completed: 3 }, suffix: :purchase_order
+  enum :status, { pending: 0, processing: 1, error: 2, completed: 3, non_dropshipping: 4, dropshipping: 5 }, suffix: :purchase_order
 
   scope :for_dealers, ->(dealer_ids) { where(dealer_id: dealer_ids) }
 
