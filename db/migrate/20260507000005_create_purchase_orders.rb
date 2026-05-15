@@ -7,6 +7,11 @@ class CreatePurchaseOrders < ActiveRecord::Migration[8.0]
       t.integer :po_id
       t.string :po_number, null: false
       t.string :po_type
+      t.string :skuvault_status
+      t.string :payment_status
+      t.string :supplier_name
+      t.json :notified_sm_request
+      t.integer :status, default: 0
       t.timestamps null: false
     end
 

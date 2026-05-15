@@ -7,6 +7,12 @@ class CreateLineItems < ActiveRecord::Migration[8.0]
       t.string :sku, null: false
       t.string :brand
       t.string :title
+      t.string :skuvault_product_id
+      t.string :received_quantity
+      t.string :received_date
+      t.string :retail_cost
+      t.text :public_notes
+      t.text :private_notes
       t.integer :quantity, null: false
       t.float :cost
       t.timestamps null: false
