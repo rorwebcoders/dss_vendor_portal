@@ -72,6 +72,7 @@ ActiveAdmin.register PurchaseOrder do
     f.inputs "Purchase Order Details" do
       f.input :dealer, collection: Dealer.order(:name), include_blank: "Unassigned"
       f.input :po_id
+      f.input :status
       f.input :po_number
       f.input :po_type
       f.input :dealer_response,

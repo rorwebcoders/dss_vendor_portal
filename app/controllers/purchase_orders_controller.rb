@@ -38,12 +38,18 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def accept
-    @purchase_order.accept_by_dealer!
+    # @purchase_order.accept_by_dealer!
+    
+    DealerDecisionJob.perform_later(@purchase_order.id, current_user.id, "accept")
+
     redirect_to purchase_order_path(@purchase_order), notice: "Purchase order accepted."
   end
 
   def reject
-    @purchase_order.reject_by_dealer!
+    # @purchase_order.reject_by_dealer!
+
+    DealerDecisionJob.perform_later(@purchase_order.id, current_user.id, "reject")
+
     redirect_to purchase_orders_path, notice: "Purchase order rejected, unassigned, and cleared for reassignment."
   end
 
