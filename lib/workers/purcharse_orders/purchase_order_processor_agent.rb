@@ -113,11 +113,11 @@ class PurchaseOrderProcessorAgent
             notify_dealer_request_body = {
               dealer_id: dealer_id,
               line_items: line_items
-            }.to_json
+            }
 
-            # notify_orders_to_skumonster(notify_dealer_request_body)
+            # notify_orders_to_skumonster(notify_dealer_request_body.to_json)
 
-            purchase_order.update(status: :dropshipping)
+            purchase_order.update(status: :dropshipping, notified_sm_request: notify_dealer_request_body)
             dropshipping = true
             break
           end
