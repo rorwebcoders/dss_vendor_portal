@@ -38,20 +38,21 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-body-tertiary text-body">
+  <body class="bg-body-tertiary text-body <%= "dealer-shell-enabled" if user_signed_in? %>">
+    <% purchase_orders_icon = raw('<svg class="portal-nav-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h9l5 5v15H6z"></path><path d="M14 2v6h6"></path><path d="M9 13h6"></path><path d="M9 17h6"></path></svg>') %>
+    <% account_icon = raw('<svg class="portal-nav-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0"></path><circle cx="12" cy="7" r="4"></circle></svg>') %>
+    <% menu_icon = raw('<svg class="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path></svg>') %>
+
     <header class="portal-header sticky-top">
       <nav class="navbar portal-navbar bg-body border-bottom">
-        <div class="container d-flex flex-wrap align-items-center gap-2 gap-md-3">
-          <%= link_to "DSS Vendor Portal", root_path, class: "navbar-brand fw-semibold me-auto me-lg-3" %>
-
+        <div class="container-fluid d-flex align-items-center gap-2 gap-md-3 px-3 px-lg-4">
           <% if user_signed_in? %>
-            <ul class="nav portal-tabs order-3 order-lg-0 mt-2 mt-lg-0 me-lg-auto gap-2">
-              <li class="nav-item">
-                <% purchase_orders_icon = raw('<svg class="portal-tab-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h9l5 5v15H6z"></path><path d="M14 2v6h6"></path><path d="M9 13h6"></path><path d="M9 17h6"></path></svg>') %>
-                <%= link_to safe_join([purchase_orders_icon, content_tag(:span, "Purchase Orders")]), purchase_orders_path, class: ["nav-link", (controller_name == "purchase_orders" ? "active" : nil)].compact.join(" ") %>
-              </li>
-            </ul>
+            <button class="btn btn-icon btn-outline-secondary portal-sidebar-toggle" type="button" data-sidebar-toggle aria-label="Toggle dealer navigation" aria-controls="dealer-sidebar" aria-expanded="true" title="Toggle dealer navigation">
+              <%= menu_icon %>
+            </button>
           <% end %>
+
+          <%= link_to "DSS Vendor Portal", root_path, class: "navbar-brand fw-semibold me-auto" %>
 
           <div class="portal-actions d-flex align-items-center gap-2 ms-auto">
             <button class="btn btn-icon btn-outline-secondary" type="button" data-theme-toggle aria-label="Switch to dark mode" title="Switch to dark mode">
@@ -74,10 +75,7 @@
             <% if user_signed_in? %>
               <details class="account-menu position-relative">
                 <summary class="btn btn-icon btn-outline-secondary" aria-label="My Account" title="My Account">
-                  <svg class="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M20 21a8 8 0 0 0-16 0"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                  </svg>
+                  <%= account_icon %>
                 </summary>
                 <div class="account-menu-panel dropdown-menu-end shadow-sm bg-body border rounded-3 p-2">
                   <div class="dropdown-header"><%= current_user.display_name %></div>
@@ -92,30 +90,61 @@
           </div>
         </div>
       </nav>
-
-      <% if content_for?(:page_title) || content_for?(:page_subtitle) %>
-        <div class="portal-pagebar bg-body border-bottom">
-          <div class="container py-3">
-            <% if content_for?(:page_title) %>
-              <h1 class="h4 mb-1"><%= content_for(:page_title) %></h1>
-            <% end %>
-            <% if content_for?(:page_subtitle) %>
-              <p class="text-muted mb-0"><%= content_for(:page_subtitle) %></p>
-            <% end %>
-          </div>
-        </div>
-      <% end %>
     </header>
 
-    <main class="container py-4">
-      <% if notice.present? %>
-        <div class="alert alert-success"><%= notice %></div>
-      <% end %>
-      <% if alert.present? %>
-        <div class="alert alert-danger"><%= alert %></div>
-      <% end %>
-      <%= yield %>
-    </main>
+    <% if user_signed_in? %>
+      <div class="dealer-layout" data-dealer-layout>
+        <aside class="dealer-sidebar bg-body" id="dealer-sidebar" data-dealer-sidebar aria-label="Dealer navigation">
+          <div class="dealer-sidebar-inner">
+            <div class="dealer-sidebar-heading">
+              <span class="dealer-sidebar-kicker">Dealer</span>
+              <strong class="dealer-sidebar-title">Workspace</strong>
+            </div>
+
+            <nav class="nav nav-pills flex-column dealer-side-nav" aria-label="Dealer sections">
+              <%= link_to safe_join([purchase_orders_icon, content_tag(:span, "Purchase Orders", class: "dealer-side-nav-text")]), purchase_orders_path, class: ["nav-link", "dealer-side-nav-link", (controller_name == "purchase_orders" ? "active" : nil)].compact.join(" "), title: "Purchase Orders" %>
+              <%= link_to safe_join([account_icon, content_tag(:span, "Profile", class: "dealer-side-nav-text")]), edit_account_path, class: ["nav-link", "dealer-side-nav-link", (controller_name == "accounts" ? "active" : nil)].compact.join(" "), title: "Profile" %>
+            </nav>
+          </div>
+        </aside>
+        <button class="dealer-sidebar-backdrop" type="button" data-sidebar-close aria-label="Close dealer navigation"></button>
+
+        <div class="dealer-main-panel">
+          <% if content_for?(:page_title) || content_for?(:page_subtitle) %>
+            <div class="portal-pagebar bg-body border-bottom">
+              <div class="container-fluid px-3 px-lg-4 py-3">
+                <% if content_for?(:page_title) %>
+                  <h1 class="h4 mb-1"><%= content_for(:page_title) %></h1>
+                <% end %>
+                <% if content_for?(:page_subtitle) %>
+                  <p class="text-muted mb-0"><%= content_for(:page_subtitle) %></p>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+
+          <main class="container-fluid px-3 px-lg-4 py-4">
+            <% if notice.present? %>
+              <div class="alert alert-success"><%= notice %></div>
+            <% end %>
+            <% if alert.present? %>
+              <div class="alert alert-danger"><%= alert %></div>
+            <% end %>
+            <%= yield %>
+          </main>
+        </div>
+      </div>
+    <% else %>
+      <main class="container py-4">
+        <% if notice.present? %>
+          <div class="alert alert-success"><%= notice %></div>
+        <% end %>
+        <% if alert.present? %>
+          <div class="alert alert-danger"><%= alert %></div>
+        <% end %>
+        <%= yield %>
+      </main>
+    <% end %>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
