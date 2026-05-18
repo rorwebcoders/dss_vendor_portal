@@ -497,3 +497,67 @@ body.dealer-sidebar-collapsed .dealer-side-nav-link {
     padding: 0.75rem 0.85rem;
   }
 }
+
+.purchase-orders-status-tabs {
+  background: rgba(var(--bs-body-bg-rgb), 0.92);
+  border: 1px solid rgba(var(--bs-border-color-rgb), 0.75);
+  border-radius: 1rem;
+  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.06);
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.4rem;
+}
+
+.purchase-orders-status-tab {
+  align-items: center;
+  border-radius: 0.8rem;
+  color: var(--bs-secondary-color);
+  display: inline-flex;
+  font-weight: 700;
+  gap: 0.55rem;
+  line-height: 1;
+  min-height: 2.35rem;
+  padding: 0.65rem 0.85rem;
+  text-decoration: none;
+}
+
+.purchase-orders-status-tab:hover,
+.purchase-orders-status-tab:focus {
+  background: var(--bs-tertiary-bg);
+  color: var(--bs-body-color);
+}
+
+.purchase-orders-status-tab.active {
+  background: var(--bs-primary);
+  box-shadow: 0 10px 22px rgba(var(--bs-primary-rgb), 0.2);
+  color: #fff;
+}
+
+.purchase-orders-status-tab-count {
+  align-items: center;
+  background: rgba(var(--bs-secondary-rgb), 0.14);
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.75rem;
+  justify-content: center;
+  min-width: 1.55rem;
+  padding: 0.25rem 0.45rem;
+}
+
+.purchase-orders-status-tab.active .purchase-orders-status-tab-count {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+@media (max-width: 575.98px) {
+  .purchase-orders-status-tabs {
+    display: flex;
+    width: 100%;
+  }
+
+  .purchase-orders-status-tab {
+    flex: 1 1 100%;
+    justify-content: space-between;
+  }
+}

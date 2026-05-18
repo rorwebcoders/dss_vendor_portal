@@ -14,14 +14,23 @@ class PurchaseOrdersController < ApplicationController
   SORT_DIRECTIONS = %w[asc desc].freeze
   DEFAULT_SORT = "created"
   DEFAULT_DIRECTION = "desc"
+  STATUS_FILTERS = {
+    "pending" => "Pending Orders",
+    "accepted" => "Accepted Orders"
+  }.freeze
 
   def index
     @query = params[:q].to_s.strip
     @sort_column = SORT_COLUMNS.key?(params[:sort]) ? params[:sort] : DEFAULT_SORT
     @sort_direction = SORT_DIRECTIONS.include?(params[:direction]) ? params[:direction] : DEFAULT_DIRECTION
+    @status_filter = STATUS_FILTERS.key?(params[:status]) ? params[:status] : STATUS_FILTERS.keys.first
+    @status_filters = STATUS_FILTERS
 
-    purchase_orders = current_user.accessible_purchase_orders.left_joins(:dealer).includes(:dealer)
-    purchase_orders = search_purchase_orders(purchase_orders) if @query.present?
+    base_purchase_orders = current_user.accessible_purchase_orders.left_joins(:dealer)
+    filtered_purchase_orders = @query.present? ? search_purchase_orders(base_purchase_orders) : base_purchase_orders
+    @purchase_order_status_counts = filtered_purchase_orders.where(dealer_response: STATUS_FILTERS.keys).group(:dealer_response).count
+
+    purchase_orders = filtered_purchase_orders.includes(:dealer).where(dealer_response: @status_filter)
     purchase_orders = purchase_orders.order(
       Arel.sql("#{SORT_COLUMNS.fetch(@sort_column)} #{@sort_direction.upcase}"),
       id: :desc
