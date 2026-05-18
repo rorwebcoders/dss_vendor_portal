@@ -1,5 +1,28 @@
-<% content_for :page_title, "Purchase Order #{@purchase_order.po_number}" %>
-<% content_for :page_subtitle, @purchase_order.dealer&.name || "Unassigned" %>
+<% content_for :title, "Purchase Order #{@purchase_order.po_number}" %>
+
+<div class="purchase-orders-toolbar mb-3">
+  <div class="purchase-orders-toolbar-copy">
+    <p class="text-uppercase text-primary fw-semibold small mb-1">Dealer PO list</p>
+    <p class="text-muted small mb-0">Search and sort purchase orders assigned to your dealers.</p>
+  </div>
+
+  <form class="purchase-orders-search" action="<%= purchase_orders_path %>" accept-charset="UTF-8" method="get">
+    <input value="all" autocomplete="off" type="hidden" name="status" id="status">
+    <input value="created" autocomplete="off" type="hidden" name="sort" id="sort">
+    <input value="desc" autocomplete="off" type="hidden" name="direction" id="direction">
+    <label class="form-label visually-hidden" for="q">Search purchase orders</label>
+    <div class="input-group input-group-sm">
+      <span class="input-group-text" aria-hidden="true">
+        <svg class="purchase-orders-search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </svg>
+      </span>
+      <input value="" class="form-control" placeholder="Search" autocomplete="off" type="search" name="q" id="q">
+      <input type="submit" name="commit" value="Go" class="btn btn-primary" data-disable-with="Go">
+    </div>
+  </form>
+</div>
 
 <div class="mb-4">
   <%= link_to "← Back to Purchase Orders", purchase_orders_path, class: "btn btn-outline-secondary btn-sm" %>
