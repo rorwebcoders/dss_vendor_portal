@@ -1,12 +1,17 @@
 <% content_for :title, "My Account" %>
-<% content_for :page_title, "My Account" %>
-<% content_for :page_subtitle, "Manage your dealer portal profile and password." %>
+<div class="purchase-orders-toolbar mb-3">
+  <div class="purchase-orders-toolbar-copy">
+    <p class="text-uppercase text-primary fw-semibold small mb-1">My account</p>
+    <p class="text-muted small mb-0">Manage your dealer portal profile and password.</p>
+  </div>
+
+  <div class="purchase-orders-toolbar-actions">
+    <%= link_to "← Back to Purchase Orders", purchase_orders_path, class: "btn btn-outline-secondary btn-sm" %>
+  </div>
+</div>
 
 <div class="row justify-content-center">
   <div class="col-12 col-lg-10 col-xl-8">
-    <div class="d-flex justify-content-end mb-4">
-      <%= link_to "Back to Purchase Orders", purchase_orders_path, class: "btn btn-outline-secondary" %>
-    </div>
 
     <% if current_user.errors.any? %>
       <div class="alert alert-danger">
