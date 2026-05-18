@@ -15,9 +15,11 @@ class PurchaseOrdersController < ApplicationController
   DEFAULT_SORT = "created"
   DEFAULT_DIRECTION = "desc"
   STATUS_FILTERS = {
+    "all" => "All order",
     "pending" => "Pending Orders",
     "accepted" => "Accepted Orders"
   }.freeze
+  STATUS_FILTER_VALUES = (STATUS_FILTERS.keys - ["all"]).freeze
 
   def index
     @query = params[:q].to_s.strip
@@ -28,9 +30,11 @@ class PurchaseOrdersController < ApplicationController
 
     base_purchase_orders = current_user.accessible_purchase_orders.left_joins(:dealer)
     filtered_purchase_orders = @query.present? ? search_purchase_orders(base_purchase_orders) : base_purchase_orders
-    @purchase_order_status_counts = filtered_purchase_orders.where(dealer_response: STATUS_FILTERS.keys).group(:dealer_response).count
+    status_counts = filtered_purchase_orders.where(dealer_response: STATUS_FILTER_VALUES).group(:dealer_response).count
+    @purchase_order_status_counts = status_counts.merge("all" => filtered_purchase_orders.count)
 
-    purchase_orders = filtered_purchase_orders.includes(:dealer).where(dealer_response: @status_filter)
+    purchase_orders = filtered_purchase_orders.includes(:dealer)
+    purchase_orders = purchase_orders.where(dealer_response: @status_filter) unless @status_filter == "all"
     purchase_orders = purchase_orders.order(
       Arel.sql("#{SORT_COLUMNS.fetch(@sort_column)} #{@sort_direction.upcase}"),
       id: :desc

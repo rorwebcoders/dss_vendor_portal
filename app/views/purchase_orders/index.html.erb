@@ -102,7 +102,11 @@
     <% if @query.present? %>
       No purchase orders match “<%= @query %>”.
     <% else %>
-      No <%= @status_filter %> purchase orders are available for your current dealer assignments.
+      <% if @status_filter == "all" %>
+        No purchase orders are available for your current dealer assignments.
+      <% else %>
+        No <%= @status_filters.fetch(@status_filter).downcase %> are available for your current dealer assignments.
+      <% end %>
     <% end %>
   </div>
 <% end %>
