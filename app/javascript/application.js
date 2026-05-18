@@ -66,3 +66,88 @@ const bindThemeToggles = () => {
 setTheme(preferredTheme())
 document.addEventListener("DOMContentLoaded", bindThemeToggles)
 document.addEventListener("turbo:load", bindThemeToggles)
+
+const sidebarStorageKey = "dss-vendor-portal-sidebar-collapsed"
+const desktopSidebarQuery = window.matchMedia("(min-width: 992px)")
+
+const sidebarStoredCollapsed = () => {
+  try {
+    return localStorage.getItem(sidebarStorageKey) === "true"
+  } catch {
+    return false
+  }
+}
+
+const saveSidebarCollapsed = (collapsed) => {
+  try {
+    localStorage.setItem(sidebarStorageKey, collapsed ? "true" : "false")
+  } catch {
+    // Sidebar persistence is optional when storage is unavailable.
+  }
+}
+
+const setSidebarExpandedAttribute = () => {
+  const expanded = desktopSidebarQuery.matches ? !document.body.classList.contains("dealer-sidebar-collapsed") : document.body.classList.contains("dealer-sidebar-open")
+
+  document.querySelectorAll("[data-sidebar-toggle]").forEach((toggle) => {
+    toggle.setAttribute("aria-expanded", expanded ? "true" : "false")
+  })
+}
+
+const closeDealerSidebar = () => {
+  document.body.classList.remove("dealer-sidebar-open")
+  setSidebarExpandedAttribute()
+}
+
+const toggleDealerSidebar = () => {
+  if (desktopSidebarQuery.matches) {
+    const collapsed = !document.body.classList.contains("dealer-sidebar-collapsed")
+    document.body.classList.toggle("dealer-sidebar-collapsed", collapsed)
+    saveSidebarCollapsed(collapsed)
+    closeDealerSidebar()
+  } else {
+    document.body.classList.toggle("dealer-sidebar-open")
+    setSidebarExpandedAttribute()
+  }
+}
+
+const bindDealerSidebar = () => {
+  if (!document.querySelector("[data-dealer-layout]")) return
+
+  document.body.classList.toggle("dealer-sidebar-collapsed", desktopSidebarQuery.matches && sidebarStoredCollapsed())
+  if (desktopSidebarQuery.matches) closeDealerSidebar()
+  setSidebarExpandedAttribute()
+
+  document.querySelectorAll("[data-sidebar-toggle]").forEach((toggle) => {
+    if (toggle.dataset.sidebarToggleBound === "true") return
+
+    toggle.dataset.sidebarToggleBound = "true"
+    toggle.addEventListener("click", toggleDealerSidebar)
+  })
+
+  document.querySelectorAll("[data-sidebar-close]").forEach((closeButton) => {
+    if (closeButton.dataset.sidebarCloseBound === "true") return
+
+    closeButton.dataset.sidebarCloseBound = "true"
+    closeButton.addEventListener("click", closeDealerSidebar)
+  })
+
+  document.querySelectorAll(".dealer-side-nav-link").forEach((link) => {
+    if (link.dataset.sidebarLinkBound === "true") return
+
+    link.dataset.sidebarLinkBound = "true"
+    link.addEventListener("click", () => {
+      if (!desktopSidebarQuery.matches) closeDealerSidebar()
+    })
+  })
+}
+
+const handleDealerSidebarKeydown = (event) => {
+  if (event.key === "Escape") closeDealerSidebar()
+}
+
+window.addEventListener("resize", bindDealerSidebar)
+desktopSidebarQuery.addEventListener("change", bindDealerSidebar)
+document.addEventListener("keydown", handleDealerSidebarKeydown)
+document.addEventListener("DOMContentLoaded", bindDealerSidebar)
+document.addEventListener("turbo:load", bindDealerSidebar)
