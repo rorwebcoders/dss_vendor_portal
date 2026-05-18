@@ -1,10 +1,9 @@
 <div class="purchase-orders-status-tabs mb-3" role="tablist" aria-label="Purchase order status filters">
   <% @status_filters.each do |status, label| %>
     <% active = @status_filter == status %>
-    <% tab_content = safe_join([content_tag(:span, label), content_tag(:span, @purchase_order_status_counts.fetch(status, 0), class: "purchase-orders-status-tab-count")]) %>
     <% tab_path = purchase_orders_path(status: status, q: @query.presence, sort: @sort_column, direction: @sort_direction) %>
     <% tab_classes = ["purchase-orders-status-tab", ("active" if active)].compact.join(" ") %>
-    <%= link_to tab_content, tab_path, class: tab_classes, role: "tab", "aria-selected": active %>
+    <%= link_to label, tab_path, class: tab_classes, role: "tab", "aria-selected": active %>
   <% end %>
 </div>
 

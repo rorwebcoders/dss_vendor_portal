@@ -599,21 +599,6 @@ body.dealer-sidebar-collapsed .dealer-side-nav-link {
   color: #fff;
 }
 
-.purchase-orders-status-tab-count {
-  align-items: center;
-  background: rgba(var(--bs-secondary-rgb), 0.14);
-  border-radius: 999px;
-  display: inline-flex;
-  font-size: 0.75rem;
-  justify-content: center;
-  min-width: 1.55rem;
-  padding: 0.25rem 0.45rem;
-}
-
-.purchase-orders-status-tab.active .purchase-orders-status-tab-count {
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
-}
 
 @media (max-width: 575.98px) {
   .purchase-orders-status-tabs {

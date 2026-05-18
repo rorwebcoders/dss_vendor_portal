@@ -19,8 +19,6 @@ class PurchaseOrdersController < ApplicationController
     "pending" => "Pending Orders",
     "accepted" => "Accepted Orders"
   }.freeze
-  STATUS_FILTER_VALUES = (STATUS_FILTERS.keys - ["all"]).freeze
-
   def index
     @query = params[:q].to_s.strip
     @sort_column = SORT_COLUMNS.key?(params[:sort]) ? params[:sort] : DEFAULT_SORT
@@ -31,9 +29,6 @@ class PurchaseOrdersController < ApplicationController
     base_purchase_orders = current_user.accessible_purchase_orders.left_joins(:dealer)
     @purchase_order_summary_cards = purchase_order_summary_cards(base_purchase_orders)
     filtered_purchase_orders = @query.present? ? search_purchase_orders(base_purchase_orders) : base_purchase_orders
-    status_counts = filtered_purchase_orders.where(dealer_response: STATUS_FILTER_VALUES).group(:dealer_response).count
-    @purchase_order_status_counts = status_counts.merge("all" => filtered_purchase_orders.count)
-
     purchase_orders = filtered_purchase_orders.includes(:dealer)
     purchase_orders = purchase_orders.where(dealer_response: @status_filter) unless @status_filter == "all"
     purchase_orders = purchase_orders.order(
