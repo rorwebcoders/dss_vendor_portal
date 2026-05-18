@@ -35,6 +35,16 @@
   <% end %>
 </div>
 
+<div class="purchase-orders-summary-grid mb-4" aria-label="Purchase order summary">
+  <% @purchase_order_summary_cards.each do |card| %>
+    <article class="purchase-orders-summary-card purchase-orders-summary-card--<%= card[:modifier] %>">
+      <p class="purchase-orders-summary-card-label"><%= card[:label] %></p>
+      <p class="purchase-orders-summary-card-value"><%= card[:value] %></p>
+      <p class="purchase-orders-summary-card-detail"><%= card[:detail] %></p>
+    </article>
+  <% end %>
+</div>
+
 <% if @purchase_orders.any? %>
   <div class="purchase-orders-card bg-body shadow-sm">
     <div class="table-responsive">

@@ -498,6 +498,71 @@ body.dealer-sidebar-collapsed .dealer-side-nav-link {
   }
 }
 
+.purchase-orders-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.purchase-orders-summary-card {
+  background: #f4f2ec;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 1rem;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+  min-height: 10rem;
+  padding: 1.75rem;
+}
+
+.purchase-orders-summary-card-label {
+  color: #4b5563;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 1rem;
+}
+
+.purchase-orders-summary-card-value {
+  color: #111827;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 500;
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+
+.purchase-orders-summary-card-detail {
+  color: #6b7280;
+  font-size: 1rem;
+  line-height: 1.25;
+  margin-bottom: 0;
+}
+
+.purchase-orders-summary-card--accepted .purchase-orders-summary-card-detail {
+  color: #3f7f2a;
+  font-weight: 600;
+}
+
+.purchase-orders-summary-card--rejected .purchase-orders-summary-card-detail {
+  color: #b42318;
+  font-weight: 600;
+}
+
+@media (max-width: 991.98px) {
+  .purchase-orders-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 575.98px) {
+  .purchase-orders-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .purchase-orders-summary-card {
+    min-height: auto;
+    padding: 1.25rem;
+  }
+}
+
 .purchase-orders-status-tabs {
   background: rgba(var(--bs-body-bg-rgb), 0.92);
   border: 1px solid rgba(var(--bs-border-color-rgb), 0.75);
