@@ -1,5 +1,5 @@
 class PurchaseOrder < ApplicationRecord
-  DEALER_RESPONSES = %w[pending accepted].freeze
+  DEALER_RESPONSES = %w[pending accepted rejected].freeze
 
   belongs_to :dealer, optional: true
   has_many :line_items, dependent: :destroy

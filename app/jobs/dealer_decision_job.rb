@@ -16,26 +16,20 @@ class DealerDecisionJob < ApplicationJob
 
 private
   def handle_accept(po, dealer_id)
-    # SkuMonsterClient.reserve_inventory!(
-    #   dealer_id: dealer_id,
-    #   purchase_order: po
-    # )
-
     # @purchase_order.accept_by_dealer!
 
-    po.update!(dealer_response: "accepted", dealer_id: dealer_id)
+    po.update!(dealer_response: "accepted")
 
     LabelGenerationJob.perform_later(po.id)
   end
 
   def handle_reject(po, dealer_id)
-    SkuMonsterClient.block_dealer_inventory!(
-      request_body: po.notified_sm_request
+    po.update!(
+      dealer_response: "rejected"
     )
 
-    po.update!(
-      dealer_id: nil,
-      dealer_response: :nil
-    )
+    # SkuMonsterClient.block_dealer_inventory!(
+    #   request_body: po.notified_sm_request
+    # )
   end
 end

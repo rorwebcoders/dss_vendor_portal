@@ -17,7 +17,8 @@ class PurchaseOrdersController < ApplicationController
   STATUS_FILTERS = {
     "all" => "All order",
     "pending" => "Pending Orders",
-    "accepted" => "Accepted Orders"
+    "accepted" => "Accepted Orders",
+    "rejected" => "Rejected Orders"
   }.freeze
   def index
     @query = params[:q].to_s.strip
@@ -83,7 +84,7 @@ class PurchaseOrdersController < ApplicationController
       },
       {
         label: "Rejected Orders (30d)",
-        value: recent_orders.where(dealer_response: nil).count,
+        value: recent_orders.where(dealer_response: "rejected").count,
         detail: "Rejected in last 30 days",
         modifier: "rejected"
       }
