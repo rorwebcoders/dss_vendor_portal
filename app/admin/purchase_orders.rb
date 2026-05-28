@@ -34,7 +34,8 @@ ActiveAdmin.register PurchaseOrder do
   filter :po_number
   filter :po_id
   filter :po_type
-  filter :dealer_response, as: :select, collection: PurchaseOrder::DEALER_RESPONSES
+  filter :dealer_response, as: :select,
+       collection: PurchaseOrder.dealer_responses.keys.map { |k| [k.titleize, k] }
   filter :dealer
   filter :created_at
 
@@ -77,7 +78,7 @@ ActiveAdmin.register PurchaseOrder do
       f.input :po_type
       f.input :dealer_response,
               as: :select,
-              collection: PurchaseOrder::DEALER_RESPONSES.map { |response| [response.titleize, response] },
+              collection: PurchaseOrder.dealer_responses.keys.map { |k| [k.titleize, k] },
               include_blank: "Empty"
     end
 

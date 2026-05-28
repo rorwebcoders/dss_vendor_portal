@@ -17,8 +17,7 @@ class PurchaseOrdersController < ApplicationController
   STATUS_FILTERS = {
     "all" => "All order",
     "pending" => "Pending Orders",
-    "accepted" => "Accepted Orders",
-    "rejected" => "Rejected Orders"
+    "accepted" => "Accepted Orders"
   }.freeze
   def index
     @query = params[:q].to_s.strip
@@ -48,7 +47,7 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def accept
-    # @purchase_order.accept_by_dealer!
+    @purchase_order.accept_by_dealer!
     
     DealerDecisionJob.perform_later(@purchase_order.id, current_user.id, "accept")
 
@@ -56,7 +55,7 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def reject
-    # @purchase_order.reject_by_dealer!
+    @purchase_order.reject_by_dealer!(current_user.id)
 
     DealerDecisionJob.perform_later(@purchase_order.id, current_user.id, "reject")
 
@@ -67,7 +66,7 @@ class PurchaseOrdersController < ApplicationController
 
   def purchase_order_summary_cards(purchase_orders)
     recent_orders = purchase_orders.where(updated_at: 30.days.ago..)
-    open_orders_count = purchase_orders.where(dealer_response: "pending").count
+    open_orders_count = purchase_orders.where(dealer_response: :pending).count
 
     [
       {
@@ -78,13 +77,13 @@ class PurchaseOrdersController < ApplicationController
       },
       {
         label: "Accepted Orders (30d)",
-        value: recent_orders.where(dealer_response: "accepted").count,
+        value: recent_orders.where(dealer_response: :accepted).count,
         detail: "Accepted in last 30 days",
         modifier: "accepted"
       },
       {
         label: "Rejected Orders (30d)",
-        value: recent_orders.where(dealer_response: "rejected").count,
+        value: DealerLog.where(dealer_id: current_user.id, status: :rejected).count,
         detail: "Rejected in last 30 days",
         modifier: "rejected"
       }

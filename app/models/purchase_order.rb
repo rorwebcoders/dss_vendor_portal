@@ -1,18 +1,16 @@
 class PurchaseOrder < ApplicationRecord
-  DEALER_RESPONSES = %w[pending accepted rejected].freeze
-
   belongs_to :dealer, optional: true
-  has_many :line_items, dependent: :destroy
 
+  has_many :line_items, dependent: :destroy
   accepts_nested_attributes_for :line_items, allow_destroy: true
 
   validates :po_number, presence: true
-  validates :dealer_response, inclusion: { in: DEALER_RESPONSES }, allow_nil: true
 
   before_validation :sync_dealer_response_with_assignment
   after_update :run_dealer_response_callback, if: :saved_change_to_dealer_response?
 
-  enum :status, { pending: 0, processing: 1, error: 2, completed: 3, non_dropshipping: 4, dropshipping: 5 }, suffix: :purchase_order
+  enum :status, { pending: 0, processing: 1, error: 2, completed: 3, non_dropshipping: 4, dropshipping: 5 }, suffix: true
+  enum :dealer_response, { pending: 0, accepted: 1 }, suffix: true
 
   scope :for_dealers, ->(dealer_ids) { where(dealer_id: dealer_ids) }
 
@@ -33,10 +31,11 @@ class PurchaseOrder < ApplicationRecord
   end
 
   def accept_by_dealer!
-    update!(dealer_response: "accepted")
+    update!(dealer_response: :accepted)
   end
 
-  def reject_by_dealer!
+  def reject_by_dealer!(current_user_id)
+    DealerLog.create(purchase_order_id: self.id, dealer_id: current_user_id, rejected_at: Time.now, status: :rejected)
     update!(dealer_response: nil, dealer: nil)
   end
 

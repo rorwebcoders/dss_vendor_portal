@@ -127,7 +127,7 @@ end
 performance_po_count = ENV.fetch("SEED_PERFORMANCE_PO_COUNT", 50_000).to_i
 performance_po_dealers = [metro_dealer, north_dealer, south_dealer]
 performance_po_types = %w[b_order stock_order special_order emergency_order warranty_order]
-performance_po_responses = PurchaseOrder::DEALER_RESPONSES
+performance_po_responses = PurchaseOrder.dealer_responses.keys
 performance_po_prefix = "PERF"
 existing_performance_po_numbers = PurchaseOrder.where("po_number LIKE ?", "#{performance_po_prefix}-%").pluck(:po_number).to_set
 now = Time.current

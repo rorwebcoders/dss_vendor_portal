@@ -67,7 +67,7 @@
               <td><%= purchase_order.po_type %></td>
               <td><%= purchase_order.dealer&.name || "Unassigned" %></td>
               <td>
-                <span class="<%= purchase_order_status_badge_class(purchase_order.dealer_response) %>">
+                <span class="<%= purchase_order_status_badge_class(purchase_order.dealer_response.to_s) %>">
                   <%= purchase_order.dealer_response&.titleize || "Empty" %>
                 </span>
               </td>
