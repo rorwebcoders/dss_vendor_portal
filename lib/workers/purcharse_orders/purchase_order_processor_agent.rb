@@ -1,5 +1,6 @@
 require 'logger'
 require 'net/http'
+require 'uri'
 require 'json'
 require 'openssl' # Required for SSL options
 require 'active_support/all' # Required for time zone operations
@@ -57,30 +58,30 @@ class PurchaseOrderProcessorAgent
         purchase_order = po_data[:purchase_order]
         line_items = po_data[:line_items]
 
-        # reserved_response = fetch_reserved_quantity_from_skumonster(line_items)
-        reserved_response = {
-          "reserved_quantity": {
-            "12345": 0,
-            "1234": 0
-          },
-          "dealers": [
-            {
-             "id": 99,
-             "priority_position": 15
-            },
-            {
-             "id": 128,
-             "priority_position": 10
-            }
-          ]
-        }
-
-        reserved_quantities = reserved_response[:reserved_quantity]
-        ascending_dealers = reserved_response[:dealers].sort_by { |d| d[:priority_position] }
+        reserved_response = fetch_reserved_quantity_from_skumonster(line_items)
+        # reserved_response = '{
+        #   "reserved_quantity": {
+        #     "BRK-1001": 0,
+        #     "FLT-2201": 0
+        #   },
+        #   "dealers": [
+        #     {
+        #      "id": 99,
+        #      "priority_position": 15
+        #     },
+        #     {
+        #      "id": 128,
+        #      "priority_position": 10
+        #     }
+        #   ]
+        # }'
+        reserved_response = JSON.parse(reserved_response)
+        reserved_quantities = reserved_response["reserved_quantity"]
+        ascending_dealers = reserved_response["dealers"].sort_by { |d| d["priority_position"] }
 
         dropshipping = false
         ascending_dealers.each do |dealer|
-          dealer_id = dealer[:id]
+          dealer_id = dealer["id"]
 
           eligible = true
           notify_dealers_data[dealer_id] ||= {}
@@ -172,54 +173,51 @@ class PurchaseOrderProcessorAgent
   end
   
   def fetch_reserved_quantity_from_skumonster(line_items)
-    reserved_quantity_api_url = Rails.env.development? ? 'http://localhost:3000/'
-                                : 'https://sm.dealersalessolutions.com/fetch_reserved_quantity'
+    reserved_quantity_api_url = Rails.application.credentials[Rails.env.to_sym][:reserved_quantity_api_url]
+    skumonster_api_token = Rails.application.credentials[Rails.env.to_sym][:skumonster_api_token]
 
-    url = URI.parse(reserved_quantity_api_url)
-    http = Net::HTTP.new(url.host, url.port)
+    uri = URI(reserved_quantity_api_url)
+    http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
-
-    token = Rails.application.credentials[Rails.env.to_sym][:skumonster_api_token]
-    request = Net::HTTP::Post.new(url.path, {
-      'Content-Type' => 'application/json',
-      'Authorization' => "Bearer #{token}"
-    })
-    
-    # Sample Request:
-    # {
-    #   "line_items": [
-    #     {
-    #       "sku": "12345",
-    #       "quantity": 2
-    #     },
-    #     {
-    #       "sku": "67890",
-    #       "quantity": 1
-    #     }
-    #   ]
-    # }
-
+    request = Net::HTTP::Post.new(uri.request_uri)
+    request["Authorization"] = skumonster_api_token
+    request["Content-Type"] = "application/json"
     request_body = { line_items: line_items }.to_json
     request.body = request_body
-    response = http.request(request)
+    # ------ Sample Request Start ------ #
+      # {
+      #   "line_items": [
+      #     {
+      #       "sku": "4633210604",
+      #       "quantity": 2
+      #     },
+      #     {
+      #       "sku": "4636900179",
+      #       "quantity": 5
+      #     }
+      #   ]
+      # }
+    # ------ Sample Request End   ------ #
 
-    # Response Sample:
-    # response = {
-    #   "reserved_quantity": {
-    #     "sku12345": 5,
-    #     "67890": 0
-    #   },
-    #   "dealers": [
-    #     {
-    #      "id": 99,
-    #      "priority_position": 5
-    #     },
-    #     {
-    #      "id": 128,
-    #      "priority_position": 10
-    #     }
-    #   ]
-    # }
+    response = http.request(request)
+    # ------ Sample Response Start ------ #
+      # response = {
+      #   "reserved_quantity": {
+      #     "sku12345": 5,
+      #     "67890": 0
+      #   },
+      #   "dealers": [
+      #     {
+      #      "id": 99,
+      #      "priority_position": 5
+      #     },
+      #     {
+      #      "id": 128,
+      #      "priority_position": 10
+      #     }
+      #   ]
+      # }
+    # ------ Sample Response End   ------ #
 
     return response.body
   end
