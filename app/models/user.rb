@@ -20,11 +20,4 @@ class User < ApplicationRecord
     PurchaseOrder.for_dealers(dealer_ids)
   end
 
-  def self.ransackable_attributes(_auth_object = nil)
-    %w[created_at email first_name id last_name remember_created_at reset_password_sent_at reset_password_token updated_at]
-  end
-
-  def self.ransackable_associations(_auth_object = nil)
-    %w[dealer_memberships dealers]
-  end
 end

@@ -40,16 +40,7 @@ class PurchaseOrder < ApplicationRecord
     update!(dealer_response: nil, dealer: nil)
   end
 
-  def self.ransackable_attributes(_auth_object = nil)
-    %w[created_at dealer_id dealer_response id po_id po_number po_type updated_at]
-  end
-
-  def self.ransackable_associations(_auth_object = nil)
-    %w[dealer line_items]
-  end
-
-  private
-
+private
   def sync_dealer_response_with_assignment
     self.dealer_response = nil if dealer_id.blank?
     self.dealer_response = "pending" if dealer_id.present? && dealer_response.blank?

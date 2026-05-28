@@ -16,12 +16,4 @@ class Dealer < ApplicationRecord
   def to_s
     display_name
   end
-
-  def self.ransackable_attributes(_auth_object = nil)
-    %w[abbreviation api_location_code api_name created_at email enabled id name updated_at]
-  end
-
-  def self.ransackable_associations(_auth_object = nil)
-    %w[dealer_memberships purchase_orders users]
-  end
 end
