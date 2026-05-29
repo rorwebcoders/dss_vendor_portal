@@ -116,7 +116,7 @@ class PurchaseOrderProcessorAgent
               line_items: line_items
             }
 
-            # notify_orders_to_skumonster(notify_dealer_request_body.to_json)
+            notify_orders_to_skumonster(notify_dealer_request_body)
 
             purchase_order.update(status: :dropshipping, notified_sm_request: notify_dealer_request_body)
             dropshipping = true
@@ -138,37 +138,34 @@ class PurchaseOrderProcessorAgent
   end
 
   def notify_orders_to_skumonster(notify_request)
-    notify_orders_api_url = Rails.env.development? ? 'http://localhost:3000/'
-                                : 'https://sm.dealersalessolutions.com/notify_orders'
+    notify_orders_api_url = Rails.application.credentials[Rails.env.to_sym][:notify_orders_api_url]
+    skumonster_api_token = Rails.application.credentials[Rails.env.to_sym][:skumonster_api_token]
 
-    url = URI.parse(notify_orders_api_url)
-    http = Net::HTTP.new(url.host, url.port)
+    uri = URI(notify_orders_api_url)
+    http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
-
-    token = Rails.application.credentials[Rails.env.to_sym][:skumonster_api_token]
-    request = Net::HTTP::Post.new(url.path, {
-      'Content-Type' => 'application/json',
-      'Authorization' => "Bearer #{token}"
-    })
-
-    # Request:
-    # {
-    #   "dealer_id": 100,
-    #   "line_items": [
-    #     {
-    #       "sku": "12345",
-    #       "quantity": 20
-    #     },
-    #     {
-    #       "sku": "67890",
-    #       "quantity": 1
-    #     }
-    #   ]
-    # }
-    request_body = notify_request
+    request = Net::HTTP::Post.new(uri.request_uri)
+    request["Authorization"] = skumonster_api_token
+    request["Content-Type"] = "application/json"
+    # ------ Sample Request Start ------ #
+      # {
+      #   "dealer_id": 100,
+      #   "line_items": [
+      #     {
+      #       "sku": "670137054",
+      #       "quantity": 1
+      #     },
+      #     {
+      #       "sku": "670213730",
+      #       "quantity": 1
+      #     }
+      #   ]
+      # }
+    # ------ Sample Request End   ------ #
+    request_body = notify_request.to_json
     request.body = request_body
     response = http.request(request)
-
+   
     return response.body
   end
   
