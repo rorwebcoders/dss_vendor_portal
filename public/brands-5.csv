@@ -1,0 +1,31 @@
+"id";"name";"brand_products_model";"api_name";"brand_alternate_pn_model";"alternate_pn_file_name";"enabled";"parent_company_id";"created_at";"updated_at";"brand_prefix";"use_prefix_in_sv_sd";"market_type"
+"1";"Mazda";"MazdaProduct";NULL;"MazdaAlternatePn";"mazda_alternate.csv";"1";"1";"2024-07-17 20:41:31.939276";"2024-07-17 20:41:31.939276";NULL;"0";NULL
+"2";"Audi";"AudiProduct";NULL;"AudiAlternatePn";"audi_alternate.csv";"1";"2";"2024-07-17 20:41:31.955890";"2024-07-17 20:41:31.955890";NULL;"0";NULL
+"3";"Volkswagen";"VolkswagenProduct";NULL;"VolkswagenAlternatePn";"volkswagen_alternate.csv";"1";"2";"2024-07-17 20:41:31.965218";"2024-07-17 20:41:31.965218";NULL;"0";NULL
+"4";"Porsche";"PorscheProduct";NULL;"PorscheAlternatePn";"porsche_alternate.csv";"1";"2";"2024-07-17 20:41:31.980566";"2024-07-17 20:41:31.980566";NULL;"0";NULL
+"5";"Alfa Romeo";"AlfaRomeoProduct";;"AlfaRomeoAlternatePn";"alfa_romeo_alternate.csv";"1";"3";"2024-07-17 20:41:31.997249";"2026-06-01 19:11:17.561946";"AFR";"1";NULL
+"6";"Aston Martin";"AstonMartinProduct";NULL;"AstonMartinAlternatePn";"aston_martin_alternate.csv";"1";"4";"2024-07-17 20:41:32.013098";"2024-07-17 20:41:32.013098";NULL;"0";NULL
+"7";"Bmw";"BmwProduct";NULL;"BmwAlternatePn";"bmw_alternate.csv";"1";"5";"2024-07-17 20:41:32.028997";"2024-07-17 20:41:32.028997";NULL;"0";NULL
+"8";"Mopar";"MoparProduct";NULL;"MoparAlternatePn";"mopar_alternate.csv";"1";"3";"2024-07-17 20:41:32.038663";"2024-07-17 20:41:32.038663";NULL;"0";NULL
+"9";"Ford";"FordProduct";NULL;"FordAlternatePn";"ford_alternate.csv";"1";"6";"2024-07-17 20:41:32.052470";"2024-07-17 20:41:32.052470";NULL;"0";NULL
+"10";"Gm";"GmProduct";NULL;"GmAlternatePn";"gm_alternate.csv";"1";"7";"2024-07-17 20:41:32.068745";"2024-07-17 20:41:32.068745";NULL;"0";NULL
+"11";"Honda";"HondaProduct";;"HondaAlternatePn";"honda_alternate.csv";"1";"8";"2024-07-17 20:41:32.083013";"2026-06-01 19:10:48.639594";;"0";NULL
+"12";"Acura";"AcuraProduct";NULL;"AcuraAlternatePn";"acura_alternate.csv";"1";"8";"2024-07-17 20:41:32.091721";"2024-07-17 20:41:32.091721";NULL;"0";NULL
+"13";"Jaguar";"JaguarProduct";NULL;"JaguarAlternatePn";"jaguar_alternate.csv";"1";"9";"2024-07-17 20:41:32.103424";"2024-07-17 20:41:32.103424";NULL;"0";NULL
+"14";"Land Rover";"LandRoverProduct";NULL;"LandRoverAlternatePn";"land_rover_alternate.csv";"1";"9";"2024-07-17 20:41:32.110907";"2024-07-17 20:41:32.110907";NULL;"0";NULL
+"15";"Kia";"KiaProduct";NULL;"KiaAlternatePn";"kia_alternate.csv";"1";"10";"2024-07-17 20:41:32.122517";"2024-07-17 20:41:32.122517";NULL;"0";NULL
+"16";"Hyundai";"HyundaiProduct";NULL;"HyundaiAlternatePn";"hyundai_alternate.csv";"1";"10";"2024-07-17 20:41:32.131834";"2024-07-17 20:41:32.131834";NULL;"0";NULL
+"17";"Genesis";"GenesisProduct";NULL;"GenesisAlternatePn";"genesis_alternate.csv";"1";"10";"2024-07-17 20:41:32.140298";"2024-07-17 20:41:32.140298";NULL;"0";NULL
+"18";"Mercedes-Benz";"MercedesBenzProduct";NULL;"MercedesBenzAlternatePn";"mercedes_benz_alternate.csv";"1";"11";"2024-07-17 20:41:32.153507";"2024-07-17 20:41:32.153507";NULL;"0";NULL
+"19";"Smart";"SmartProduct";;"SmartAlternatePn";"smart_alternate.csv";"0";"11";"2024-07-17 20:41:32.163899";"2024-09-23 15:03:53.272305";NULL;"0";NULL
+"20";"Sprinter";"SprinterProduct";NULL;"SprinterAlternatePn";"sprinter_alternate.csv";"1";"11";"2024-07-17 20:41:32.174483";"2024-07-17 20:41:32.174483";NULL;"0";NULL
+"21";"Maserati";"MaseratiProduct";NULL;"MaseratiAlternatePn";"maserati_alternate.csv";"1";"3";"2024-07-17 20:41:32.183490";"2024-07-17 20:41:32.183490";NULL;"0";NULL
+"22";"Nissan";"NissanProduct";NULL;"NissanAlternatePn";"nissan_alternate.csv";"1";"12";"2024-07-17 20:41:32.197974";"2024-07-17 20:41:32.197974";NULL;"0";NULL
+"23";"Infiniti";"InfinitiProduct";NULL;"InfinitiAlternatePn";"infiniti_alternate.csv";"1";"12";"2024-07-17 20:41:32.208275";"2024-07-17 20:41:32.208275";NULL;"0";NULL
+"24";"Mitsubishi";"MitsubishiProduct";NULL;"MitsubishiAlternatePn";"mitsubishi_alternate.csv";"1";"12";"2024-07-17 20:41:32.216298";"2024-07-17 20:41:32.216298";NULL;"0";NULL
+"25";"Toyota";"ToyotaProduct";NULL;"ToyotaAlternatePn";"toyota_alternate.csv";"1";"13";"2024-07-17 20:41:32.236506";"2024-07-17 20:41:32.236506";NULL;"0";NULL
+"26";"Volvo";"VolvoProduct";NULL;"VolvoAlternatePn";"volvo_alternate.csv";"1";"14";"2024-07-17 20:41:32.252001";"2024-07-17 20:41:32.252001";NULL;"0";NULL
+"27";"Subaru";"SubaruProduct";NULL;"SubaruAlternatePn";"subaru_alternate.csv";"1";"15";"2024-07-17 20:41:32.264473";"2024-07-17 20:41:32.264473";NULL;"0";NULL
+"28";"Suzuki";"SuzukiProduct";NULL;"SuzukiAlternatePn";"suzuki_alternate.csv";"1";"16";"2024-07-17 20:41:32.277463";"2024-07-17 20:41:32.277463";NULL;"0";NULL
+"29";"Other";"OtherProduct";NULL;"OtherAlternatePn";"other_alternate.csv";"1";"17";"2024-07-17 20:41:32.290255";"2024-07-17 20:41:32.290255";NULL;"0";NULL
+"30";"Lexus";"LexusProduct";;"LexusAlternatePn";"lexus_alternate.csv";"1";"13";"2024-09-16 17:26:04.071392";"2024-09-16 17:26:04.071392";NULL;"0";NULL
