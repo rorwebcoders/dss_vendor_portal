@@ -155,4 +155,14 @@ performance_purchase_orders.each_slice(1_000) do |batch|
   PurchaseOrder.insert_all(batch)
 end
 
+Dealer.all.each_with_index do |dealer, index|
+  dealer.dealer_address1 = "1 Market St"
+  dealer.dealer_city = "San Francisco"
+  dealer.dealer_state = "CA"
+  dealer.dealer_zip = "94105"
+  dealer.dealer_country = "US"
+  dealer.sm_dealer_id = index + 1
+  dealer.save
+end
+
 puts "Seeded #{performance_po_count} performance purchase order combinations (#{performance_purchase_orders.size} inserted)."

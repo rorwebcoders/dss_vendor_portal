@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 ActiveAdmin.register PurchaseOrder do
-  permit_params :dealer_id, :po_id, :po_number, :po_type, :dealer_response,
+  permit_params :dealer_id, :po_id, :po_number, :po_type, :dealer_response, :tracking_number, :shipstation_label_url,
                 line_items_attributes: %i[id sku brand title quantity cost _destroy]
 
   includes :dealer
@@ -19,6 +19,7 @@ ActiveAdmin.register PurchaseOrder do
     column :po_number
     column :po_id
     column :po_type
+    column :tracking_number
     column("Response") do |purchase_order|
       if purchase_order.dealer_response.present?
         status_tag(purchase_order.dealer_response.titleize)
@@ -34,6 +35,7 @@ ActiveAdmin.register PurchaseOrder do
   filter :po_number
   filter :po_id
   filter :po_type
+  filter :tracking_number
   filter :dealer_response, as: :select,
        collection: PurchaseOrder.dealer_responses.keys.map { |k| [k.titleize, k] }
   filter :dealer
@@ -46,6 +48,8 @@ ActiveAdmin.register PurchaseOrder do
       row :po_id
       row :po_number
       row :po_type
+      row :tracking_number
+      row :shipstation_label_url
       row("Response") do |purchase_order|
         if purchase_order.dealer_response.present?
           status_tag(purchase_order.dealer_response.titleize)
@@ -76,6 +80,8 @@ ActiveAdmin.register PurchaseOrder do
       f.input :status
       f.input :po_number
       f.input :po_type
+      f.input :tracking_number
+      f.input :shipstation_label_url
       f.input :dealer_response,
               as: :select,
               collection: PurchaseOrder.dealer_responses.keys.map { |k| [k.titleize, k] },

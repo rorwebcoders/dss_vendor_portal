@@ -16,10 +16,7 @@ class DealerDecisionJob < ApplicationJob
 
 private
   def handle_accept(po, dealer_id)
-    # @purchase_order.accept_by_dealer!
-    # po.update!(dealer_response: :accepted)
-
-    # LabelGenerationJob.perform_later(po.id)
+    LabelGenerationJob.perform_later(po.id)
   end
 
   def handle_reject(po, dealer_id)

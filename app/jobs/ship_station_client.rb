@@ -1,3 +1,7 @@
+require "net/http"
+require "uri"
+require "json"
+
 class ShipStationClient
   def self.create_label(purchase_order)
     url = URI.parse("https://ssapi.shipstation.com/shipments/createlabel")
@@ -12,14 +16,15 @@ class ShipStationClient
     }
 
     request = Net::HTTP::Post.new(url.path, headers)
-    request.body = build_payload(purchase_order).to_json
+    request_body = build_payload(purchase_order).to_json
+    request.body = request_body
     response = http.request(request)
 
-    unless response.code.to_i == 200
+    unless [200, 201].include?(response.code.to_i)
       raise "ShipStation Label Error: #{response.body}"
     end
 
-    body = JSON.parse(response.body)
+    body = JSON.parse(response.body) rescue {}
 
     {
       tracking: body["trackingNumber"],
@@ -28,42 +33,38 @@ class ShipStationClient
   end
 
 private
-  def self.build_payload(params)
+  def self.build_payload(po)
     {
       carrierCode: "fedex",
       serviceCode: "fedex_ground",
       packageCode: "package",
       shipDate: Time.current.strftime("%Y-%m-%d"),
       weight: {
-        value: total_weight,
-        units: "pounds"
+        value: po.weight,
+        units: po.units
       },
-      dimensions: default_dimensions,
+      dimensions: {
+        units: "inches",
+        length: po.length || 12,
+        width: po.width || 10,
+        height: po.height || 8
+      },
       shipFrom: {
-        name: params[:dealer_name],
-        street1: params[:dealer_address1],
-        city: params[:dealer_city],
-        state: params[:dealer_state],
-        postalCode: params[:dealer_zip],
-        country: params[:dealer_country]
+        name: po.dealer.dealer_name,
+        street1: po.dealer.dealer_address1,
+        city: po.dealer.dealer_city,
+        state: po.dealer.dealer_state,
+        postalCode: po.dealer.dealer_zip,
+        country: po.dealer.dealer_country
       },
       shipTo: {
-        name: params[:shipping_name],
-        street1: params[:shipping_address1],
-        city: params[:shipping_city],
-        state: params[:shipping_state],
-        postalCode: params[:shipping_zip],
-        country: params[:shipping_country]
+        name: po.shipping_name,
+        street1: po.shipping_address1,
+        city: po.shipping_city,
+        state: po.shipping_state,
+        postalCode: po.shipping_zip,
+        country: po.shipping_country
       }
-    }
-  end
-
-  def self.default_dimensions
-    {
-      units: "inches",
-      length: 12,
-      width: 10,
-      height: 8
     }
   end
 end

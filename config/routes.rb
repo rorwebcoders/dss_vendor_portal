@@ -4,10 +4,11 @@ Rails.application.routes.draw do
   devise_for :users, skip: [:registrations], controllers: { sessions: "users/sessions" }
 
   resource :account, only: [:edit, :update]
-  resources :purchase_orders, only: [:index, :show] do
+  resources :purchase_orders, only: [:index, :show, :update] do
     member do
       patch :accept
       patch :reject
+      patch :update
     end
   end
 

@@ -1,6 +1,6 @@
 <% content_for :title, "Purchase Order #{@purchase_order.po_number}" %>
-<div class="container-fluid py-4 purchase-order-show">
-  <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+<div class="container-fluid purchase-order-show">
+  <div class="purchase-orders-toolbar purchase-orders-toolbar mb-3 d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
     <div>
       <p class="text-uppercase text-primary fw-semibold small mb-1">
         Purchase Order Details
@@ -16,7 +16,7 @@
     </div>
 
     <div class="d-flex gap-2">
-      <%= link_to "← Back", purchase_orders_path, class: "btn btn-outline-secondary" %>
+      <%= link_to "Back", purchase_orders_path, class: "btn btn-outline-secondary" %>
       <% if @purchase_order.pending_dealer_response? %>
         <%= button_to "Reject", reject_purchase_order_path(@purchase_order),
             method: :patch, class: "btn btn-outline-danger",
@@ -25,6 +25,112 @@
       <% end %>
     </div>
   </div>
+
+  <% if @purchase_order.dealer_response.to_s == "accepted" %>
+    <div class="row justify-content-center mb-4">
+      <div class="col-12">
+
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white py-3">
+            <div class="d-flex justify-content-between align-items-start">
+
+              <!-- Title -->
+              <div>
+                <h5 class="mb-1 fw-bold">Create Shipping Label</h5>
+                <small class="text-muted">
+                  Enter package weight and dimensions
+                </small>
+              </div>
+
+              <!-- Tracking -->
+              <% if @purchase_order.tracking_number.present? %>
+                <div class="text-end">
+                  <small class="text-muted d-block">Tracking Number</small>
+
+                  <% if @purchase_order.tracking_number.present? %>
+                    <% if @purchase_order.shipstation_label_url.present? %>
+                      <%= link_to @purchase_order.tracking_number,
+                            @purchase_order.shipstation_label_url,
+                            target: "_blank",
+                            class: "fw-semibold text-primary text-decoration-none" %>
+                    <% else %>
+                      <span class="fw-semibold text-dark">
+                        <%= @purchase_order.tracking_number %>
+                      </span>
+                    <% end %>
+                  <% else %>
+                    <span class="badge bg-warning text-dark">
+                      Label Generating...
+                    </span>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <%= form_with model: @purchase_order, local: true do |f| %>
+
+              <div class="row g-2 align-items-end">
+
+                <!-- Weight -->
+                <div class="col-12 col-md-2">
+                  <label class="form-label">Weight</label>
+                  <%= f.number_field :weight,
+                        class: "form-control", required: true,
+                        placeholder: "Weight" %>
+                </div>
+
+                <!-- Units -->
+                <div class="col-12 col-md-2">
+                  <label class="form-label">Units</label>
+                  <%= f.select :units,
+                          [["Pounds (lb)", "pounds"],
+                           ["Ounces (oz)", "ounces"]],
+                          {},
+                          class: "form-select" %>
+                </div>
+
+                <!-- Length -->
+                <div class="col-12 col-md-2">
+                  <label class="form-label">Length</label>
+                  <%= f.number_field :length,
+                        class: "form-control", required: true,
+                        placeholder: "L" %>
+                </div>
+
+                <!-- Width -->
+                <div class="col-12 col-md-2">
+                  <label class="form-label">Width</label>
+                  <%= f.number_field :width,
+                        class: "form-control", required: true,
+                        placeholder: "W" %>
+                </div>
+
+                <!-- Height -->
+                <div class="col-12 col-md-2">
+                  <label class="form-label">Height</label>
+                  <%= f.number_field :height,
+                        class: "form-control", required: true,
+                        placeholder: "H" %>
+                </div>
+
+                <% if @purchase_order.weight.to_s == "" %>
+                  <div class="col-12 col-md-1 d-grid">
+                    <label class="form-label invisible">.</label>
+                    <%= f.submit "Create Label",
+                          class: "btn btn-primary" %>
+                  </div>
+                <% end %>
+
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  <% end %>
 
   <div class="row g-4 mb-4">
     <div class="col-md-6 col-xl-3">
@@ -88,27 +194,57 @@
   <!-- Meta Info -->
   <div class="card border-0 shadow-sm mb-4">
     <div class="card-body">
-
       <div class="row g-4">
-        <div class="col-md-4">
-          <p class="text-muted small mb-1">Created At</p>
-          <h6 class="mb-0 fw-semibold">
-            <%= l(@purchase_order.created_at, format: :long) %>
-          </h6>
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="bor1der rounded p-3 h-100">
+            <small class="text-muted text-uppercase d-block mb-2">
+              Dealer Address
+            </small>
+
+            <div class="fw-semibold">
+              <%= @purchase_order.dealer&.dealer_address1 %><br>
+              <%= @purchase_order.dealer&.dealer_city %>,
+              <%= @purchase_order.dealer&.dealer_state %>
+              <%= @purchase_order.dealer&.dealer_zip %><br>
+              <%= @purchase_order.dealer&.dealer_country %>
+            </div>
+          </div>
         </div>
 
-        <div class="col-md-4">
-          <p class="text-muted small mb-1">Total Line Items</p>
-          <h6 class="mb-0 fw-semibold">
-            <%= @line_items.count %>
-          </h6>
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="border1 rounded p-3 h-100">
+            <small class="text-muted text-uppercase d-block mb-2">
+              Created At
+            </small>
+
+            <div class="fw-semibold">
+              <%= l(@purchase_order.created_at, format: :long) %>
+            </div>
+          </div>
         </div>
 
-        <div class="col-md-4">
-          <p class="text-muted small mb-1">Total Cost</p>
-          <h6 class="mb-0 fw-bold text-primary">
-            <%= number_to_currency(@line_items.sum(&:cost)) %>
-          </h6>
+        <div class="col-12 col-md-6 col-lg-2">
+          <div class="borderq rounded p-3 h-100 text-center">
+            <small class="text-muted text-uppercase d-block mb-2">
+              Line Items
+            </small>
+
+            <h3 class="mb-0 fw-bold">
+              <%= @line_items.count %>
+            </h3>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-2">
+          <div class="bord1er rounded p-3 h-100 text-center">
+            <small class="text-muted text-uppercase d-block mb-2">
+              Total Cost
+            </small>
+
+            <h3 class="mb-0 fw-bold text-primary">
+              <%= number_to_currency(@line_items.sum(&:cost)) %>
+            </h3>
+          </div>
         </div>
       </div>
     </div>

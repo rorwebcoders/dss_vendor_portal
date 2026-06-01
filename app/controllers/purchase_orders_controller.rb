@@ -46,12 +46,22 @@ class PurchaseOrdersController < ApplicationController
     @line_items = @purchase_order.line_items.order(:id)
   end
 
+  def update
+    purchase_order = PurchaseOrder.find(params[:id])
+
+    if purchase_order.update(shipping_params)
+      DealerDecisionJob.perform_later(purchase_order.id, current_user.id, "accept")
+
+      redirect_to purchase_order_path(purchase_order), notice: "Package details saved. Label generation has been queued."
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
   def accept
     @purchase_order.accept_by_dealer!
     
-    DealerDecisionJob.perform_later(@purchase_order.id, current_user.id, "accept")
-
-    redirect_to purchase_order_path(@purchase_order), notice: "Purchase order accepted."
+    redirect_to purchase_order_path(@purchase_order), notice: "Purchase order accepted. Please provide shipping dimensions."
   end
 
   def reject
@@ -62,7 +72,10 @@ class PurchaseOrdersController < ApplicationController
     redirect_to purchase_orders_path, notice: "Purchase order rejected, unassigned, and cleared for reassignment."
   end
 
-  private
+private
+  def shipping_params 
+    params.require(:purchase_order).permit(:weight, :units, :length, :width, :height)
+  end
 
   def purchase_order_summary_cards(purchase_orders)
     recent_orders = purchase_orders.where(updated_at: 30.days.ago..)
