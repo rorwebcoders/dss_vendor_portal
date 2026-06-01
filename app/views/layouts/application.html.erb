@@ -78,7 +78,7 @@
                   <%= account_icon %>
                 </summary>
                 <div class="account-menu-panel dropdown-menu-end shadow-sm bg-body border rounded-3 p-2">
-                  <div class="dropdown-header"><%= current_user.display_name %></div>
+                  <%# <div class="dropdown-header"><%= current_user.display_name %#></div> %>
                   <%= link_to "Edit profile", edit_account_path, class: "dropdown-item rounded-2" %>
                   <div class="dropdown-divider"></div>
                   <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "dropdown-item text-danger rounded-2", form_class: "m-0" %>
