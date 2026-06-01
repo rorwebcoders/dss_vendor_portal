@@ -43,7 +43,7 @@
               </div>
 
               <!-- Tracking -->
-              <% if @purchase_order.tracking_number.present? %>
+              <% if @purchase_order.weight.to_s != "" %>
                 <div class="text-end">
                   <small class="text-muted d-block">Tracking Number</small>
 
