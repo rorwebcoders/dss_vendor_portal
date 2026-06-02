@@ -19,14 +19,7 @@ class SkuvaultPurchaseOrderImporterAgent
   def start_processing
     begin
       logger_info("Script started at #{Time.now}")
-    
-      if Rails.env.development?
-        file_path = Rails.root.join('public','vendors_data', 'skuvault_get_pos_response.json')
-        skuvault_purchase_orders = File.read(file_path)
-      else
-        skuvault_purchase_orders = skuvault_get_pos
-      end
-
+      skuvault_purchase_orders = skuvault_get_pos
       skuvault_purchase_orders = JSON.parse(skuvault_purchase_orders)["PurchaseOrders"] || []
       skuvault_purchase_orders.each do |entry|
         logger_info("Processing PoNumber: #{entry["PoNumber"]}")
@@ -59,8 +52,8 @@ class SkuvaultPurchaseOrderImporterAgent
   end
   
   def skuvault_get_pos
-    skuvault_tenant_token = Rails.application.credentials[Rails.env.to_sym][:skuvault_tenant_token]
-    skuvault_user_token = Rails.application.credentials[Rails.env.to_sym][:skuvault_user_token]
+    skuvault_tenant_token = Rails.application.credentials[Rails.env.to_sym][:skuvault_tenant_tokeni_for_import]
+    skuvault_user_token = Rails.application.credentials[Rails.env.to_sym][:skuvault_user_token_for_import]
     modified_after_datetime_utc = (Time.zone.now - 24.hours).utc.iso8601(7)
     url = URI("https://app.skuvault.com/api/purchaseorders/getPOs")
     http = Net::HTTP.new(url.host, url.port)
