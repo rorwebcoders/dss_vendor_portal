@@ -8,22 +8,6 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <script>
-      (() => {
-        const storageKey = "dss-vendor-portal-theme"
-        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
-        let storedTheme
-
-        try {
-          storedTheme = localStorage.getItem(storageKey)
-        } catch {
-          storedTheme = null
-        }
-
-        document.documentElement.setAttribute("data-bs-theme", storedTheme || systemTheme)
-      })()
-    </script>
-
     <%= yield :head %>
 
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
@@ -150,3 +134,30 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
+
+<script>
+  (() => {
+    const storageKey = "dss-vendor-portal-theme";
+
+    const theme =
+      localStorage.getItem(storageKey) ||
+      (window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light");
+
+    document.documentElement.setAttribute("data-bs-theme", theme);
+
+    document.addEventListener("click", (e) => {
+      const button = e.target.closest("[data-theme-toggle]");
+      if (!button) return;
+
+      const current =
+        document.documentElement.getAttribute("data-bs-theme") || "light";
+
+      const next = current === "dark" ? "light" : "dark";
+
+      document.documentElement.setAttribute("data-bs-theme", next);
+      localStorage.setItem(storageKey, next);
+    });
+  })();
+</script>
