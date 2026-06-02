@@ -56,7 +56,7 @@
             <th scope="col"><%= purchase_order_sort_link("dealer", "Dealer") %></th>
             <th scope="col"><%= purchase_order_sort_link("status", "Status") %></th>
             <th scope="col"><%= purchase_order_sort_link("created", "Created") %></th>
-            <th scope="col"><span class="visually-hidden">Actions</span></th>
+            <th scope="col"><span class="visually-hidden1">Actions</span></th>
           </tr>
         </thead>
         <tbody>
@@ -72,7 +72,17 @@
                 </span>
               </td>
               <td><%= l(purchase_order.created_at, format: :short) %></td>
-              <td class="text-end"><%= link_to "View", purchase_order_path(purchase_order), class: "btn btn-sm btn-primary rounded-pill px-3" %></td>
+              <td class="text-end">
+                <div class="d-flex gap-2">
+                  <%= link_to "View", purchase_order_path(purchase_order), class: "btn btn-sm btn-primary rounded-pill px-3" %>
+                  <% if purchase_order.pending_dealer_response? %>
+                    <%= button_to "Accept", accept_purchase_order_path(purchase_order), method: :patch, class: "btn btn-sm rounded-pill btn-success" %>
+                    <%= button_to "Reject", reject_purchase_order_path(purchase_order),
+                        method: :patch, class: "btn btn-sm rounded-pill btn-outline-danger",
+                        form: { data: { turbo_confirm: "Reject this purchase order?" } } %>
+                  <% end %>
+                </div>
+              </td>
             </tr>
           <% end %>
         </tbody>
