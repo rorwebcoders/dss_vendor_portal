@@ -45,11 +45,17 @@ class PurchaseOrdersController < ApplicationController
     @page = 1 if @page < 1
     @purchase_orders = purchase_orders.order(created_at: :desc).offset((@page - 1) * PER_PAGE).limit(PER_PAGE)
 
-    @has_more = PurchaseOrder.count > @page * PER_PAGE
+    @has_more = purchase_orders.count > @page * PER_PAGE
   end
 
   def show
-    @line_items = @purchase_order.line_items.order(:id)
+    line_items = @purchase_order.line_items.order(:id)
+    
+    @page = params[:page].to_i
+    @page = 1 if @page < 1
+    @line_items = line_items.offset((@page - 1) * PER_PAGE).limit(PER_PAGE)
+
+    @has_more = line_items.count > @page * PER_PAGE
   end
 
   def update

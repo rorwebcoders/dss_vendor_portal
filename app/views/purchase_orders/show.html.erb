@@ -267,34 +267,16 @@
             </tr>
           </thead>
 
-          <tbody>
-            <% @line_items.each do |line_item| %>
-              <tr>
-                <td class="fw-semibold">
-                  <%= line_item.sku %>
-                </td>
-
-                <td>
-                  <%= line_item.brand %>
-                </td>
-
-                <td>
-                  <%= line_item.title %>
-                </td>
-
-                <td class="text-end">
-                  <span class="badge bg-secondary-subtle text-dark px-3 py-2">
-                    <%= line_item.quantity %>
-                  </span>
-                </td>
-
-                <td class="text-end fw-semibold text-primary">
-                  <%= number_to_currency(line_item.cost) if line_item.cost.present? %>
-                </td>
-              </tr>
-            <% end %>
+          <tbody id="line-items">
+            <%= render partial: "purchase_orders/line_item", collection: @line_items, as: :line_item %>
           </tbody>
         </table>
+        <div id="loading" class="text-center py-4" style="display:none;">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+        <div id="scroll-sentinel" data-page="<%= @page %>" data-has-more="<%= @has_more %>"></div>
       </div>
     <% else %>
       <div class="card-body">
@@ -305,6 +287,84 @@
     <% end %>
   </div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const loadingEl = document.getElementById("loading")
+    const sentinel = document.getElementById("scroll-sentinel")
+
+    if (!sentinel) return
+
+    let page = Number(sentinel.dataset.page || 1)
+    let loading = false
+    let hasMore = sentinel.dataset.hasMore === "true"
+
+    const loadMore = async () => {
+      if (loading || !hasMore) return
+
+      loading = true
+      if (loadingEl) loadingEl.style.display = "block"
+
+      try {
+        page += 1
+
+        const url = new URL(window.location.href)
+        url.searchParams.set("page", page)
+
+        const res = await fetch(url.toString(), {
+          headers: { Accept: "text/html" }
+        })
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+
+        const html = await res.text()
+        const doc = new DOMParser().parseFromString(html, "text/html")
+
+        const newRows = doc.querySelectorAll("#line-items tr")
+        const tbody = document.getElementById("line-items")
+
+        if (newRows.length === 0) {
+          hasMore = false
+          observer.disconnect()
+          sentinel.innerHTML =
+            '<div class="text-center text-muted py-3">No more line items</div>'
+          return
+        }
+
+        newRows.forEach(row => tbody.appendChild(row))
+
+        const newSentinel = doc.getElementById("scroll-sentinel")
+
+        if (newSentinel) {
+          hasMore = newSentinel.dataset.hasMore === "true"
+          sentinel.dataset.hasMore = newSentinel.dataset.hasMore
+        }
+
+        if (!hasMore) {
+          observer.disconnect()
+          sentinel.innerHTML =
+            '<div class="text-center text-muted py-3">No more line items</div>'
+        }
+      } catch (error) {
+        console.error("Infinite scroll error:", error)
+      } finally {
+        loading = false
+        if (loadingEl) loadingEl.style.display = "none"
+      }
+    }
+
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting) {
+          loadMore()
+        }
+      },
+      { rootMargin: "200px" }
+    )
+
+    observer.observe(sentinel)
+  })
+</script>
 
 <style>
   .purchase-order-show .table td,
