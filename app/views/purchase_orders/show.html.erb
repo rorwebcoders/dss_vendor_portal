@@ -171,20 +171,8 @@
       <div class="card border-0 shadow-sm h-100">
         <div class="card-body">
           <p class="text-muted small mb-2">Status</p>
-
-          <% badge_class =
-              case @purchase_order.dealer_response
-              when "accepted"
-                "bg-success"
-              when "rejected"
-                "bg-danger"
-              else
-                "bg-warning text-dark"
-              end
-          %>
-
-          <span class="badge <%= badge_class %> px-3 py-2 rounded-pill">
-            <%= @purchase_order.dealer_response&.titleize || "Pending" %>
+          <span class="<%= purchase_order_status_badge_class(@purchase_order.dealer_response.to_s) %>">
+            <%= @purchase_order.dealer_response&.titleize || "Empty" %>
           </span>
         </div>
       </div>
