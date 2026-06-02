@@ -20,7 +20,7 @@
       <% if @purchase_order.pending_dealer_response? %>
         <%= button_to "Reject", reject_purchase_order_path(@purchase_order),
             method: :patch, class: "btn btn-outline-danger",
-            form: { data: { turbo_confirm: "Reject this purchase order?" } } %>
+            form: { onsubmit: "return confirm('Reject this purchase order?');" } %>
         <%= button_to "Accept", accept_purchase_order_path(@purchase_order), method: :patch, class: "btn btn-success" %>
       <% end %>
     </div>
