@@ -61,11 +61,21 @@
                 <summary class="btn btn-icon btn-outline-secondary" aria-label="My Account" title="My Account">
                   <%= account_icon %>
                 </summary>
-                <div class="account-menu-panel dropdown-menu-end shadow-sm bg-body border rounded-3 p-2">
-                  <%# <div class="dropdown-header"><%= current_user.display_name %#></div> %>
-                  <%= link_to "Edit profile", edit_account_path, class: "dropdown-item rounded-2" %>
-                  <div class="dropdown-divider"></div>
-                  <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "dropdown-item text-danger rounded-2", form_class: "m-0" %>
+                <div class="account-menu-panel position-absolute end-0 mt-2 bg-body shadow-lg border rounded-4 overflow-hidden">
+                  <div class="p-2">
+                    <%= link_to edit_account_path,
+                        class: "dropdown-item rounded-3 py-2 px-3 d-flex align-items-center" do %>
+                      <span class="me-2">👤</span>
+                      Edit Profile
+                    <% end %>
+
+                    <hr class="my-2">
+                    <%= button_to destroy_user_session_path,
+                        method: :delete,
+                        class: "btn btn-light text-danger w-100 text-start border-0 rounded-3 py-2 px-3" do %>
+                      🚪 Logout
+                    <% end %>
+                  </div>
                 </div>
               </details>
             <% else %>
