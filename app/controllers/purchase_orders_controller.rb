@@ -39,7 +39,13 @@ class PurchaseOrdersController < ApplicationController
     @total_purchase_orders = purchase_orders.count
     @total_pages = (@total_purchase_orders / PER_PAGE.to_f).ceil
     @current_page = [[params[:page].to_i, 1].max, [@total_pages, 1].max].min
-    @purchase_orders = purchase_orders.offset((@current_page - 1) * PER_PAGE).limit(PER_PAGE)
+    # @purchase_orders = purchase_orders.offset((@current_page - 1) * PER_PAGE).limit(PER_PAGE)
+
+    @page = params[:page].to_i
+    @page = 1 if @page < 1
+    @purchase_orders = purchase_orders.order(created_at: :desc).offset((@page - 1) * PER_PAGE).limit(PER_PAGE)
+
+    @has_more = PurchaseOrder.count > @page * PER_PAGE
   end
 
   def show

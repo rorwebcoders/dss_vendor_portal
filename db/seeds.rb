@@ -119,6 +119,7 @@ rows.each_slice(5).with_index do |line_rows, index|
   purchase_order.assign_attributes(
     po_id: 800_000 + index,
     po_type: po_types.sample,
+    dealer_response: :pending,
     status: :pending
   )
 
