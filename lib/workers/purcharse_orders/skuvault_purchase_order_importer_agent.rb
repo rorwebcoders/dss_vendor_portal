@@ -45,6 +45,7 @@ class SkuvaultPurchaseOrderImporterAgent
           entry["SaleItems"].each do |skuvault_line_item|
             line_item = purchase_order.line_items.find_or_create_by!(
               sku: skuvault_line_item["Sku"],
+              cost: skuvault_line_item["UnitPrice"]["a"],
               quantity: skuvault_line_item["Quantity"]
             )
           end
