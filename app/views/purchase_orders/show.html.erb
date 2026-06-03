@@ -1,14 +1,22 @@
 <% content_for :title, "Purchase Order #{@purchase_order.po_number}" %>
 <div class="container-fluid purchase-order-show">
   <div class="purchase-orders-toolbar purchase-orders-toolbar mb-3 d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+
     <div>
       <p class="text-uppercase text-primary fw-semibold small mb-1">
         Purchase Order Details
       </p>
 
-      <h1 class="h3 fw-bold mb-1">
-        <%= @purchase_order.po_number %>
-      </h1>
+      <div class="d-flex align-items-center gap-2">
+        <h1 class="h3 fw-bold mb-0">
+          <%= @purchase_order.po_number %>
+        </h1>
+
+        <span class="<%= purchase_order_status_badge_class(@purchase_order.dealer_response.to_s) %>">
+          <%= @purchase_order.dealer_response&.titleize || "Empty" %>
+        </span>
+      </div>
+      
 
       <p class="text-muted mb-0">
         Review purchase order information and line items.
@@ -36,7 +44,7 @@
 
               <!-- Title -->
               <div>
-                <h5 class="mb-1 fw-bold">Create Shipping Label</h5>
+                <h5 class="mb-1 fw-bold">Shipping Label</h5>
                 <small class="text-muted">
                   Enter package weight and dimensions
                 </small>
@@ -74,7 +82,7 @@
               <div class="row g-2 align-items-end">
 
                 <!-- Weight -->
-                <div class="col-12 col-md-2">
+                <div class="col-12 col-md-2" style="width: 15.667%;">
                   <label class="form-label">Weight</label>
                   <%= f.number_field :weight,
                         class: "form-control", required: true,
@@ -82,7 +90,7 @@
                 </div>
 
                 <!-- Units -->
-                <div class="col-12 col-md-2">
+                <div class="col-12 col-md-2" style="width: 15.667%;">
                   <label class="form-label">Units</label>
                   <%= f.select :units,
                           [["Pounds (lb)", "pounds"],
@@ -92,7 +100,7 @@
                 </div>
 
                 <!-- Length -->
-                <div class="col-12 col-md-2">
+                <div class="col-12 col-md-2" style="width: 15.667%;">
                   <label class="form-label">Length</label>
                   <%= f.number_field :length,
                         class: "form-control", required: true,
@@ -100,7 +108,7 @@
                 </div>
 
                 <!-- Width -->
-                <div class="col-12 col-md-2">
+                <div class="col-12 col-md-2" style="width: 15.667%;">
                   <label class="form-label">Width</label>
                   <%= f.number_field :width,
                         class: "form-control", required: true,
@@ -108,7 +116,7 @@
                 </div>
 
                 <!-- Height -->
-                <div class="col-12 col-md-2">
+                <div class="col-12 col-md-2" style="width: 15.667%;">
                   <label class="form-label">Height</label>
                   <%= f.number_field :height,
                         class: "form-control", required: true,
@@ -118,7 +126,7 @@
                 <% if @purchase_order.weight.to_s == "" %>
                   <div class="col-12 col-md-1 d-grid">
                     <label class="form-label invisible">.</label>
-                    
+
                     <%= f.submit "Accept & Create Label",
                           class: "btn btn-success" %>
                   </div>
@@ -137,21 +145,22 @@
   <div class="card border-0 shadow-sm mb-4">
     <div class="card-body">
       <div class="row g-4">
+        
         <div class="col-12 col-md-6 col-lg-4">
           <div class="bor1der rounded p-3 h-100">
             <small class="text-muted text-uppercase d-block mb-2">
-              Dealer Address
+              Shipping Address
             </small>
 
             <div class="fw-semibold">
-              <%= "#{@purchase_order.shipping_firstname} #{@purchase_order.shipping_lastname}" %><br>
+              <%= @purchase_order.shipping_firstname %> <%= @purchase_order.shipping_lastname %><br>
               <%= @purchase_order.shipping_address1 %><br>
-              <%= @purchase_order.shipping_city %>,
-              <%= @purchase_order.shipping_state %>
-              <%= @purchase_order.shipping_zip %><br>
-              <%= @purchase_order.shipping_phone %><br>
-              <%= @purchase_order.shipping_email %><br>
+              <%= @purchase_order.shipping_city %>, <%= @purchase_order.shipping_state %> <%= @purchase_order.shipping_zip %><br>
               <%= @purchase_order.shipping_country %>
+            </div>
+            <div class="text-muted small mt-2">
+              <div><%= @purchase_order.shipping_phone %></div>
+              <div><%= @purchase_order.shipping_email %></div>
             </div>
           </div>
         </div>
@@ -165,22 +174,6 @@
             <div class="fw-semibold">
               <%= l(@purchase_order.created_at, format: :long) %>
             </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-2">
-          <div class="borderq rounded p-3 h-100 text-center">
-            <small class="text-muted text-uppercase d-block mb-2">
-              Status
-            </small>
-
-            <span class="<%= purchase_order_status_badge_class(@purchase_order.dealer_response.to_s) %>">
-              <%= @purchase_order.dealer_response&.titleize || "Empty" %>
-             </span>
-
-            <h3 class="mb-0 fw-bold">
-              <%= @line_items.count %>
-            </h3>
           </div>
         </div>
 
@@ -221,8 +214,6 @@
           <thead class="table-light">
             <tr>
               <th>SKU</th>
-              <th>Brand</th>
-              <th>Title</th>
               <th class="text-end">Qty</th>
               <th class="text-end">Cost</th>
             </tr>

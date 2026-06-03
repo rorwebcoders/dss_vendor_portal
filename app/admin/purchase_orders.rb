@@ -107,6 +107,11 @@ ActiveAdmin.register PurchaseOrder do
       f.input :po_number
       f.input :tracking_number
       f.input :shipstation_label_url
+      f.input :weight
+      f.input :units
+      f.input :length
+      f.input :width
+      f.input :height
       f.input :dealer_response,
               as: :select,
               collection: PurchaseOrder.dealer_responses.keys.map { |k| [k.titleize, k] },
