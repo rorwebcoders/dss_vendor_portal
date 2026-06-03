@@ -20,16 +20,17 @@ class PurchaseOrderProcessorAgent
   def start_processing
     begin
       logger_info("Script started at #{Time.now}")
-
       purchase_orders = PurchaseOrder.where(status: :pending)
+      dealer_data = Dealer.pluck(:id, :sm_dealer_id, :abbreviation).to_h do |id, sm_dealer_id, abbreviation|
+                     [sm_dealer_id, { our_dealer_id: id, abbreviation: abbreviation }]
+                   end
       purchase_orders_data = purchase_orders.map do |purchase_order|
         sku_quantities = purchase_order.line_items.each_with_object(Hash.new(0)) do |line_item, hash|
           hash[line_item.sku] += line_item.quantity.to_i
         end
-
         {
           purchase_order: purchase_order,
-          po_number: purchase_order.po_number,
+          id: purchase_order.id,
           total_quantity: sku_quantities.values.sum,
           line_items: sku_quantities.map do |sku, quantity|
             {
@@ -39,7 +40,6 @@ class PurchaseOrderProcessorAgent
           end
         }
       end
-
       purchase_orders_data = purchase_orders_data.sort_by do |po|
         -po[:total_quantity]
       end
@@ -53,28 +53,12 @@ class PurchaseOrderProcessorAgent
 
       notify_dealers_data = {}
       purchase_orders_data.each do |po_data|
-        logger_info("Processing PoNumber: #{po_data[:po_number]}")
+        logger_info("Processing Po Id: #{po_data[:id]}")
 
         purchase_order = po_data[:purchase_order]
         line_items = po_data[:line_items]
 
         reserved_response = fetch_reserved_quantity_from_skumonster(line_items)
-        # reserved_response = '{
-        #   "reserved_quantity": {
-        #     "BRK-1001": 0,
-        #     "FLT-2201": 0
-        #   },
-        #   "dealers": [
-        #     {
-        #      "id": 99,
-        #      "priority_position": 15
-        #     },
-        #     {
-        #      "id": 128,
-        #      "priority_position": 10
-        #     }
-        #   ]
-        # }'
         reserved_response = JSON.parse(reserved_response)
         reserved_quantities = reserved_response["reserved_quantity"]
         ascending_dealers = reserved_response["dealers"].sort_by { |d| d["priority_position"] }
@@ -118,13 +102,17 @@ class PurchaseOrderProcessorAgent
 
             notify_orders_to_skumonster(notify_dealer_request_body)
 
-            purchase_order.update(status: :dropshipping, notified_sm_request: notify_dealer_request_body)
+            dealer = dealer_data[dealer_id.to_i]
+            our_dealer_id = dealer[:our_dealer_id]
+            abbreviation = dealer[:abbreviation]
+            po_number = "#{abbreviation}-#{Time.current.strftime('%d%m%y-%H%M%S')}"
+            purchase_order.update(po_number: po_number, dealer_id: our_dealer_id, status: :dropshipping, notified_sm_request: notify_dealer_request_body)
             dropshipping = true
             break
           end
         end
 
-        logger_info("Finished PoNumber: #{po_data[:po_number]}, #{dropshipping == true ? "Eligible" : "Not Eligible"} for dropshipping")
+        logger_info("Finished Po Id: #{po_data[:id]}, #{dropshipping == true ? "Eligible" : "Not Eligible"} for dropshipping")
         unless dropshipping
           purchase_order.update(status: :non_dropshipping)
         end
@@ -140,31 +128,16 @@ class PurchaseOrderProcessorAgent
   def notify_orders_to_skumonster(notify_request)
     notify_orders_api_url = Rails.application.credentials[Rails.env.to_sym][:notify_orders_api_url]
     skumonster_api_token = Rails.application.credentials[Rails.env.to_sym][:skumonster_api_token]
-
     uri = URI(notify_orders_api_url)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     request = Net::HTTP::Post.new(uri.request_uri)
     request["Authorization"] = skumonster_api_token
     request["Content-Type"] = "application/json"
-    # ------ Sample Request Start ------ #
-      # {
-      #   "dealer_id": 100,
-      #   "line_items": [
-      #     {
-      #       "sku": "670137054",
-      #       "quantity": 1
-      #     },
-      #     {
-      #       "sku": "670213730",
-      #       "quantity": 1
-      #     }
-      #   ]
-      # }
-    # ------ Sample Request End   ------ #
     request_body = notify_request.to_json
     request.body = request_body
     response = http.request(request)
+    logger_info("Notify Orders Response: #{response.body}")
    
     return response.body
   end
@@ -172,7 +145,6 @@ class PurchaseOrderProcessorAgent
   def fetch_reserved_quantity_from_skumonster(line_items)
     reserved_quantity_api_url = Rails.application.credentials[Rails.env.to_sym][:reserved_quantity_api_url]
     skumonster_api_token = Rails.application.credentials[Rails.env.to_sym][:skumonster_api_token]
-
     uri = URI(reserved_quantity_api_url)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
@@ -181,40 +153,8 @@ class PurchaseOrderProcessorAgent
     request["Content-Type"] = "application/json"
     request_body = { line_items: line_items }.to_json
     request.body = request_body
-    # ------ Sample Request Start ------ #
-      # {
-      #   "line_items": [
-      #     {
-      #       "sku": "4633210604",
-      #       "quantity": 2
-      #     },
-      #     {
-      #       "sku": "4636900179",
-      #       "quantity": 5
-      #     }
-      #   ]
-      # }
-    # ------ Sample Request End   ------ #
-
     response = http.request(request)
-    # ------ Sample Response Start ------ #
-      # response = {
-      #   "reserved_quantity": {
-      #     "sku12345": 5,
-      #     "67890": 0
-      #   },
-      #   "dealers": [
-      #     {
-      #      "id": 99,
-      #      "priority_position": 5
-      #     },
-      #     {
-      #      "id": 128,
-      #      "priority_position": 10
-      #     }
-      #   ]
-      # }
-    # ------ Sample Response End   ------ #
+    logger_info("Reserved Quantity Response: #{response.body}")
 
     return response.body
   end
