@@ -1,6 +1,6 @@
 class PurchaseOrdersController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_accessible_purchase_order, only: %i[show accept reject]
+  before_action :set_accessible_purchase_order, only: %i[show reject]
 
   PER_PAGE = 10
   SORT_COLUMNS = {
@@ -48,6 +48,7 @@ class PurchaseOrdersController < ApplicationController
 
   def show
     line_items = @purchase_order.line_items.order(:id)
+    @total_line_items = @purchase_order.line_items.count
     
     @page = params[:page].to_i
     @page = 1 if @page < 1
@@ -69,11 +70,11 @@ class PurchaseOrdersController < ApplicationController
     end
   end
 
-  def accept
-    @purchase_order.accept_by_dealer!
+  # def accept
+  #   @purchase_order.accept_by_dealer!
     
-    redirect_to purchase_order_path(@purchase_order), notice: "Purchase order accepted. Please provide shipping dimensions."
-  end
+  #   redirect_to purchase_order_path(@purchase_order), notice: "Purchase order accepted. Please provide shipping dimensions."
+  # end
 
   def reject
     @purchase_order.reject_by_dealer!(current_user.id)

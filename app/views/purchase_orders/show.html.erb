@@ -7,7 +7,7 @@
         Purchase Order Details
       </p>
 
-      <div class="d-flex align-items-center gap-2">
+      <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-2">
         <h1 class="h3 fw-bold mb-0">
           <%= @purchase_order.po_number %>
         </h1>
@@ -16,9 +16,8 @@
           <%= @purchase_order.dealer_response&.titleize || "Empty" %>
         </span>
       </div>
-      
 
-      <p class="text-muted mb-0">
+      <p class="text-muted mb-0 mt-1">
         Review purchase order information and line items.
       </p>
     </div>
@@ -77,57 +76,58 @@
 
         <div class="card-body">
           <%= form_with model: @purchase_order, local: true do |f| %>
-
-            <div class="row g-2 align-items-end">
-
-              <!-- Weight -->
-              <div class="col-12 col-md-2" style="width: 15.667%;">
-                <label class="form-label">Weight</label>
+            <div class="row g-3 align-items-end">
+              <div class="col-12 col-md-2">
+                <label class="form-label text-muted small">Weight</label>
                 <%= f.number_field :weight,
-                      class: "form-control", required: true,
+                      class: "form-control",
+                      required: true,
                       placeholder: "Weight" %>
               </div>
 
               <!-- Units -->
-              <div class="col-12 col-md-2" style="width: 15.667%;">
-                <label class="form-label">Units</label>
+              <div class="col-12 col-md-2">
+                <label class="form-label text-muted small">Units</label>
                 <%= f.select :units,
-                        [["Pounds (lb)", "pounds"],
-                         ["Ounces (oz)", "ounces"]],
-                        {},
-                        class: "form-select" %>
+                      [["Pounds (lb)", "pounds"], ["Ounces (oz)", "ounces"]],
+                      {},
+                      class: "form-select" %>
               </div>
 
               <!-- Length -->
-              <div class="col-12 col-md-2" style="width: 15.667%;">
-                <label class="form-label">Length</label>
+              <div class="col-12 col-md-2">
+                <label class="form-label text-muted small">Length</label>
                 <%= f.number_field :length,
-                      class: "form-control", required: true,
+                      class: "form-control",
+                      required: true,
                       placeholder: "L" %>
               </div>
 
               <!-- Width -->
-              <div class="col-12 col-md-2" style="width: 15.667%;">
-                <label class="form-label">Width</label>
+              <div class="col-12 col-md-2">
+                <label class="form-label text-muted small">Width</label>
                 <%= f.number_field :width,
-                      class: "form-control", required: true,
+                      class: "form-control",
+                      required: true,
                       placeholder: "W" %>
               </div>
 
               <!-- Height -->
-              <div class="col-12 col-md-2" style="width: 15.667%;">
-                <label class="form-label">Height</label>
+              <div class="col-12 col-md-2">
+                <label class="form-label text-muted small">Height</label>
                 <%= f.number_field :height,
-                      class: "form-control", required: true,
+                      class: "form-control",
+                      required: true,
                       placeholder: "H" %>
               </div>
 
-              <% if @purchase_order.weight.to_s == "" %>
-                <div class="col-12 col-md-1 d-grid">
-                  <label class="form-label invisible">.</label>
+              <!-- Submit -->
+              <% if @purchase_order.weight.blank? %>
+                <div class="col-12 col-md-2 d-grid">
+                  <label class="form-label invisible">submit</label>
 
                   <%= f.submit "Accept & Create Label",
-                        class: "btn btn-success" %>
+                        class: "btn btn-success w-100" %>
                 </div>
               <% end %>
 
@@ -199,7 +199,7 @@
         </h2>
 
         <span class="badge bg-light text-dark">
-          <%= @line_items.count %> Items
+          <%= @total_line_items %> Items
         </span>
       </div>
     </div>
