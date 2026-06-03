@@ -35,7 +35,7 @@ CSV.foreach(csv_file, headers: true) do |row|
 
   dealer = Dealer.find_or_initialize_by(sm_dealer_id: row["Id"])
 
-  dealer.name              = row["Name"]
+  dealer.dealer_name              = row["Name"]
   dealer.abbreviation      = row["Abbreviation"]
   dealer.api_name          = row["Api name"]
   dealer.api_location_code = row["Api location code"]
@@ -118,7 +118,7 @@ rows.each_slice(5).with_index do |line_rows, index|
 
   purchase_order.assign_attributes(
     po_id: 800_000 + index,
-    po_type: po_types.sample,
+    # po_type: po_types.sample,
     dealer_response: :pending,
     status: :pending
   )
