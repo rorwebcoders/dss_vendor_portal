@@ -9,7 +9,7 @@ ActiveAdmin.register User do
     column :email
     column :first_name
     column :last_name
-    column("Dealers") { |user| user.dealers.order(:name).pluck(:name).join(", ") }
+    column("Dealers") { |user| user.dealers.order(:dealer_name).pluck(:dealer_name).join(", ") }
     column :created_at
     actions
   end
@@ -24,7 +24,7 @@ ActiveAdmin.register User do
       row :email
       row :first_name
       row :last_name
-      row("Dealers") { |user| user.dealers.order(:name).pluck(:name).join(", ") }
+      row("Dealers") { |user| user.dealers.order(:dealer_name).pluck(:dealer_name).join(", ") }
       row :created_at
       row :updated_at
     end
@@ -37,7 +37,7 @@ ActiveAdmin.register User do
       f.input :last_name
       f.input :password
       f.input :password_confirmation
-      f.input :dealers, as: :check_boxes, collection: Dealer.order(:name)
+      f.input :dealers, as: :check_boxes, collection: Dealer.order(:dealer_name)
     end
     f.actions
   end

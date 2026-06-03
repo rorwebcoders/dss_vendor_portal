@@ -11,10 +11,10 @@ ActiveAdmin.register LineItem do
     selectable_column
     id_column
     column :purchase_order
-    column("Dealer") { |line_item| line_item.purchase_order.dealer&.name || status_tag("Unassigned") }
+    column("Dealer") { |line_item| line_item.purchase_order.dealer&.dealer_name || status_tag("Unassigned") }
     column :sku
-    column :brand
-    column :title
+    # column :brand
+    # column :title
     column :quantity
     column :cost
     actions
@@ -22,15 +22,15 @@ ActiveAdmin.register LineItem do
 
   filter :purchase_order
   filter :sku
-  filter :brand
-  filter :title
+  # filter :brand
+  # filter :title
 
   form do |f|
     f.inputs do
-      f.input :purchase_order, collection: PurchaseOrder.includes(:dealer).order(:po_number).map { |po| ["#{po.po_number} - #{po.dealer&.name || 'Unassigned'}", po.id] }
+      f.input :purchase_order, collection: PurchaseOrder.includes(:dealer).order(:po_number).map { |po| ["#{po.po_number} - #{po.dealer&.dealer_name || 'Unassigned'}", po.id] }
       f.input :sku
-      f.input :brand
-      f.input :title
+      # f.input :brand
+      # f.input :title
       f.input :quantity
       f.input :cost
     end

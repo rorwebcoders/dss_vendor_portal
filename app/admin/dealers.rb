@@ -1,13 +1,14 @@
 # frozen_string_literal: true
 
 ActiveAdmin.register Dealer do
-  permit_params :name, :abbreviation, :api_name, :api_location_code, :email, :enabled, :dealer_address1, :dealer_city, :dealer_state, :dealer_zip, :dealer_country, :sm_dealer_id, user_ids: []
+  permit_params :dealer_name, :abbreviation, :api_name, :api_location_code, :email, :enabled, :dealer_address1, :dealer_city, :dealer_state, :dealer_zip, :dealer_country, :sm_dealer_id, user_ids: []
 
   index do
     selectable_column
     id_column
-    column :name
+    column :dealer_name
     column :abbreviation
+    column :sm_dealer_id
     column :api_name
     column :api_location_code
     column :email
@@ -16,7 +17,7 @@ ActiveAdmin.register Dealer do
     actions
   end
 
-  filter :name
+  filter :dealer_name
   filter :abbreviation
   filter :api_name
   filter :api_location_code
@@ -26,7 +27,7 @@ ActiveAdmin.register Dealer do
   show do
     attributes_table do
       row :id
-      row :name
+      row :dealer_name
       row :abbreviation
       row :api_name
       row :api_location_code
@@ -54,8 +55,6 @@ ActiveAdmin.register Dealer do
         column :po_number do |purchase_order|
           link_to purchase_order.po_number, admin_purchase_order_path(purchase_order)
         end
-        column :po_id
-        column :po_type
         column :created_at
       end
     end
@@ -63,7 +62,7 @@ ActiveAdmin.register Dealer do
 
   form do |f|
     f.inputs "Dealer Details" do
-      f.input :name
+      f.input :dealer_name
       f.input :abbreviation
       f.input :api_name
       f.input :api_location_code
