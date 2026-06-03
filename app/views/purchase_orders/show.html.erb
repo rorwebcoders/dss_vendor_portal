@@ -21,12 +21,12 @@
         <%= button_to "Reject", reject_purchase_order_path(@purchase_order),
             method: :patch, class: "btn btn-outline-danger",
             form: { onsubmit: "return confirm('Reject this purchase order?');" } %>
-        <%= button_to "Accept", accept_purchase_order_path(@purchase_order), method: :patch, class: "btn btn-success" %>
+        <%#= button_to "Accept & Create Label", accept_purchase_order_path(@purchase_order), method: :patch, class: "btn btn-success" %>
       <% end %>
     </div>
   </div>
 
-  <% if @purchase_order.dealer_response.to_s == "accepted" %>
+  <% if @purchase_order.dealer_response.to_s == "pending" %>
     <div class="row justify-content-center mb-4">
       <div class="col-12">
 
@@ -118,8 +118,9 @@
                 <% if @purchase_order.weight.to_s == "" %>
                   <div class="col-12 col-md-1 d-grid">
                     <label class="form-label invisible">.</label>
-                    <%= f.submit "Create Label",
-                          class: "btn btn-primary" %>
+                    
+                    <%= f.submit "Accept & Create Label",
+                          class: "btn btn-success" %>
                   </div>
                 <% end %>
 
@@ -132,53 +133,6 @@
     </div>
   <% end %>
 
-  <div class="row g-4 mb-4">
-    <div class="col-md-6 col-xl-3">
-      <div class="card border-0 shadow-sm h-100">
-        <div class="card-body">
-          <p class="text-muted small mb-2">Dealer</p>
-
-          <h5 class="fw-semibold mb-0">
-            <%= @purchase_order.dealer&.name || "Unassigned" %>
-          </h5>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-6 col-xl-3">
-      <div class="card border-0 shadow-sm h-100">
-        <div class="card-body">
-          <p class="text-muted small mb-2">PO ID</p>
-          <h5 class="fw-semibold mb-0">
-            <%= @purchase_order.po_id %>
-          </h5>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-6 col-xl-3">
-      <div class="card border-0 shadow-sm h-100">
-        <div class="card-body">
-          <p class="text-muted small mb-2">PO Type</p>
-          <h5 class="fw-semibold mb-0">
-            <%= @purchase_order.po_type %>
-          </h5>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-6 col-xl-3">
-      <div class="card border-0 shadow-sm h-100">
-        <div class="card-body">
-          <p class="text-muted small mb-2">Status</p>
-          <span class="<%= purchase_order_status_badge_class(@purchase_order.dealer_response.to_s) %>">
-            <%= @purchase_order.dealer_response&.titleize || "Empty" %>
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Meta Info -->
   <div class="card border-0 shadow-sm mb-4">
     <div class="card-body">
@@ -190,11 +144,14 @@
             </small>
 
             <div class="fw-semibold">
-              <%= @purchase_order.dealer&.dealer_address1 %><br>
-              <%= @purchase_order.dealer&.dealer_city %>,
-              <%= @purchase_order.dealer&.dealer_state %>
-              <%= @purchase_order.dealer&.dealer_zip %><br>
-              <%= @purchase_order.dealer&.dealer_country %>
+              <%= "#{@purchase_order.shipping_firstname} #{@purchase_order.shipping_lastname}" %><br>
+              <%= @purchase_order.shipping_address1 %><br>
+              <%= @purchase_order.shipping_city %>,
+              <%= @purchase_order.shipping_state %>
+              <%= @purchase_order.shipping_zip %><br>
+              <%= @purchase_order.shipping_phone %><br>
+              <%= @purchase_order.shipping_email %><br>
+              <%= @purchase_order.shipping_country %>
             </div>
           </div>
         </div>
@@ -214,8 +171,12 @@
         <div class="col-12 col-md-6 col-lg-2">
           <div class="borderq rounded p-3 h-100 text-center">
             <small class="text-muted text-uppercase d-block mb-2">
-              Line Items
+              Status
             </small>
+
+            <span class="<%= purchase_order_status_badge_class(@purchase_order.dealer_response.to_s) %>">
+              <%= @purchase_order.dealer_response&.titleize || "Empty" %>
+             </span>
 
             <h3 class="mb-0 fw-bold">
               <%= @line_items.count %>
@@ -230,7 +191,7 @@
             </small>
 
             <h3 class="mb-0 fw-bold text-primary">
-              <%= number_to_currency(@line_items.sum(&:cost)) %>
+              <%= number_to_currency(@line_items.sum { |item| item.cost.to_f }) %>
             </h3>
           </div>
         </div>

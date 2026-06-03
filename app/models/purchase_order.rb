@@ -4,8 +4,6 @@ class PurchaseOrder < ApplicationRecord
   has_many :line_items, dependent: :destroy
   accepts_nested_attributes_for :line_items, allow_destroy: true
 
-  validates :po_number, presence: true
-
   before_validation :sync_dealer_response_with_assignment
   after_update :run_dealer_response_callback, if: :saved_change_to_dealer_response?
 

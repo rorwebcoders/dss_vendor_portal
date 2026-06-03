@@ -5,9 +5,7 @@ class PurchaseOrdersController < ApplicationController
   PER_PAGE = 10
   SORT_COLUMNS = {
     "po_number" => "purchase_orders.po_number",
-    "po_id" => "purchase_orders.po_id",
-    "po_type" => "purchase_orders.po_type",
-    "dealer" => "dealers.name",
+    "dealer" => "dealers.dealer_name",
     "status" => "purchase_orders.dealer_response",
     "created" => "purchase_orders.created_at"
   }.freeze
@@ -60,11 +58,12 @@ class PurchaseOrdersController < ApplicationController
 
   def update
     purchase_order = PurchaseOrder.find(params[:id])
+    purchase_order.accept_by_dealer!
 
     if purchase_order.update(shipping_params)
       DealerDecisionJob.perform_later(purchase_order.id, current_user.id, "accept")
 
-      redirect_to purchase_order_path(purchase_order), notice: "Package details saved. Label generation has been queued."
+      redirect_to purchase_order_path(purchase_order), notice: "Purchase order accepted. Label generation has been queued."
     else
       render :edit, status: :unprocessable_entity
     end
@@ -121,10 +120,8 @@ private
     purchase_orders.where(
       <<~SQL.squish,
         purchase_orders.po_number LIKE :term OR
-        CAST(purchase_orders.po_id AS CHAR) LIKE :term OR
-        purchase_orders.po_type LIKE :term OR
         purchase_orders.dealer_response LIKE :term OR
-        dealers.name LIKE :term
+        dealers.dealer_name LIKE :term
       SQL
       term: term
     )

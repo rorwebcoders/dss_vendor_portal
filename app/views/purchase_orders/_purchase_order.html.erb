@@ -1,8 +1,6 @@
 <tr>
   <td class="fw-semibold text-body"><%= purchase_order.po_number %></td>
-  <td><%= purchase_order.po_id %></td>
-  <td><%= purchase_order.po_type %></td>
-  <td><%= purchase_order.dealer&.name || "Unassigned" %></td>
+  <td><%= purchase_order.dealer&.dealer_name || "Unassigned" %></td>
   <td>
     <span class="<%= purchase_order_status_badge_class(purchase_order.dealer_response.to_s) %>">
       <%= purchase_order.dealer_response&.titleize || "Empty" %>
@@ -12,12 +10,12 @@
   <td class="text-end">
     <div class="d-flex gap-2">
       <%= link_to "View", purchase_order_path(purchase_order), class: "btn btn-sm btn-primary rounded-pill px-3" %>
-      <% if purchase_order.pending_dealer_response? %>
-        <%= button_to "Accept", accept_purchase_order_path(purchase_order), method: :patch, class: "btn btn-sm rounded-pill btn-success" %>
-        <%= button_to "Reject", reject_purchase_order_path(purchase_order),
+      <%# if purchase_order.pending_dealer_response? %>
+        <%#= button_to "Accept", accept_purchase_order_path(purchase_order), method: :patch, class: "btn btn-sm rounded-pill btn-success" %>
+        <%#= button_to "Reject", reject_purchase_order_path(purchase_order),
             method: :patch, class: "btn btn-sm rounded-pill btn-outline-danger",
             form: { onsubmit: "return confirm('Reject this purchase order?');" } %>
-      <% end %>
+      <%# end %>
     </div>
   </td>
 </tr>
