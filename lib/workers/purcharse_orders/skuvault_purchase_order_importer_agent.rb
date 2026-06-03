@@ -19,60 +19,65 @@ class SkuvaultPurchaseOrderImporterAgent
   def start_processing
     begin
       logger_info("Script started at #{Time.now}")
-      skuvault_purchase_orders = skuvault_get_pos
-      skuvault_purchase_orders = JSON.parse(skuvault_purchase_orders)["PurchaseOrders"] || []
+      skuvault_purchase_orders = get_sales_from_skuvault    
+
       skuvault_purchase_orders.each do |entry|
-        logger_info("Processing PoNumber: #{entry["PoNumber"]}")
-        purchase_order = PurchaseOrder.find_or_initialize_by(po_id: entry["PoId"])
-        purchase_order.po_number = entry["PoNumber"]
+        skuvault_id = entry["Id"]
+        logger_info("Processing Skuvault Id: #{skuvault_id}")
+
+        purchase_order = PurchaseOrder.find_or_initialize_by(skuvault_id: skuvault_id)
+        purchase_order.skuvault_marketplace_id = entry["MarketplaceId"]
+        purchase_order.skuvault_channel_id = entry["ChannelId"]
+        contact_info  = entry["ContactInfo"] || {}
+        purchase_order.shipping_firstname = contact_info["FirstName"]
+        purchase_order.shipping_lastname = contact_info["LastName"]
+        purchase_order.shipping_company = contact_info["Company"]
+        purchase_order.shipping_phone = contact_info["Phone"]
+        purchase_order.shipping_email = contact_info["Email"]
+        shipping_info = entry["ShippingInfo"] || {}
+        purchase_order.shipping_address1 = [shipping_info["Address1"], shipping_info["Address2"]].compact.reject(&:blank?).join(", ")
+        purchase_order.shipping_city = shipping_info["City"]
+        purchase_order.shipping_state = shipping_info["Region"]
+        purchase_order.shipping_zip = shipping_info["PostalCode"]
+        purchase_order.shipping_country = shipping_info["Country"]
         purchase_order.skuvault_status = entry["Status"]
-        purchase_order.payment_status = entry["PaymentStatus"]
-        purchase_order.supplier_name = entry["SupplierName"]
         if purchase_order.save!
-          entry["LineItems"].each do |skuvault_line_item|
-            line_item = purchase_order.line_items.find_or_initialize_by(skuvault_product_id: skuvault_line_item["ProductId"])
-            line_item.sku = skuvault_line_item["SKU"]
-            line_item.quantity = skuvault_line_item["Quantity"]
-            line_item.received_quantity = skuvault_line_item["ReceivedQuantity"]
-            line_item.received_date = skuvault_line_item["ReceivedDate"]
-            line_item.cost = skuvault_line_item["Cost"]
-            line_item.retail_cost = skuvault_line_item["RetailCost"]
-            line_item.private_notes = skuvault_line_item["PrivateNotes"]
-            line_item.public_notes = skuvault_line_item["PublicNotes"]
-            line_item.save!
+          entry["SaleItems"].each do |skuvault_line_item|
+            line_item = purchase_order.line_items.find_or_create_by!(
+              sku: skuvault_line_item["Sku"],
+              quantity: skuvault_line_item["Quantity"]
+            )
           end
         end
       end
-      
       logger_info("Script completed at #{Time.now}")
     rescue StandardError => e
       logger_error(e.message)
       logger_error(e.backtrace.join("\n"))
     end
   end
-  
-  def skuvault_get_pos
-    skuvault_tenant_token = Rails.application.credentials[Rails.env.to_sym][:skuvault_tenant_tokeni_for_import]
-    skuvault_user_token = Rails.application.credentials[Rails.env.to_sym][:skuvault_user_token_for_import]
-    modified_after_datetime_utc = (Time.zone.now - 24.hours).utc.iso8601(7)
-    url = URI("https://app.skuvault.com/api/purchaseorders/getPOs")
-    http = Net::HTTP.new(url.host, url.port)
-    http.use_ssl = true
-    request = Net::HTTP::Post.new(url)
-    request["Content-Type"] = 'application/json'
-    request["Accept"] = 'application/json'
-    request_body_hash = {
-      "IncludeProducts" => "false",
-      # "ModifiedAfterDateTimeUtc" => "#{modified_after_datetime_utc}",
-      "PageNumber" => 0,
-      "Status" => "Everything except Completed",
-      "TenantToken" => skuvault_tenant_token,
-      "UserToken" => skuvault_user_token
-    }
 
-    request.body = request_body_hash.to_json
-    response = http.request(request)
-    return response.read_body
+  def get_sales_from_skuvault
+    skuvault_tenant_token = Rails.application.credentials[Rails.env.to_sym][:skuvault_tenant_token]
+    skuvault_user_token = Rails.application.credentials[Rails.env.to_sym][:skuvault_user_token]
+
+    uri = URI.parse("#{Rails.application.credentials[Rails.env.to_sym][:skuvault_get_sales_api]}")
+    request = Net::HTTP::Post.new(uri)
+    request.content_type = "application/json"
+    request["Accept"] = "application/json"
+    request.body = JSON.dump({
+     "Status" => "ReadyToShip",
+     "TenantToken" => skuvault_tenant_token,
+     "UserToken" => skuvault_user_token
+    })
+    req_options = { use_ssl: uri.scheme == "https" }
+    response = Net::HTTP.start(uri.hostname, uri.port, req_options) do |http|
+      http.request(request)
+    end
+    logger_info("Skuvault Get Sales Response: #{response.body}")
+    sales_data = JSON.parse(response.body)["Sales"]
+
+    return sales_data
   end
 
   def logger_info(msg)
