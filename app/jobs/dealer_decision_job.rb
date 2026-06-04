@@ -20,11 +20,8 @@ private
   end
 
   def handle_reject(po, dealer_id)
-    # po.update!(dealer_response: nil, dealer: nil)
-    # DealerLog.create(purchase_order_id: po.id, dealer_id: dealer_id, rejected_at: Time.now, status: :rejected)
-
-    # SkuMonsterClient.block_dealer_inventory!(
-    #   request_body: po.notified_sm_request
-    # )
+    SkuMonsterClient.block_dealer_inventory!(
+      request_body: po.notified_sm_request
+    )
   end
 end
