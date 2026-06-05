@@ -1,0 +1,86 @@
+<% if false %>
+  <h2>Change your password</h2>
+
+  <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
+    <%= render "users/shared/error_messages", resource: resource %>
+    <%= f.hidden_field :reset_password_token %>
+
+    <div class="field">
+      <%= f.label :password, "New password" %><br />
+      <% if @minimum_password_length %>
+        <em>(<%= @minimum_password_length %> characters minimum)</em><br />
+      <% end %>
+      <%= f.password_field :password, autofocus: true, autocomplete: "new-password" %>
+    </div>
+
+    <div class="field">
+      <%= f.label :password_confirmation, "Confirm new password" %><br />
+      <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+    </div>
+
+    <div class="actions">
+      <%= f.submit "Change my password" %>
+    </div>
+  <% end %>
+
+  <%= render "users/shared/links" %>
+<% end %>
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow border-0">
+        <div class="card-body p-4">
+          <h2 class="text-center mb-4">Change Your Password</h2>
+
+          <%= form_for(resource,
+                        as: resource_name,
+                        url: password_path(resource_name),
+                        html: { method: :put }) do |f| %>
+
+            <%= render "users/shared/error_messages", resource: resource %>
+
+            <%= f.hidden_field :reset_password_token %>
+
+            <div class="mb-3">
+              <%= f.label :password, "New Password", class: "form-label" %>
+
+              <% if @minimum_password_length %>
+                <small class="text-muted d-block mb-2">
+                  Minimum <%= @minimum_password_length %> characters
+                </small>
+              <% end %>
+
+              <%= f.password_field :password,
+                    autofocus: true,
+                    autocomplete: "new-password",
+                    class: "form-control",
+                    placeholder: "Enter new password" %>
+            </div>
+
+            <div class="mb-4">
+              <%= f.label :password_confirmation,
+                    "Confirm New Password",
+                    class: "form-label" %>
+
+              <%= f.password_field :password_confirmation,
+                    autocomplete: "new-password",
+                    class: "form-control",
+                    placeholder: "Confirm new password" %>
+            </div>
+
+            <div class="d-grid">
+              <%= f.submit "Change Password",
+                    class: "btn btn-primary btn-lg" %>
+            </div>
+
+          <% end %>
+
+          <div class="text-center mt-3">
+            <%= render "users/shared/links" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
