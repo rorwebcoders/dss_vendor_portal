@@ -15,7 +15,14 @@ ActiveAdmin.register User do
   end
 
   filter :email
-  filter :dealers
+  filter :dealers,
+    as: :searchable_select,
+    url: proc { searchable_select_options_admin_dealers_path },
+    fields: [:dealer_name],
+    text_attribute: :dealer_name,
+    minimum_input_length: 2,
+    order_by: 'dealer_name_asc'
+  # filter :dealers
   filter :created_at
 
   show do
@@ -35,9 +42,12 @@ ActiveAdmin.register User do
       f.input :email
       f.input :first_name
       f.input :last_name
-      f.input :password
-      f.input :password_confirmation
-      f.input :dealers, as: :check_boxes, collection: Dealer.order(:dealer_name)
+      # f.input :password
+      # f.input :password_confirmation
+      f.input :dealers,
+        as: :searchable_select,
+        multiple: true,
+        collection: Dealer.order(dealer_name: :asc)
     end
     f.actions
   end
