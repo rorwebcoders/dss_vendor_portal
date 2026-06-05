@@ -48,7 +48,7 @@ class PurchaseOrdersController < ApplicationController
 
   def show
     line_items = @purchase_order.line_items.order(:id)
-    @total_line_items = @purchase_order.line_items.count
+    @total_line_items = line_items.count
     
     @page = params[:page].to_i
     @page = 1 if @page < 1

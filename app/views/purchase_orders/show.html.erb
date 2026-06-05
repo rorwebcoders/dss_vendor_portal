@@ -138,102 +138,121 @@
     </div>
   </div>
 
-  <!-- Meta Info -->
-  <div class="card border-0 shadow-sm mb-4">
-    <div class="card-body">
+  <div class="row justify-content-center mb-4">
+    <div class="container-fluid">
       <div class="row g-4">
-        
-        <div class="col-12 col-md-6 col-lg-4">
-          <div class="bor1der rounded p-3 h-100">
-            <small class="text-muted text-uppercase d-block mb-2">
-              Shipping Address
-            </small>
 
-            <div class="fw-semibold">
-              <%= @purchase_order.shipping_firstname %> <%= @purchase_order.shipping_lastname %><br>
-              <%= @purchase_order.shipping_address1 %><br>
-              <%= @purchase_order.shipping_city %>, <%= @purchase_order.shipping_state %> <%= @purchase_order.shipping_zip %><br>
-              <%= @purchase_order.shipping_country %>
+        <!-- Left Side - Line Items -->
+        <div class="col-lg-8">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-2">
+              <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">Line Items</h5>
+
+                <span class="badge bg-primary">
+                  <%= @total_line_items %> Items
+                </span>
+              </div>
             </div>
-            <div class="text-muted small mt-2">
-              <div><%= @purchase_order.shipping_phone %></div>
-              <div><%= @purchase_order.shipping_email %></div>
-            </div>
+
+            <% if @line_items.any? %>
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>SKU</th>
+                      <th>Qty</th>
+                      <th>Cost</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="line-items">
+                    <%= render partial: "purchase_orders/line_item",
+                              collection: @line_items,
+                              as: :line_item %>
+                  </tbody>
+                </table>
+
+                <div id="loading"
+                     class="text-center py-4"
+                     style="display:none;">
+                  <div class="spinner-border text-primary"></div>
+                </div>
+
+                <div id="scroll-sentinel"
+                     data-page="<%= @page %>"
+                     data-has-more="<%= @has_more %>">
+                </div>
+              </div>
+            <% else %>
+              <div class="card-body">
+                <div class="alert alert-info mb-0">
+                  No line items available.
+                </div>
+              </div>
+            <% end %>
           </div>
         </div>
 
-        <div class="col-12 col-md-6 col-lg-4">
-          <div class="border1 rounded p-3 h-100">
-            <small class="text-muted text-uppercase d-block mb-2">
-              Created At
-            </small>
-
-            <div class="fw-semibold">
-              <%= l(@purchase_order.created_at, format: :long) %>
+        <!-- Right Side - Shipping Address -->
+        <div class="col-lg-4">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+              <h5 class="mb-0 fw-bold text-primary">Shipping Address</h5>
             </div>
-          </div>
-        </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <strong>
+                  <%= @purchase_order.shipping_firstname %>
+                  <%= @purchase_order.shipping_lastname %>
+                </strong>
+              </div>
 
-        <div class="col-12 col-md-6 col-lg-2">
-          <div class="bord1er rounded p-3 h-100 text-center">
-            <small class="text-muted text-uppercase d-block mb-2">
-              Total Cost
-            </small>
+              <div class="text-muted">
+                <div><%= @purchase_order.shipping_address1 %></div>
 
-            <h3 class="mb-0 fw-bold text-primary">
-              <%= number_to_currency(@line_items.sum { |item| item.cost.to_f }) %>
-            </h3>
+                <div>
+                  <%= @purchase_order.shipping_city %>,
+                  <%= @purchase_order.shipping_state %>
+                  <%= @purchase_order.shipping_zip %>
+                </div>
+
+                <div><%= @purchase_order.shipping_country %></div>
+              </div>
+
+              <hr>
+
+              <% if @purchase_order.shipping_phone.present? %>
+                <div class="mb-2">
+                  <strong>Phone</strong><br>
+                  <span class="text-muted">
+                    <%= @purchase_order.shipping_phone %>
+                  </span>
+                </div>
+              <% end %>
+
+              <% if @purchase_order.shipping_company.present? %>
+                <div class="mb-2">
+                  <strong>Company</strong><br>
+                  <span class="text-muted">
+                    <%= @purchase_order.shipping_company %>
+                  </span>
+                </div>
+              <% end %>
+
+              <% if @purchase_order.shipping_email.present? %>
+                <div>
+                  <strong>Email</strong><br>
+                  <span class="text-muted">
+                    <%= @purchase_order.shipping_email %>
+                  </span>
+                </div>
+              <% end %>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- Line Items -->
-  <div class="card border-0 shadow-sm">
-    <div class="card-header bg-white border-0 py-3">
-      <div class="d-flex justify-content-between align-items-center">
-        <h2 class="h5 mb-0 fw-bold">
-          Line Items
-        </h2>
-
-        <span class="badge bg-light text-dark">
-          <%= @total_line_items %> Items
-        </span>
-      </div>
-    </div>
-
-    <% if @line_items.any? %>
-
-      <div class="table-responsive">
-        <table class="table align-middle mb-0">
-
-          <thead class="table-light">
-            <tr>
-              <th>SKU</th>
-              <th class="text-end">Qty</th>
-              <th class="text-end">Cost</th>
-            </tr>
-          </thead>
-
-          <tbody id="line-items">
-            <%= render partial: "purchase_orders/line_item", collection: @line_items, as: :line_item %>
-          </tbody>
-        </table>
-        <div id="loading" class="text-center py-4" style="display:none;">
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div>
-        </div>
-        <div id="scroll-sentinel" data-page="<%= @page %>" data-has-more="<%= @has_more %>"></div>
-      </div>
-    <% else %>
-      <div class="card-body">
-        <div class="alert alert-info mb-0">
-          No line items available for this purchase order.
-        </div>
-      </div>
-    <% end %>
   </div>
 </div>
 
