@@ -89,62 +89,62 @@ puts "Done"
 
 
 
-require "csv"
-require "securerandom"
+# require "csv"
+# require "securerandom"
 
-dealer_qty_file = Rails.root.join("public", "dealer_quantities.csv")
-brands_file     = Rails.root.join("public", "brands-5.csv")
+# dealer_qty_file = Rails.root.join("public", "dealer_quantities.csv")
+# brands_file     = Rails.root.join("public", "brands-5.csv")
 
-brands_by_sm_id = {}
+# brands_by_sm_id = {}
 
-CSV.foreach(brands_file, headers: true, col_sep: ";") do |row|
-  brands_by_sm_id[row["id"].to_s] = row["name"]
-end
+# CSV.foreach(brands_file, headers: true, col_sep: ";") do |row|
+#   brands_by_sm_id[row["id"].to_s] = row["name"]
+# end
 
-po_types = %w[b_order stock_order special_order emergency_order warranty_order]
+# po_types = %w[b_order stock_order special_order emergency_order warranty_order]
 
-rows = []
+# rows = []
 
-CSV.foreach(dealer_qty_file, headers: true, col_sep: ";") do |row|
-  rows << row
-end
+# CSV.foreach(dealer_qty_file, headers: true, col_sep: ";") do |row|
+#   rows << row
+# end
 
-rows.each_slice(5).with_index do |line_rows, index|
-  po_number = "SM-SEED-#{(index + 1).to_s.rjust(6, '0')}"
+# rows.each_slice(5).with_index do |line_rows, index|
+#   po_number = "SM-SEED-#{(index + 1).to_s.rjust(6, '0')}"
 
-  purchase_order = PurchaseOrder.find_or_initialize_by(
-    po_number: po_number
-  )
+#   purchase_order = PurchaseOrder.find_or_initialize_by(
+#     po_number: po_number
+#   )
 
-  purchase_order.assign_attributes(
-    po_id: 800_000 + index,
-    # po_type: po_types.sample,
-    dealer_response: :pending,
-    status: :pending
-  )
+#   purchase_order.assign_attributes(
+#     po_id: 800_000 + index,
+#     # po_type: po_types.sample,
+#     dealer_response: :pending,
+#     status: :pending
+#   )
 
-  purchase_order.save!
+#   purchase_order.save!
 
-  line_rows.each do |line_row|
-    brand_name = brands_by_sm_id[line_row["brand_id"].to_s] || "Unknown Brand"
+#   line_rows.each do |line_row|
+#     brand_name = brands_by_sm_id[line_row["brand_id"].to_s] || "Unknown Brand"
 
-    sku = line_row["sku"].presence || "SKU-#{SecureRandom.hex(4)}"
+#     sku = line_row["sku"].presence || "SKU-#{SecureRandom.hex(4)}"
 
-    line_item = LineItem.find_or_initialize_by(
-      purchase_order: purchase_order,
-      sku: sku
-    )
+#     line_item = LineItem.find_or_initialize_by(
+#       purchase_order: purchase_order,
+#       sku: sku
+#     )
 
-    line_item.assign_attributes(
-      brand: brand_name,
-      title: "SM Product #{SecureRandom.uuid}",
-      quantity: rand(1..10),
-      cost: rand(5.0..500.0).round(2)
-    )
+#     line_item.assign_attributes(
+#       brand: brand_name,
+#       title: "SM Product #{SecureRandom.uuid}",
+#       quantity: rand(1..10),
+#       cost: rand(5.0..500.0).round(2)
+#     )
 
-    line_item.save!
-  end
-end
+#     line_item.save!
+#   end
+# end
 
-puts "Purchase Orders created: #{PurchaseOrder.count}"
-puts "Line Items created: #{LineItem.count}"
+# puts "Purchase Orders created: #{PurchaseOrder.count}"
+# puts "Line Items created: #{LineItem.count}"
