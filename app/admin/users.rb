@@ -42,13 +42,26 @@ ActiveAdmin.register User do
       f.input :email
       f.input :first_name
       f.input :last_name
-      # f.input :password
-      # f.input :password_confirmation
+      if f.object.new_record?
+        f.input :password
+        f.input :password_confirmation
+      end
       f.input :dealers,
         as: :searchable_select,
         multiple: true,
         collection: Dealer.order(dealer_name: :asc)
     end
     f.actions
+  end
+
+  controller do
+    def create
+      super do |success, failure|
+        success.html do
+          resource.send_reset_password_instructions
+          redirect_to admin_user_path(resource), notice: "User created and password setup email sent."
+        end
+      end
+    end
   end
 end

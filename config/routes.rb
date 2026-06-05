@@ -1,7 +1,13 @@
 Rails.application.routes.draw do
   devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
-  devise_for :users, skip: [:registrations], controllers: { sessions: "users/sessions" }
+
+  devise_for :users,
+  skip: [:registrations],
+  controllers: {
+    sessions: "users/sessions",
+    passwords: "users/passwords"
+  }
 
   resource :account, only: [:edit, :update]
   resources :purchase_orders, only: [:index, :show, :update] do

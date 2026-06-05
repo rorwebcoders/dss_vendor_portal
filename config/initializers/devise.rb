@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 Devise.setup do |config|
-  config.mailer_sender = "please-change-me@example.com"
+  config.mailer_sender = "sales@dealersalessolutions.com"
   require "devise/orm/active_record"
   config.case_insensitive_keys = [:email]
   config.strip_whitespace_keys = [:email]
