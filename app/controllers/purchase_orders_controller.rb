@@ -24,15 +24,38 @@ class PurchaseOrdersController < ApplicationController
     @status_filter = STATUS_FILTERS.key?(params[:status]) ? params[:status] : STATUS_FILTERS.keys.first
     @status_filters = STATUS_FILTERS
 
-    base_purchase_orders = current_user.accessible_purchase_orders.left_joins(:dealer)
-    @purchase_order_summary_cards = purchase_order_summary_cards(base_purchase_orders)
-    filtered_purchase_orders = @query.present? ? search_purchase_orders(base_purchase_orders) : base_purchase_orders
-    purchase_orders = filtered_purchase_orders.includes(:dealer)
-    purchase_orders = purchase_orders.where(dealer_response: @status_filter) unless @status_filter == "all"
-    purchase_orders = purchase_orders.order(
-      Arel.sql("#{SORT_COLUMNS.fetch(@sort_column)} #{@sort_direction.upcase}"),
-      id: :desc
-    )
+    @rejected = params[:rejected].to_s == "true"
+    if @rejected
+      @rejected_data = RejectedOrder.where(dealer_id: current_user.dealer_ids).includes(:dealer).index_by(&:purchase_order_id).transform_values do |rejected|
+        {
+          dealer_name: rejected.dealer&.dealer_name,
+          status: rejected.status,
+          po_number: rejected.po_number
+        }
+      end
+      rejected_purchase_orders = RejectedOrder.where(dealer_id: current_user.dealer_ids)
+      rejected_purchase_order_ids = rejected_purchase_orders.pluck(:purchase_order_id)
+      base_purchase_orders = PurchaseOrder.where(id: rejected_purchase_order_ids)
+      @purchase_order_summary_cards = purchase_order_summary_cards(base_purchase_orders)
+     
+      filtered_purchase_orders = if @query.present?
+        filtered_rejected_purchase_orders = search_purchase_orders(rejected_purchase_orders)
+        PurchaseOrder.where(id: filtered_rejected_purchase_orders.pluck(:purchase_order_id))
+      else
+        base_purchase_orders
+      end
+      purchase_orders = filtered_purchase_orders.includes(:dealer)
+    else
+      base_purchase_orders = current_user.accessible_purchase_orders.left_joins(:dealer)
+      @purchase_order_summary_cards = purchase_order_summary_cards(base_purchase_orders)
+      filtered_purchase_orders = @query.present? ? search_purchase_orders(base_purchase_orders) : base_purchase_orders
+      purchase_orders = filtered_purchase_orders.includes(:dealer)
+      purchase_orders = purchase_orders.where(dealer_response: @status_filter) unless @status_filter == "all"
+      purchase_orders = purchase_orders.order(
+        Arel.sql("#{SORT_COLUMNS.fetch(@sort_column)} #{@sort_direction.upcase}"),
+        id: :desc
+      )
+    end
 
     @total_purchase_orders = purchase_orders.count
     @total_pages = (@total_purchase_orders / PER_PAGE.to_f).ceil
@@ -47,6 +70,11 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def show
+    @rejected = params[:rejected].to_s == "true"
+    if @rejected
+      @rejected_order = RejectedOrder.where(dealer_id: current_user.dealer_ids).find_by(purchase_order_id: @purchase_order.id)
+    end
+
     line_items = @purchase_order.line_items.order(:id)
     @total_line_items = line_items.count
     
@@ -108,7 +136,7 @@ private
       },
       {
         label: "Rejected Orders (30d)",
-        value: DealerLog.where(dealer_id: current_user.id, status: :rejected).count,
+        value: RejectedOrder.where(dealer_id: current_user.dealer_ids, status: :rejected).count,
         detail: "Rejected in last 30 days",
         modifier: "rejected"
       }
@@ -117,19 +145,31 @@ private
 
   def search_purchase_orders(purchase_orders)
     term = "%#{ActiveRecord::Base.sanitize_sql_like(@query)}%"
-
-    purchase_orders.where(
-      <<~SQL.squish,
-        purchase_orders.po_number LIKE :term OR
-        purchase_orders.dealer_response LIKE :term OR
-        dealers.dealer_name LIKE :term
-      SQL
-      term: term
-    )
+    if @rejected
+      purchase_orders.where(
+        <<~SQL.squish,
+          rejected_orders.po_number LIKE :term
+        SQL
+        term: term
+      )
+    else
+      purchase_orders.where(
+        <<~SQL.squish,
+          purchase_orders.po_number LIKE :term OR
+          purchase_orders.dealer_response LIKE :term OR
+          dealers.dealer_name LIKE :term
+        SQL
+        term: term
+      )
+    end
   end
 
   def set_accessible_purchase_order
-    @purchase_order = current_user.accessible_purchase_orders.includes(:dealer, :line_items).find_by(id: params[:id])
-    redirect_to purchase_orders_path, alert: "You do not have access to that purchase order." unless @purchase_order
+    unless params[:rejected].to_s == "true" 
+      @purchase_order = current_user.accessible_purchase_orders.includes(:dealer, :line_items).find_by(id: params[:id])
+      redirect_to purchase_orders_path, alert: "You do not have access to that purchase order." unless @purchase_order
+    else
+      @purchase_order = PurchaseOrder.includes(:line_items).find_by(id: params[:id])
+    end
   end
 end

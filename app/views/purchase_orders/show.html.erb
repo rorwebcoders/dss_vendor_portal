@@ -9,12 +9,22 @@
 
       <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-2">
         <h1 class="h3 fw-bold mb-0">
-          <%= @purchase_order.po_number %>
+          <% if @rejected %>
+            <%= @rejected_order.po_number %>
+          <% else %>
+            <%= @purchase_order.po_number %>
+          <% end %>
         </h1>
 
-        <span class="<%= purchase_order_status_badge_class(@purchase_order.dealer_response.to_s) %>">
-          <%= @purchase_order.dealer_response&.titleize || "Empty" %>
-        </span>
+        <% if @rejected %>
+          <span class="<%= purchase_order_status_badge_class(@rejected_order.status.to_s) %>">
+            <%= @rejected_order.status&.titleize || "Empty" %>
+          </span>
+        <% else %>
+          <span class="<%= purchase_order_status_badge_class(@purchase_order.dealer_response.to_s) %>">
+            <%= @purchase_order.dealer_response&.titleize || "Empty" %>
+          </span>
+        <% end %>
       </div>
 
       <p class="text-muted mb-0 mt-1">
@@ -33,110 +43,112 @@
     </div>
   </div>
 
-  <div class="row justify-content-center mb-4">
-    <div class="col-12">
+  <% unless @rejected %>
+    <div class="row justify-content-center mb-4">
+      <div class="col-12">
 
-      <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white py-3">
-          <div class="d-flex justify-content-between align-items-start">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white py-3">
+            <div class="d-flex justify-content-between align-items-start">
 
-            <!-- Title -->
-            <div>
-              <h5 class="mb-1 fw-bold">Shipping Label</h5>
-              <small class="text-muted">
-                Enter package weight and dimensions
-              </small>
-            </div>
+              <!-- Title -->
+              <div>
+                <h5 class="mb-1 fw-bold">Shipping Label</h5>
+                <small class="text-muted">
+                  Enter package weight and dimensions
+                </small>
+              </div>
 
-            <!-- Tracking -->
-            <% if @purchase_order.weight.to_s != "" %>
-              <div class="text-end">
-                <small class="text-muted d-block">Tracking Number</small>
+              <!-- Tracking -->
+              <% if @purchase_order.weight.to_s != "" %>
+                <div class="text-end">
+                  <small class="text-muted d-block">Tracking Number</small>
 
-                <% if @purchase_order.tracking_number.present? %>
-                  <% if @purchase_order.shipstation_label_url.present? %>
-                    <%= link_to @purchase_order.tracking_number,
-                          @purchase_order.shipstation_label_url,
-                          target: "_blank",
-                          class: "fw-semibold text-primary text-decoration-none" %>
+                  <% if @purchase_order.tracking_number.present? %>
+                    <% if @purchase_order.shipstation_label_url.present? %>
+                      <%= link_to @purchase_order.tracking_number,
+                            @purchase_order.shipstation_label_url,
+                            target: "_blank",
+                            class: "fw-semibold text-primary text-decoration-none" %>
+                    <% else %>
+                      <span class="fw-semibold text-dark">
+                        <%= @purchase_order.tracking_number %>
+                      </span>
+                    <% end %>
                   <% else %>
-                    <span class="fw-semibold text-dark">
-                      <%= @purchase_order.tracking_number %>
+                    <span class="badge bg-warning text-dark">
+                      Label Generating...
                     </span>
                   <% end %>
-                <% else %>
-                  <span class="badge bg-warning text-dark">
-                    Label Generating...
-                  </span>
+                </div>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <%= form_with model: @purchase_order, local: true do |f| %>
+              <div class="row g-3 align-items-end">
+                <div class="col-12 col-md-2">
+                  <label class="form-label text-muted small">Weight</label>
+                  <%= f.number_field :weight,
+                        class: "form-control",
+                        required: true,
+                        placeholder: "Weight" %>
+                </div>
+
+                <!-- Units -->
+                <div class="col-12 col-md-2">
+                  <label class="form-label text-muted small">Units</label>
+                  <%= f.select :units,
+                        [["Pounds (lb)", "pounds"], ["Ounces (oz)", "ounces"]],
+                        {},
+                        class: "form-select" %>
+                </div>
+
+                <!-- Length -->
+                <div class="col-12 col-md-2">
+                  <label class="form-label text-muted small">Length</label>
+                  <%= f.number_field :length,
+                        class: "form-control",
+                        required: true,
+                        placeholder: "L" %>
+                </div>
+
+                <!-- Width -->
+                <div class="col-12 col-md-2">
+                  <label class="form-label text-muted small">Width</label>
+                  <%= f.number_field :width,
+                        class: "form-control",
+                        required: true,
+                        placeholder: "W" %>
+                </div>
+
+                <!-- Height -->
+                <div class="col-12 col-md-2">
+                  <label class="form-label text-muted small">Height</label>
+                  <%= f.number_field :height,
+                        class: "form-control",
+                        required: true,
+                        placeholder: "H" %>
+                </div>
+
+                <!-- Submit -->
+                <% if @purchase_order.weight.blank? %>
+                  <div class="col-12 col-md-2 d-grid">
+                    <label class="form-label invisible">submit</label>
+                    <%= f.submit "Accept & Create Label",
+                          class: "btn btn-success btn-sm w-100 py-2" %>
+                  </div>
                 <% end %>
+
               </div>
             <% end %>
           </div>
         </div>
 
-        <div class="card-body">
-          <%= form_with model: @purchase_order, local: true do |f| %>
-            <div class="row g-3 align-items-end">
-              <div class="col-12 col-md-2">
-                <label class="form-label text-muted small">Weight</label>
-                <%= f.number_field :weight,
-                      class: "form-control",
-                      required: true,
-                      placeholder: "Weight" %>
-              </div>
-
-              <!-- Units -->
-              <div class="col-12 col-md-2">
-                <label class="form-label text-muted small">Units</label>
-                <%= f.select :units,
-                      [["Pounds (lb)", "pounds"], ["Ounces (oz)", "ounces"]],
-                      {},
-                      class: "form-select" %>
-              </div>
-
-              <!-- Length -->
-              <div class="col-12 col-md-2">
-                <label class="form-label text-muted small">Length</label>
-                <%= f.number_field :length,
-                      class: "form-control",
-                      required: true,
-                      placeholder: "L" %>
-              </div>
-
-              <!-- Width -->
-              <div class="col-12 col-md-2">
-                <label class="form-label text-muted small">Width</label>
-                <%= f.number_field :width,
-                      class: "form-control",
-                      required: true,
-                      placeholder: "W" %>
-              </div>
-
-              <!-- Height -->
-              <div class="col-12 col-md-2">
-                <label class="form-label text-muted small">Height</label>
-                <%= f.number_field :height,
-                      class: "form-control",
-                      required: true,
-                      placeholder: "H" %>
-              </div>
-
-              <!-- Submit -->
-              <% if @purchase_order.weight.blank? %>
-                <div class="col-12 col-md-2 d-grid">
-                  <label class="form-label invisible">submit</label>
-                  <%= f.submit "Accept & Create Label",
-                        class: "btn btn-success btn-sm w-100 py-2" %>
-                </div>
-              <% end %>
-
-            </div>
-          <% end %>
-        </div>
       </div>
-
     </div>
-  </div>
+  <% end %>
 
   <div class="row justify-content-center mb-4">
     <div class="container-fluid">

@@ -33,7 +33,16 @@ class PurchaseOrder < ApplicationRecord
   end
 
   def reject_by_dealer!(current_user_id)
-    DealerLog.create(purchase_order_id: self.id, dealer_id: current_user_id, rejected_at: Time.now, status: :rejected)
+    RejectedOrder.create!(
+      purchase_order_id: id,
+      user_id: current_user_id,
+      dealer_id: dealer_id,
+      po_number: po_number,
+      rejected_at: Time.current,
+      purchase_order_data: as_json,
+      line_items_data: line_items.as_json,
+      status: :rejected
+    )
     update!(dealer_response: nil, dealer: nil, po_number: nil, status: :pending)
   end
 

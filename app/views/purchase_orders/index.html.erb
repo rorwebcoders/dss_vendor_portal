@@ -1,10 +1,14 @@
 <div class="purchase-orders-status-tabs mb-3" role="tablist" aria-label="Purchase order status filters">
   <% @status_filters.each do |status, label| %>
-    <% active = @status_filter == status %>
+    <% active = @status_filter == status && params[:rejected] != "true" %>
     <% tab_path = purchase_orders_path(status: status, q: @query.presence, sort: @sort_column, direction: @sort_direction) %>
     <% tab_classes = ["purchase-orders-status-tab", ("active" if active)].compact.join(" ") %>
     <%= link_to label, tab_path, class: tab_classes, role: "tab", "aria-selected": active %>
   <% end %>
+  <% active = @rejected %>
+  <% tab_path = purchase_orders_path(rejected: true, q: @query.presence, sort: @sort_column, direction: @sort_direction) %>
+  <% tab_classes = ["purchase-orders-status-tab", ("active" if active)].compact.join(" ") %>
+  <%= link_to "Rejected Orders", tab_path, class: tab_classes, role: "tab", "aria-selected": active %>
 </div>
 
 <div class="purchase-orders-toolbar mb-3">
@@ -14,9 +18,15 @@
   </div>
 
   <%= form_with url: purchase_orders_path, method: :get, local: true, class: "purchase-orders-search" do |form| %>
-    <%= form.hidden_field :status, value: @status_filter %>
-    <%= form.hidden_field :sort, value: @sort_column %>
-    <%= form.hidden_field :direction, value: @sort_direction %>
+    <% if @rejected %>
+      <%= form.hidden_field :rejected, value: true %>
+      <%= form.hidden_field :sort, value: @sort_column %>
+      <%= form.hidden_field :direction, value: @sort_direction %>
+    <% else %>
+      <%= form.hidden_field :status, value: @status_filter %>
+      <%= form.hidden_field :sort, value: @sort_column %>
+      <%= form.hidden_field :direction, value: @sort_direction %>
+    <% end %>
     <%= form.label :q, "Search purchase orders", class: "form-label visually-hidden" %>
     <div class="input-group input-group-sm">
       <span class="input-group-text" aria-hidden="true">
