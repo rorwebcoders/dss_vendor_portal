@@ -29,6 +29,8 @@ class CreatePurchaseOrders < ActiveRecord::Migration[8.0]
       t.string :width
       t.string :height
       t.json :notified_sm_request
+      t.json :read_to_ship_response
+      t.json :others_response
       t.integer :status, default: 0
       t.integer :dealer_response, default: 0
       t.timestamps null: false
