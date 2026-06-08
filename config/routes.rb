@@ -18,6 +18,18 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :api do
+    namespace :v1 do
+      namespace :skumonster do
+        get :non_dropshippings, to: 'non_dropshippings#index'
+      end
+    end
+  end
+
+  namespace :admin do
+    post "api_token/update", to: "api_token#update", as: :api_token_update
+  end
+
   authenticated :user do
     root "purchase_orders#index", as: :authenticated_root
   end
