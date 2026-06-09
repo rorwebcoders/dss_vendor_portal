@@ -39,8 +39,8 @@ class PurchaseOrder < ApplicationRecord
       dealer_id: dealer_id,
       po_number: po_number,
       rejected_at: Time.current,
-      purchase_order_data: as_json,
-      line_items_data: line_items.as_json,
+      purchase_order_data: as_json.to_json,
+      line_items_data: line_items.as_json.to_json,
       status: :rejected
     )
     update!(dealer_response: nil, dealer: nil, po_number: nil, status: :pending)

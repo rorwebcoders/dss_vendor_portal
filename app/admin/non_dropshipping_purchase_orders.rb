@@ -1,5 +1,5 @@
 ActiveAdmin.register PurchaseOrder, as: "NonDropshippingPurchaseOrders" do
-  menu label: "Non Dropshipping POs", priority: 2
+  menu parent: "Purchase  Orders", label: "Non-Dropshipping Purchase Orders"
   includes :dealer
 
   actions :index, :show

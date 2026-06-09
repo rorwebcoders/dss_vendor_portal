@@ -1,11 +1,18 @@
 # frozen_string_literal: true
 
 ActiveAdmin.register PurchaseOrder do
+  menu parent: "Purchase  Orders", label: "Dropship Orders"
   permit_params :dealer_id, :po_number, :skuvault_status, :shipping_name, :shipping_address1, :shipping_city, :shipping_state,
   :shipping_zip, :shipping_country, :skuvault_id, :skuvault_marketplace_id, :skuvault_channel_id, :shipping_firstname,
   :shipping_lastname, :shipping_company, :shipping_phone, :shipping_email, :tracking_number, :shipstation_label_url,
   :weight, :units, :length, :width, :height, :notified_sm_request, :status, :dealer_response, 
   line_items_attributes: %i[id sku brand title quantity cost _destroy]
+
+  controller do
+    def scoped_collection
+      super.where.not(status: PurchaseOrder.statuses[:non_dropshipping])
+    end
+  end
 
   includes :dealer
 
