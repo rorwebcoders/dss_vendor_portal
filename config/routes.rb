@@ -21,7 +21,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       namespace :skumonster do
-        get :non_dropshippings, to: 'non_dropshippings#index'
+        get :non_dropshipping_orders, to: 'non_dropshippings#index'
       end
     end
   end
