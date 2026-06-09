@@ -111,32 +111,32 @@ ActiveAdmin.register PurchaseOrder do
     f.inputs "Purchase Order Details" do
       f.input :dealer, collection: Dealer.order(:dealer_name), include_blank: "Unassigned"
       f.input :status
-      f.input :skuvault_id
-      f.input :skuvault_marketplace_id
-      f.input :skuvault_channel_id
-      f.input :shipping_firstname
-      f.input :shipping_lastname
-      f.input :shipping_company
-      f.input :shipping_phone
-      f.input :shipping_email
-      f.input :po_number
-      f.input :tracking_number
-      f.input :shipstation_label_url
-      f.input :weight
-      f.input :units
-      f.input :length
-      f.input :width
-      f.input :height
+      f.input :skuvault_id, input_html: { disabled: true, readonly: true }
+      f.input :skuvault_marketplace_id, input_html: { disabled: true, readonly: true }
+      f.input :skuvault_channel_id, input_html: { disabled: true, readonly: true }
+      f.input :shipping_firstname, input_html: { disabled: true, readonly: true }
+      f.input :shipping_lastname, input_html: { disabled: true, readonly: true }
+      f.input :shipping_company, input_html: { disabled: true, readonly: true }
+      f.input :shipping_phone, input_html: { disabled: true, readonly: true }
+      f.input :shipping_email, input_html: { disabled: true, readonly: true }
+      f.input :po_number, input_html: { disabled: true, readonly: true }
+      f.input :tracking_number, input_html: { disabled: true, readonly: true }
+      f.input :shipstation_label_url, input_html: { disabled: true, readonly: true }
+      f.input :weight, input_html: { disabled: true, readonly: true }
+      f.input :units, input_html: { disabled: true, readonly: true }
+      f.input :length, input_html: { disabled: true, readonly: true }
+      f.input :width, input_html: { disabled: true, readonly: true }
+      f.input :height, input_html: { disabled: true, readonly: true }
       f.input :dealer_response,
               as: :select,
               collection: PurchaseOrder.dealer_responses.keys.map { |k| [k.titleize, k] },
-              include_blank: "Empty"
+              include_blank: "Empty", input_html: { disabled: true, readonly: true }
     end
     f.inputs "Line Items" do
-      f.has_many :line_items, allow_destroy: true, new_record: "Add Line Item" do |line_item|
-        line_item.input :sku
-        line_item.input :quantity
-        line_item.input :cost
+      f.has_many :line_items, allow_destroy: false, new_record: false do |line_item|
+        line_item.input :sku, input_html: { disabled: true, readonly: true }
+        line_item.input :quantity, input_html: { disabled: true, readonly: true }
+        line_item.input :cost, input_html: { disabled: true, readonly: true }
       end
     end
     f.actions
