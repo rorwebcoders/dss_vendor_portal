@@ -48,14 +48,20 @@ ActiveAdmin.register_page "ApiToken" do
 
                     if (copyBtn) {
                       copyBtn.onclick = function () {
-                        navigator.clipboard.writeText(tokenField.value);
+                        const text = tokenField.value;
+
+                        const temp = document.createElement("textarea");
+                        document.body.appendChild(temp);
+                        temp.value = text;
+                        temp.select();
+
+                        document.execCommand("copy");
+
+                        document.body.removeChild(temp);
 
                         const old = copyBtn.innerText;
                         copyBtn.innerText = "Copied!";
-
-                        setTimeout(function () {
-                          copyBtn.innerText = old;
-                        }, 1200);
+                        setTimeout(() => copyBtn.innerText = old, 1200);
                       };
                     }
                   }
