@@ -26,6 +26,10 @@ class SkuvaultPurchaseOrderImporterAgent
         logger_info("Processing Skuvault Id: #{skuvault_id}")
 
         purchase_order = PurchaseOrder.find_or_initialize_by(skuvault_id: skuvault_id)
+        if purchase_order.persisted?
+          logger_info("Skuvault Id Already existed: #{skuvault_id}")
+          next
+        end
         purchase_order.skuvault_marketplace_id = entry["MarketplaceId"]
         purchase_order.skuvault_channel_id = entry["ChannelId"]
         contact_info  = entry["ContactInfo"] || {}
