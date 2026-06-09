@@ -41,7 +41,7 @@ class SkuvaultPurchaseOrderImporterAgent
         purchase_order.shipping_zip = shipping_info["PostalCode"]
         purchase_order.shipping_country = shipping_info["Country"]
         purchase_order.skuvault_status = entry["Status"]
-        purchase_order.read_to_ship_response = entry
+        purchase_order.read_to_ship_response = entry.to_json
         if purchase_order.save!
           entry["SaleItems"].each do |skuvault_line_item|
             line_item = purchase_order.line_items.find_or_create_by!(
@@ -60,6 +60,7 @@ class SkuvaultPurchaseOrderImporterAgent
   end
 
   def get_sales_from_skuvault
+
     skuvault_tenant_token = Rails.application.credentials[Rails.env.to_sym][:skuvault_tenant_token]
     skuvault_user_token = Rails.application.credentials[Rails.env.to_sym][:skuvault_user_token]
 

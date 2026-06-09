@@ -24,7 +24,10 @@ ActiveAdmin.register PurchaseOrder do
     selectable_column
     id_column
     column("Status") do |purchase_order|
-      status_tag(purchase_order.status.titleize)
+      status_tag(
+        purchase_order.status.titleize,
+        class: "status-#{purchase_order.status}"
+      )
     end
     column :shipping_firstname
     column :po_number
@@ -77,7 +80,12 @@ ActiveAdmin.register PurchaseOrder do
       row :width 
       row :height 
       row :notified_sm_request
-      row :status 
+      row("Status") do |purchase_order|
+      status_tag(
+        purchase_order.status.titleize,
+        class: "status-#{purchase_order.status}"
+      )
+    end
       row("Response") do |purchase_order|
         if purchase_order.dealer_response.present?
           status_tag(purchase_order.dealer_response.titleize)

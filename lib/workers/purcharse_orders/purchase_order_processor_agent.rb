@@ -53,69 +53,75 @@ class PurchaseOrderProcessorAgent
 
       notify_dealers_data = {}
       purchase_orders_data.each do |po_data|
-        logger_info("Processing Po Id: #{po_data[:id]}")
+        begin
+          logger_info("Processing Po Id: #{po_data[:id]}")
 
-        purchase_order = po_data[:purchase_order]
-        line_items = po_data[:line_items]
+          purchase_order = po_data[:purchase_order]
+          line_items = po_data[:line_items]
 
-        reserved_response = fetch_reserved_quantity_from_skumonster(line_items)
-        reserved_response = JSON.parse(reserved_response)
-        reserved_quantities = reserved_response["reserved_quantity"]
-        ascending_dealers = reserved_response["dealers"].sort_by { |d| d["priority_position"] }
+          reserved_response = fetch_reserved_quantity_from_skumonster(line_items)
+          reserved_response = JSON.parse(reserved_response)
+          reserved_quantities = reserved_response["reserved_quantity"]
+          ascending_dealers = reserved_response["dealers"].sort_by { |d| d["priority_position"] }
 
-        dropshipping = false
-        ascending_dealers.each do |dealer|
-          dealer_id = dealer["id"]
+          dropshipping = false
+          ascending_dealers.each do |dealer|
+            dealer_id = dealer["id"]
 
-          eligible = true
-          notify_dealers_data[dealer_id] ||= {}
-          line_items.each do |li|
-            sku = li[:sku]
-            line_item_quantity = li[:quantity]
-
-            reserved_qty = reserved_quantities[sku.to_sym].to_i
-            pending_qty = pending_quantities_by_sku[sku]
-            allocated_qty = notify_dealers_data[dealer_id][sku].to_i
-
-            order_quantity = (pending_qty - reserved_qty) - allocated_qty
-            if order_quantity >= line_item_quantity
-              next
-            else
-              eligible = false
-              break
-            end
-          end
-
-          if eligible
+            eligible = true
+            notify_dealers_data[dealer_id] ||= {}
             line_items.each do |li|
               sku = li[:sku]
               line_item_quantity = li[:quantity]
 
-              notify_dealers_data[dealer_id][sku] ||= 0
-              notify_dealers_data[dealer_id][sku] += line_item_quantity
+              reserved_qty = reserved_quantities[sku.to_sym].to_i
+              pending_qty = pending_quantities_by_sku[sku]
+              allocated_qty = notify_dealers_data[dealer_id][sku].to_i
+
+              order_quantity = (pending_qty - reserved_qty) - allocated_qty
+              if order_quantity >= line_item_quantity
+                next
+              else
+                eligible = false
+                break
+              end
             end
 
-            notify_dealer_request_body = {
-              dealer_id: dealer_id,
-              line_items: line_items
-            }
+            if eligible
+              line_items.each do |li|
+                sku = li[:sku]
+                line_item_quantity = li[:quantity]
 
-            notify_orders_to_skumonster(notify_dealer_request_body)
+                notify_dealers_data[dealer_id][sku] ||= 0
+                notify_dealers_data[dealer_id][sku] += line_item_quantity
+              end
 
-            dealer = dealer_data[dealer_id.to_i]
-            our_dealer_id = dealer[:our_dealer_id]
-            abbreviation = dealer[:abbreviation]
-            po_number = "#{abbreviation}-#{Time.current.strftime('%d%m%y-%H%M%S-%6N')}-#{SecureRandom.alphanumeric(4).upcase}"
-            purchase_order.update(po_number: po_number, dealer_id: our_dealer_id, status: :dropshipping, notified_sm_request: notify_dealer_request_body)
-            dropshipping = true
-            break
+              notify_dealer_request_body = {
+                dealer_id: dealer_id,
+                line_items: line_items
+              }
+
+              notify_orders_to_skumonster(notify_dealer_request_body)
+
+              dealer = dealer_data[dealer_id.to_i]
+              our_dealer_id = dealer[:our_dealer_id]
+              abbreviation = dealer[:abbreviation]
+              po_number = "#{abbreviation}-#{Time.current.strftime('%d%m%y-%H%M%S-%6N')}-#{SecureRandom.alphanumeric(4).upcase}"
+              purchase_order.update(po_number: po_number, dealer_id: our_dealer_id, status: :dropshipping, notified_sm_request: notify_dealer_request_body)
+              dropshipping = true
+              break
+            end
           end
-        end
 
-        logger_info("Finished Po Id: #{po_data[:id]}, #{dropshipping == true ? "Eligible" : "Not Eligible"} for dropshipping")
-        unless dropshipping
-          purchase_order.update(status: :non_dropshipping)
+          logger_info("Finished Po Id: #{po_data[:id]}, #{dropshipping == true ? "Eligible" : "Not Eligible"} for dropshipping")
+          unless dropshipping
+            purchase_order.update(status: :non_dropshipping)
+          end
+        rescue StandardError => e
+          logger_error(e.message)
+          logger_error(e.backtrace.join("\n"))
         end
+        
       end
 
       logger_info("Script completed at #{Time.now}")

@@ -1,3 +1,32 @@
 @import "active_admin/mixins";
 @import "active_admin/base";
 @import "active_admin/searchable_select";
+
+
+.status_tag.status-pending {
+  background: #f39c12 !important;
+}
+
+.status_tag.status-processing {
+  background: #3498db !important;
+}
+
+.status_tag.status-error {
+  background: #e74c3c !important;
+}
+
+.status_tag.status-completed {
+  background: #27ae60 !important;
+}
+
+.status_tag.status-non_dropshipping {
+  background: #7f8c8d !important;
+}
+
+.status_tag.status-dropshipping {
+  background: #8e44ad !important;
+}
+
+.status_tag.status-label_created {
+  background: #16a085 !important;
+}
