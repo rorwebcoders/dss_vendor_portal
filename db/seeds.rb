@@ -9,51 +9,51 @@ admin.password_confirmation = "password"
 admin.save!
 
 
-require "csv"
+# require "csv"
 
-csv_file = Rails.root.join("public", "dealers.csv")
+# csv_file = Rails.root.join("public", "dealers.csv")
 
-def split_address(address)
-  return {} if address.blank?
+# def split_address(address)
+#   return {} if address.blank?
 
-  parts = address.split(",").map(&:strip)
+#   parts = address.split(",").map(&:strip)
 
-  state_zip = parts[-1].to_s.strip
-  state, zip = state_zip.split(" ", 2)
+#   state_zip = parts[-1].to_s.strip
+#   state, zip = state_zip.split(" ", 2)
 
-  {
-    street: parts[0],
-    city: parts[-2],
-    state: state,
-    zip: zip,
-    country: "US"
-  }
-end
+#   {
+#     street: parts[0],
+#     city: parts[-2],
+#     state: state,
+#     zip: zip,
+#     country: "US"
+#   }
+# end
 
-CSV.foreach(csv_file, headers: true) do |row|
-  address = split_address(row["Address"])
+# CSV.foreach(csv_file, headers: true) do |row|
+#   address = split_address(row["Address"])
 
-  dealer = Dealer.find_or_initialize_by(sm_dealer_id: row["Id"])
+#   dealer = Dealer.find_or_initialize_by(sm_dealer_id: row["Id"])
 
-  dealer.dealer_name              = row["Name"]
-  dealer.abbreviation      = row["Abbreviation"]
-  dealer.api_name          = row["Api name"]
-  dealer.api_location_code = row["Api location code"]
-  dealer.email             = "test_kumar@gmail.com"
+#   dealer.dealer_name              = row["Name"]
+#   dealer.abbreviation      = row["Abbreviation"]
+#   dealer.api_name          = row["Api name"]
+#   dealer.api_location_code = row["Api location code"]
+#   dealer.email             = "test_kumar@gmail.com"
 
-  dealer.dealer_name       = row["Dealership name"].presence || row["Name"]
-  dealer.dealer_address1   = address[:street]
-  dealer.dealer_city       = address[:city]
-  dealer.dealer_state      = address[:state]
-  dealer.dealer_zip        = address[:zip]
-  dealer.dealer_country    = address[:country]
+#   dealer.dealer_name       = row["Dealership name"].presence || row["Name"]
+#   dealer.dealer_address1   = address[:street]
+#   dealer.dealer_city       = address[:city]
+#   dealer.dealer_state      = address[:state]
+#   dealer.dealer_zip        = address[:zip]
+#   dealer.dealer_country    = address[:country]
 
-  dealer.enabled = ActiveModel::Type::Boolean.new.cast(row["Enabled"])
+#   dealer.enabled = ActiveModel::Type::Boolean.new.cast(row["Enabled"])
 
-  dealer.save!
-end
+#   dealer.save!
+# end
 
-puts "Dealers imported: #{Dealer.count}"
+# puts "Dealers imported: #{Dealer.count}"
 
 # Create test frontend users
 
