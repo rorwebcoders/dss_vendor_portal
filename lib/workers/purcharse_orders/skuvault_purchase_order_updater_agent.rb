@@ -39,11 +39,8 @@ class SkuvaultPurchaseOrderUpdaterAgent
   end
 
   def get_sales_from_skuvault
-    # skuvault_tenant_token = Rails.application.credentials[Rails.env.to_sym][:skuvault_tenant_token]
-    # skuvault_user_token = Rails.application.credentials[Rails.env.to_sym][:skuvault_user_token]
-
-    skuvault_tenant_token = "YlBp+DKl8EtUyDyHA78RckHfzVkGcmTZaKn5vDc4mpI="
-    skuvault_user_token = "zQPuLPQJHPJwi1f1wPbM2roMx7vC/LgiOOVwIEFuIag="
+    skuvault_tenant_token = Rails.application.credentials[Rails.env.to_sym][:skuvault_tenant_token]
+    skuvault_user_token = Rails.application.credentials[Rails.env.to_sym][:skuvault_user_token]
 
     skuvault_ids = PurchaseOrder.where(status: :non_dropshipping, skuvault_status: "ReadyToShip").pluck(:skuvault_id)
 
