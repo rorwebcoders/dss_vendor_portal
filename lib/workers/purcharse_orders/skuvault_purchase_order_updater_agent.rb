@@ -22,14 +22,22 @@ class SkuvaultPurchaseOrderUpdaterAgent
       skuvault_purchase_orders = get_sales_from_skuvault
       skuvault_purchase_orders.each do |entry|
         skuvault_id = entry["Id"]
-        logger_info("Processing Skuvault Id: #{skuvault_id}")
-        purchase_order = PurchaseOrder.find_or_initialize_by(skuvault_id: skuvault_id)
         status = entry["Status"]
-        if status != "ReadyToShip"
-          purchase_order.skuvault_status = entry["Status"]
-          purchase_order.others_response = entry.to_json
-          purchase_order.save
+        next if status == "ReadyToShip"
+        purchase_order = PurchaseOrder.find_by(
+          skuvault_id: skuvault_id
+        )
+        unless purchase_order
+          logger_error("PurchaseOrder not found for Skuvault ID #{skuvault_id}")
+          next
         end
+        purchase_order.update!(
+          skuvault_status: status,
+          others_response: entry.to_json
+        )
+        logger_info(
+          "Updated PO #{purchase_order.id} to status #{status}"
+        )
       end
       logger_info("Script completed at #{Time.now}")
     rescue StandardError => e
@@ -39,31 +47,46 @@ class SkuvaultPurchaseOrderUpdaterAgent
   end
 
   def get_sales_from_skuvault
+
     skuvault_tenant_token = Rails.application.credentials[Rails.env.to_sym][:skuvault_tenant_token]
-    skuvault_user_token = Rails.application.credentials[Rails.env.to_sym][:skuvault_user_token]
+    skuvault_user_token   = Rails.application.credentials[Rails.env.to_sym][:skuvault_user_token]
 
-    skuvault_ids = PurchaseOrder.where(status: :non_dropshipping, skuvault_status: "ReadyToShip").pluck(:skuvault_id)
+    skuvault_ids = PurchaseOrder.where(
+      status: :non_dropshipping,
+      skuvault_status: "ReadyToShip"
+    ).where.not(skuvault_id: nil).pluck(:skuvault_id)
 
-    uri = URI.parse("#{Rails.application.credentials[Rails.env.to_sym][:skuvault_get_sales_api]}")
+    return [] if skuvault_ids.blank?
 
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true
+    all_sales = []
 
-    request = Net::HTTP::Post.new(uri)
-    request['Accept'] = 'application/json'
-    request['Content-Type'] = 'application/json'
-
-    request.body = {
-      "TenantToken" => skuvault_tenant_token,
-      "UserToken" => skuvault_user_token,
-      "OrderIds" => skuvault_ids
-    }.to_json
-
-    response = http.request(request)
-    logger_info("Skuvault Get Sales Response: #{response.body}")
-    sales_data = JSON.parse(response.body)["Sales"]
-
-    return sales_data
+    skuvault_ids.each_slice(10_000) do |batch_ids|
+      uri = URI.parse(
+        Rails.application.credentials[Rails.env.to_sym][:skuvault_get_sales_api]
+      )
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true
+      request = Net::HTTP::Post.new(uri)
+      request['Accept'] = 'application/json'
+      request['Content-Type'] = 'application/json'
+      request.body = {
+        TenantToken: skuvault_tenant_token,
+        UserToken: skuvault_user_token,
+        OrderIds: batch_ids
+      }.to_json
+      response = http.request(request)
+      logger_info(
+        "SkuVault Get Sales Response for #{batch_ids.size} orders: #{response.code}"
+      )
+      unless response.is_a?(Net::HTTPSuccess)
+        logger_error("SkuVault API Error: #{response.code} - #{response.body}")
+        next
+      end
+      body = JSON.parse(response.body)
+      all_sales.concat(body["Sales"] || [])
+      sleep 10
+    end
+    all_sales
   end
 
   def logger_info(msg)
