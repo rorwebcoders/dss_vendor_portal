@@ -3,15 +3,15 @@
 ActiveAdmin.register Dealer do
   permit_params :dealer_name, :abbreviation, :api_name, :api_location_code, :email, :enabled, :dealer_address1, :dealer_city, :dealer_state, :dealer_zip, :dealer_country, :sm_dealer_id, user_ids: []
 
+  actions :index, :show
+
   index do
     selectable_column
     id_column
     column :dealer_name
     column :abbreviation
     column :sm_dealer_id
-    column :api_name
-    column :api_location_code
-    column :email
+    column :dealer_address1
     column :enabled
     column("Users") { |dealer| dealer.users.order(:email).pluck(:email).join(", ") }
     actions
@@ -19,8 +19,8 @@ ActiveAdmin.register Dealer do
 
   filter :dealer_name
   filter :abbreviation
-  filter :api_name
-  filter :api_location_code
+  filter :sm_dealer_id
+  filter :dealer_address1
   filter :enabled
   filter :users
 
@@ -29,14 +29,7 @@ ActiveAdmin.register Dealer do
       row :id
       row :dealer_name
       row :abbreviation
-      row :api_name
-      row :api_location_code
-      row :email
       row :dealer_address1
-      row :dealer_city
-      row :dealer_state
-      row :dealer_zip
-      row :dealer_country
       row :sm_dealer_id
       row :enabled
       row :created_at
@@ -64,14 +57,7 @@ ActiveAdmin.register Dealer do
     f.inputs "Dealer Details" do
       f.input :dealer_name
       f.input :abbreviation
-      f.input :api_name
-      f.input :api_location_code
-      f.input :email
       f.input :dealer_address1
-      f.input :dealer_city
-      f.input :dealer_state
-      f.input :dealer_zip
-      f.input :dealer_country, as: :string
       f.input :sm_dealer_id
       f.input :enabled
     end
