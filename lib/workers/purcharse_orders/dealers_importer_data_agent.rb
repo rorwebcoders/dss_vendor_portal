@@ -28,7 +28,7 @@ class DealersImporterDataAgent
         dealer.update!(
           dealer_name: dealer_data["name"],
           abbreviation: dealer_data["abbreviation"],
-          dealer_address1: dealer_data["address"],
+          dealer_address: dealer_data["address"],
           enabled: true
         )
 

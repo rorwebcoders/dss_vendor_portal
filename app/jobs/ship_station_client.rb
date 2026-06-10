@@ -51,7 +51,7 @@ private
       },
       shipFrom: {
         name: po.dealer.dealer_name,
-        street1: po.dealer.dealer_address1,
+        street1: po.dealer.dealer_address,
         city: po.dealer.dealer_city,
         state: po.dealer.dealer_state,
         postalCode: po.dealer.dealer_zip,

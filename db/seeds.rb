@@ -37,17 +37,8 @@ admin.save!
 
 #   dealer.dealer_name              = row["Name"]
 #   dealer.abbreviation      = row["Abbreviation"]
-#   dealer.api_name          = row["Api name"]
-#   dealer.api_location_code = row["Api location code"]
-#   dealer.email             = "test_kumar@gmail.com"
-
 #   dealer.dealer_name       = row["Dealership name"].presence || row["Name"]
-#   dealer.dealer_address1   = address[:street]
-#   dealer.dealer_city       = address[:city]
-#   dealer.dealer_state      = address[:state]
-#   dealer.dealer_zip        = address[:zip]
-#   dealer.dealer_country    = address[:country]
-
+#   dealer.dealer_address   = address[:street]
 #   dealer.enabled = ActiveModel::Type::Boolean.new.cast(row["Enabled"])
 
 #   dealer.save!
