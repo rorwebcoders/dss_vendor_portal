@@ -1,5 +1,5 @@
-ActiveAdmin.register PurchaseOrder, as: "NonDropshippingPurchaseOrders" do
-  menu parent: "Purchase  Orders", label: "Non-Dropshipping Purchase Orders"
+ActiveAdmin.register PurchaseOrder, as: "NonDropshippingOrders" do
+  menu parent: "Purchase  Orders", label: "Non Dropshipping Orders"
   includes :dealer
 
   actions :index, :show
