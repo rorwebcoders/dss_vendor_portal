@@ -60,12 +60,10 @@ class PurchaseOrdersController < ApplicationController
     @total_purchase_orders = purchase_orders.count
     @total_pages = (@total_purchase_orders / PER_PAGE.to_f).ceil
     @current_page = [[params[:page].to_i, 1].max, [@total_pages, 1].max].min
-    # @purchase_orders = purchase_orders.offset((@current_page - 1) * PER_PAGE).limit(PER_PAGE)
 
     @page = params[:page].to_i
     @page = 1 if @page < 1
     @purchase_orders = purchase_orders.order(created_at: :desc).offset((@page - 1) * PER_PAGE).limit(PER_PAGE)
-
     @has_more = purchase_orders.count > @page * PER_PAGE
   end
 
@@ -81,34 +79,24 @@ class PurchaseOrdersController < ApplicationController
     @page = params[:page].to_i
     @page = 1 if @page < 1
     @line_items = line_items.offset((@page - 1) * PER_PAGE).limit(PER_PAGE)
-
     @has_more = line_items.count > @page * PER_PAGE
   end
 
-  def update
+  def update # Accept
     purchase_order = PurchaseOrder.find(params[:id])
     purchase_order.accept_by_dealer!
 
     if purchase_order.update(shipping_params)
-      DealerDecisionJob.perform_later(purchase_order.id, current_user.id, "accept")
-
+      DealerDecisionJob.perform_later(purchase_order.id, "accept")
       redirect_to purchase_order_path(purchase_order), notice: "Purchase order accepted. Label generation has been queued."
     else
       render :edit, status: :unprocessable_entity
     end
   end
 
-  # def accept
-  #   @purchase_order.accept_by_dealer!
-    
-  #   redirect_to purchase_order_path(@purchase_order), notice: "Purchase order accepted. Please provide shipping dimensions."
-  # end
-
   def reject
     @purchase_order.reject_by_dealer!(current_user.id)
-
-    DealerDecisionJob.perform_later(@purchase_order.id, current_user.id, "reject")
-
+    DealerDecisionJob.perform_later(@purchase_order.id, "reject")
     redirect_to purchase_orders_path, notice: "Purchase order rejected, unassigned, and cleared for reassignment."
   end
 

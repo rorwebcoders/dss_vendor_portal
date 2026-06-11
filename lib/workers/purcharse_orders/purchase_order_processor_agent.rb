@@ -107,7 +107,7 @@ class PurchaseOrderProcessorAgent
               our_dealer_id = dealer[:our_dealer_id]
               abbreviation = dealer[:abbreviation]
               po_number = "#{abbreviation}-#{Time.current.strftime('%d%m%y-%H%M%S-%3N')}"
-              purchase_order.update(po_number: po_number, dealer_id: our_dealer_id, status: :dropshipping, notified_sm_request: notify_dealer_request_body)
+              purchase_order.update(po_number: po_number, dealer_assigned_at: Time.zone.now, dealer_id: our_dealer_id, status: :dropshipping, notified_sm_request: notify_dealer_request_body)
               dropshipping = true
               break
             end

@@ -4,7 +4,7 @@ require "json"
 
 class ShipStationClient
   def self.create_label(purchase_order)
-    url = URI.parse("https://ssapi.shipstation.com/shipments/createlabel")
+    url = URI.parse(Rails.application.credentials[Rails.env.to_sym][:shipstation_create_label_api])
 
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true
