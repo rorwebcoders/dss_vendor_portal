@@ -63,6 +63,9 @@
             <th scope="col"><%= purchase_order_sort_link("po_number", "PO Number") %></th>
             <th scope="col"><%= purchase_order_sort_link("dealer", "Dealer") %></th>
             <th scope="col"><%= purchase_order_sort_link("status", "Status") %></th>
+            <% if !@rejected && params[:status] != 'accepted' %>
+              <th scope="col">Response Time</th>
+            <% end %>
             <th scope="col"><%= purchase_order_sort_link("created", "Created") %></th>
             <th scope="col"><span class="visually-hidden">Actions</span></th>
           </tr>

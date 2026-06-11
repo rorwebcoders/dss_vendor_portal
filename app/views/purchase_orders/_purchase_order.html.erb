@@ -24,6 +24,16 @@
       </span>
     <% end %>
   </td>
+  <% if !@rejected && params[:status] != 'accepted' %>
+    <td>
+      <% if purchase_order.pending_dealer_response? && purchase_order.dealer_assigned_at.present? %>
+        <span
+          class="dealer-countdown countdown"
+          data-expires-at="<%= (purchase_order.dealer_assigned_at + 24.hours).to_i %>">
+        </span>
+      <% end %>
+    </td>
+  <% end %>
   <td><%= l(purchase_order.created_at, format: :short) %></td>
   <td class="text-end">
     <div class="d-flex gap-2">
@@ -41,3 +51,79 @@
     </div>
   </td>
 </tr>
+
+<script>
+  function formatTime(ms) {
+    const totalSeconds = Math.floor(ms / 1000);
+
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    if (hours > 0) {
+      return `${hours}h ${minutes}m remaining to accept or reject`;
+    }
+
+    return `${minutes}m ${seconds}s remaining to accept or reject`;
+  }
+
+  function updateDealerCountdowns() {
+    $('.dealer-countdown').each(function () {
+      const expiresAt = parseInt($(this).data('expires-at')) * 1000;
+      const remaining = expiresAt - Date.now();
+
+      if (remaining <= 0) {
+        $(this)
+          .text('Expired')
+          .removeClass('countdown-warning')
+          .addClass('countdown-danger');
+        return;
+      }
+
+      if (remaining < 60 * 60 * 1000) {
+        $(this)
+          .text(formatTime(remaining))
+          .removeClass('countdown-warning')
+          .addClass('countdown-danger');
+      } else {
+        const hours = Math.ceil(remaining / (1000 * 60 * 60));
+
+        $(this).text(`${hours} hours remaining to accept or reject`);
+
+        if (remaining <= 6 * 60 * 60 * 1000) {
+          $(this)
+            .removeClass('countdown-danger')
+            .addClass('countdown-warning');
+        } else {
+          $(this)
+            .removeClass('countdown-warning countdown-danger');
+        }
+      }
+    });
+  }
+
+  $(document).ready(function () {
+    updateDealerCountdowns();
+    setInterval(updateDealerCountdowns, 1000);
+  });
+</script>
+
+
+<style>
+.countdown {
+  display: inline-block;
+  font-weight: 500;
+}
+
+.countdown-normal {
+  color: #6b7280;
+}
+
+.countdown-warning {
+  color: #f59e0b;
+}
+
+.countdown-danger {
+  color: #dc2626;
+}
+</style>

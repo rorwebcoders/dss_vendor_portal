@@ -5,7 +5,7 @@ ActiveAdmin.register PurchaseOrder do
   permit_params :dealer_id, :po_number, :skuvault_status, :shipping_name, :shipping_address1, :shipping_city, :shipping_state,
   :shipping_zip, :shipping_country, :skuvault_id, :skuvault_marketplace_id, :skuvault_channel_id, :shipping_firstname,
   :shipping_lastname, :shipping_company, :shipping_phone, :shipping_email, :tracking_number, :shipstation_label_url,
-  :weight, :units, :length, :width, :height, :notified_sm_request, :status, :dealer_response, 
+  :weight, :units, :length, :width, :height, :notified_sm_request, :status, :dealer_response, :dealer_assigned_at,
   line_items_attributes: %i[id sku brand title quantity cost _destroy]
 
   controller do
@@ -40,6 +40,7 @@ ActiveAdmin.register PurchaseOrder do
       end
     end
     column("Dealer") { |purchase_order| purchase_order.dealer&.dealer_name || status_tag("Unassigned") }
+    column :dealer_assigned_at
     column :created_at
     actions
   end
@@ -56,6 +57,7 @@ ActiveAdmin.register PurchaseOrder do
     attributes_table do
       row :id
       row("Dealer") { |purchase_order| purchase_order.dealer&.dealer_name || status_tag("Unassigned") }
+      row :dealer_assigned_at
       row :po_number 
       row :skuvault_status 
       row :shipping_name 
@@ -109,8 +111,9 @@ ActiveAdmin.register PurchaseOrder do
 
   form do |f|
     f.inputs "Purchase Order Details" do
-      f.input :dealer, collection: Dealer.order(:dealer_name), include_blank: "Unassigned"
+      f.input :dealer, as: :searchable_select, collection: Dealer.order(:dealer_name), include_blank: "Unassigned"
       f.input :status
+      f.input :dealer_assigned_at, input_html: { disabled: true, readonly: true }
       f.input :skuvault_id, input_html: { disabled: true, readonly: true }
       f.input :skuvault_marketplace_id, input_html: { disabled: true, readonly: true }
       f.input :skuvault_channel_id, input_html: { disabled: true, readonly: true }

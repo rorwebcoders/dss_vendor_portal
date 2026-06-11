@@ -6,6 +6,7 @@ class PurchaseOrder < ApplicationRecord
 
   before_validation :sync_dealer_response_with_assignment
   after_update :run_dealer_response_callback, if: :saved_change_to_dealer_response?
+  before_save :set_dealer_assigned_at
 
   enum :status, { pending: 0, processing: 1, error: 2, completed: 3, non_dropshipping: 4, dropshipping: 5, label_created: 6 }, suffix: true
   enum :dealer_response, { pending: 0, accepted: 1 }, suffix: true
@@ -47,6 +48,12 @@ class PurchaseOrder < ApplicationRecord
   end
 
 private
+  def set_dealer_assigned_at
+    if will_save_change_to_dealer_id? && dealer_id.present?
+      self.dealer_assigned_at = Time.zone.now
+    end
+  end
+
   def sync_dealer_response_with_assignment
     self.dealer_response = nil if dealer_id.blank?
     self.dealer_response = "pending" if dealer_id.present? && dealer_response.blank?
