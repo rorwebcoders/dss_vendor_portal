@@ -72,6 +72,13 @@
       const expiresAt = parseInt($(this).data('expires-at')) * 1000;
       const remaining = expiresAt - Date.now();
 
+      if (remaining > 18 * 60 * 60 * 1000) {
+        $(this).hide();
+        return;
+      }
+
+      $(this).show();
+      
       if (remaining <= 0) {
         $(this)
           .text('Expired')
