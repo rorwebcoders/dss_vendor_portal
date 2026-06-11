@@ -78,3 +78,23 @@ namespace :dealers_importer_data_agent do
     end
   end
 end
+
+namespace :auto_reject_unattended_dealer_orders do
+  desc "Start the workers for auto_reject_unattended_dealer_orders"
+  task start: :environment do
+    Dir.mkdir("#{Rails.root}/lib/workers/purcharse_orders/logs") unless File.directory?("#{Rails.root}/lib/workers/purcharse_orders/logs")
+    Dir.mkdir("#{Rails.root}/lib/tasks/logs") unless File.directory?("#{Rails.root}/lib/tasks/logs")
+    auto_reject_unattended_dealer_orders_logger = Logger.new("#{File.dirname(__FILE__)}/logs/auto_reject_unattended_dealer_orders_rake.log", 'weekly')
+    auto_reject_unattended_dealer_orders_logger.formatter = Logger::Formatter.new
+    auto_reject_unattended_dealer_orders_pgrep_output = `pgrep -f auto_reject_unattended_dealer_orders.rb`
+    if auto_reject_unattended_dealer_orders_pgrep_output.empty?
+      auto_reject_unattended_dealer_orders_logger.info "Process is not running so lets start the process"
+      puts "Process is not running so lets start the process"
+      system("RAILS_ENV=development nohup bundle exec ruby #{Rails.root}/lib/workers/purcharse_orders/auto_reject_unattended_dealer_orders.rb >  #{Rails.root}/lib/workers/purcharse_orders/logs/auto_reject_unattended_dealer_orders_nohup.log 2>&1 &")
+      puts 'Process started'
+      auto_reject_unattended_dealer_orders_logger.info 'Process started'
+    else
+      puts "Process is Already running with PID #{auto_reject_unattended_dealer_orders_logger}"
+    end
+  end
+end
