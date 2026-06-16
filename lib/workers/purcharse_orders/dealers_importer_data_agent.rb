@@ -3,6 +3,7 @@ require 'net/http'
 require 'json'
 require 'openssl' # Required for SSL options
 require 'active_support/all' # Required for time zone operations
+WAREHOUSE_ADDRESS_FIELDS = %w[address_line1 address_line2 address_line3 city_locality state_province postal_code country_code phone ].freeze
 class DealersImporterDataAgent
   attr_accessor :errors
 
@@ -22,18 +23,42 @@ class DealersImporterDataAgent
       dealers = get_dealers_data
       active_ids = []
       dealers.each do |dealer_data|
-        dealer = Dealer.find_or_initialize_by(sm_dealer_id: dealer_data["id"])
-        dealer_name = dealer_data["name"]
-        logger_info("Processing Dealer: #{dealer_name}")
-        dealer.update!(
-          dealer_name: dealer_data["name"],
-          abbreviation: dealer_data["abbreviation"],
-          dealer_address: dealer_data["address"],
-          enabled: true
-        )
+        begin
+          dealer = Dealer.find_or_initialize_by(sm_dealer_id: dealer_data["id"])
+          dealer_name = dealer_data["name"]
+          logger_info("Processing Dealer: #{dealer_name}")
+          dealer.dealer_name = dealer_data["name"]
+          dealer.abbreviation = dealer_data["abbreviation"]
+          dealer.address_line1 = dealer_data["address_line1"]
+          dealer.address_line2 = dealer_data["address_line2"]
+          dealer.address_line3 = dealer_data["address_line3"]
+          dealer.city_locality = dealer_data["city_locality"]
+          dealer.state_province = dealer_data["state_province"]
+          dealer.postal_code = dealer_data["postal_code"]
+          dealer.country_code = dealer_data["country_code"]
+          dealer.phone = dealer_data["phone"]
+          dealer.dealership_name = dealer_data["dealership_name"]
+          dealer.shipstation_carrier_codes = dealer_data["shipstation_carrier_codes"]
+          dealer.enabled = true
 
-        active_ids << dealer_data["id"]
-        logger_info("Stored Dealer: #{dealer_name}")
+          address_changed = WAREHOUSE_ADDRESS_FIELDS.any? do |field|
+            dealer.will_save_change_to_attribute?(field)
+          end
+          if dealer.shipstation_warehouse_id.blank?
+            warehouse_id = create_shipstation_warehouse(dealer_data)
+            dealer.shipstation_warehouse_id = warehouse_id if warehouse_id.present?
+          elsif dealer.shipstation_warehouse_id.present? && address_changed
+            dealer_data["warehouse_id"] = dealer.shipstation_warehouse_id
+            update_shipstation_warehouse(dealer_data)
+          end
+
+          dealer.save
+          active_ids << dealer_data["id"]
+          logger_info("Stored Dealer: #{dealer_name}")
+        rescue StandardError => e
+          logger_error(e.message)
+          logger_error(e.backtrace.join("\n"))
+        end
       end
       Dealer.where.not(sm_dealer_id: active_ids).update_all(enabled: false)
       logger_info("Script completed at #{Time.now}")
@@ -43,6 +68,86 @@ class DealersImporterDataAgent
     end
   end
 
+  def update_shipstation_warehouse(params)
+    warehouse_id = params["warehouse_id"]
+    url = URI("#{Rails.application.credentials[Rails.env.to_sym][:shipstation_v2_warehouses_api_url]}/#{warehouse_id}")
+    http = Net::HTTP.new(url.host, url.port)
+    http.use_ssl = true
+    request = Net::HTTP::Put.new(url)
+    request['Content-Type'] = 'application/json'
+    request['api-key'] = Rails.application.credentials[Rails.env.to_sym][:shipstation_v2_api_key]
+    request.body = {
+      is_default: false,
+      name: params["name"],
+      origin_address: {
+        name: params["name"],
+        phone: params["phone"],
+        address_line1: params["address_line1"],
+        address_line2: params["address_line2"],
+        address_line3: params["address_line3"],
+        city_locality: params["city_locality"],
+        state_province: params["state_province"],
+        postal_code: params["postal_code"],
+        country_code: params["country_code"]
+      },
+      return_address: {
+        name: params["name"],
+        phone: params["phone"],
+        address_line1: params["address_line1"],
+        address_line2: params["address_line2"],
+        address_line3: params["address_line3"],
+        city_locality: params["city_locality"],
+        state_province: params["state_province"],
+        postal_code: params["postal_code"],
+        country_code: params["country_code"]
+      }
+    }.to_json
+    response = http.request(request)
+    logger_info("Shipstaion Update API Response Code: #{response.code}, Response: #{response.read_body}")
+  end
+
+  def create_shipstation_warehouse(params)
+    url = URI(Rails.application.credentials[Rails.env.to_sym][:shipstation_v2_warehouses_api_url])
+    http = Net::HTTP.new(url.host, url.port)
+    http.use_ssl = true
+    request = Net::HTTP::Post.new(url)
+    request['Content-Type'] = 'application/json'
+    request['api-key'] = Rails.application.credentials[Rails.env.to_sym][:shipstation_v2_api_key]
+    request.body = {
+      is_default: false,
+      name: params["name"],
+      origin_address: {
+        name: params["name"],
+        phone: params["phone"],
+        address_line1: params["address_line1"],
+        address_line2: params["address_line2"],
+        address_line3: params["address_line3"],
+        city_locality: params["city_locality"],
+        state_province: params["state_province"],
+        postal_code: params["postal_code"],
+        country_code: params["country_code"]
+      },
+      return_address: {
+        name: params["name"],
+        phone: params["phone"],
+        address_line1: params["address_line1"],
+        address_line2: params["address_line2"],
+        address_line3: params["address_line3"],
+        city_locality: params["city_locality"],
+        state_province: params["state_province"],
+        postal_code: params["postal_code"],
+        country_code: params["country_code"]
+      }
+    }.to_json
+    response = http.request(request)
+    body = response.body
+    logger_info("ShipStation Create API Response: #{body}")
+    result = JSON.parse(body)
+
+    warehouse_id = result['warehouse_id'] || nil
+    return warehouse_id
+  end
+
   def get_dealers_data
     dealers_api_url = Rails.application.credentials[Rails.env.to_sym][:dealers_api_url]
     skumonster_api_token = Rails.application.credentials[Rails.env.to_sym][:skumonster_api_token]
@@ -50,11 +155,9 @@ class DealersImporterDataAgent
  
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
-     
     request = Net::HTTP::Get.new(uri.request_uri)
     request["Authorization"] = "Bearer #{skumonster_api_token}"
     request["Content-Type"] = "application/json"
-     
     response = http.request(request)
 
     unless response.is_a?(Net::HTTPSuccess)
@@ -67,8 +170,6 @@ class DealersImporterDataAgent
     data = JSON.parse(response.body)
     return data['dealers'] || []
   end
-
-  
 
   def logger_info(msg)
     puts msg
