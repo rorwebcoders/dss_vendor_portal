@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
 ActiveAdmin.register Dealer do
-  permit_params :dealer_name, :abbreviation, :enabled, :dealer_address, :sm_dealer_id, user_ids: []
-
-  actions :index, :show
+  permit_params :dealer_name, :abbreviation, :enabled, :sm_dealer_id, user_ids: [], service_code_ids: []
+  actions :index, :show, :edit
 
   index do
     selectable_column
@@ -11,7 +10,6 @@ ActiveAdmin.register Dealer do
     column :dealer_name
     column :abbreviation
     column :sm_dealer_id
-    column :dealer_address
     column :enabled
     column("Users") { |dealer| dealer.users.order(:email).pluck(:email).join(", ") }
     actions
@@ -20,7 +18,6 @@ ActiveAdmin.register Dealer do
   filter :dealer_name
   filter :abbreviation
   filter :sm_dealer_id
-  filter :dealer_address
   filter :enabled
   filter :users
 
@@ -29,7 +26,6 @@ ActiveAdmin.register Dealer do
       row :id
       row :dealer_name
       row :abbreviation
-      row :dealer_address
       row :sm_dealer_id
       row :enabled
       row :created_at
@@ -55,17 +51,20 @@ ActiveAdmin.register Dealer do
 
   form do |f|
     f.inputs "Dealer Details" do
-      f.input :dealer_name
-      f.input :abbreviation
-      f.input :dealer_address
-      f.input :sm_dealer_id
+      f.input :dealer_name, input_html: { disabled: true, readonly: true }
+      f.input :abbreviation, input_html: { disabled: true, readonly: true }
+      f.input :sm_dealer_id, input_html: { disabled: true, readonly: true }
       f.input :enabled
-    end
+      f.input :service_codes,
+        as: :searchable_select,
+        multiple: true,
+        collection: ServiceCode.includes(:carrier)
+        .order('carriers.shipstation_friendly_name, service_codes.shipstation_name')
+      end
 
-    f.inputs "User Access" do
-      f.input :users, as: :check_boxes, collection: User.order(:email), hint: "Uncheck a user to immediately remove access to this dealer's purchase orders."
-    end
-
+      # f.inputs "User Access" do
+      #   f.input :users, as: :check_boxes, collection: User.order(:email), hint: "Uncheck a user to immediately remove access to this dealer's purchase orders."
+      # end
     f.actions
   end
 end
