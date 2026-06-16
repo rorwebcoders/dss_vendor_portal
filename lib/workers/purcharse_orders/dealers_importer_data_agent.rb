@@ -45,11 +45,15 @@ class DealersImporterDataAgent
             dealer.will_save_change_to_attribute?(field)
           end
           if dealer.shipstation_warehouse_id.blank?
-            warehouse_id = create_shipstation_warehouse(dealer_data)
-            dealer.shipstation_warehouse_id = warehouse_id if warehouse_id.present?
+            response = create_shipstation_warehouse(dealer_data)
+            dealer.shipstation_warehouse_id = response[:warehouse_id] if response[:warehouse_id].present?
+            dealer.shipstation_request = response[:request] if response[:request].present?
+            dealer.shipstation_response = response[:response] if response[:response].present?
           elsif dealer.shipstation_warehouse_id.present? && address_changed
             dealer_data["warehouse_id"] = dealer.shipstation_warehouse_id
-            update_shipstation_warehouse(dealer_data)
+            response = update_shipstation_warehouse(dealer_data)
+            dealer.shipstation_request = response[:request] if response[:request].present?
+            dealer.shipstation_response = response[:response] if response[:response].present?
           end
 
           dealer.save
@@ -76,11 +80,12 @@ class DealersImporterDataAgent
     request = Net::HTTP::Put.new(url)
     request['Content-Type'] = 'application/json'
     request['api-key'] = Rails.application.credentials[Rails.env.to_sym][:shipstation_v2_api_key]
-    request.body = {
+    request_body = {
       is_default: false,
-      name: params["name"],
+      name: "Parts Department",
       origin_address: {
-        name: params["name"],
+        name: "Parts Department",
+        company_name: params["dealership_name"],
         phone: params["phone"],
         address_line1: params["address_line1"],
         address_line2: params["address_line2"],
@@ -91,7 +96,8 @@ class DealersImporterDataAgent
         country_code: params["country_code"]
       },
       return_address: {
-        name: params["name"],
+        name: "Parts Department",
+        company_name: params["dealership_name"],
         phone: params["phone"],
         address_line1: params["address_line1"],
         address_line2: params["address_line2"],
@@ -101,9 +107,15 @@ class DealersImporterDataAgent
         postal_code: params["postal_code"],
         country_code: params["country_code"]
       }
-    }.to_json
+    }
+    request.body = request_body.to_json
     response = http.request(request)
     logger_info("Shipstaion Update API Response Code: #{response.code}, Response: #{response.read_body}")
+
+    return { 
+      request: "ShipStation Update API Request: #{request_body}",
+      response: "Shipstaion Update API Response Code: #{response.code}, Response: #{response.read_body}"
+    }
   end
 
   def create_shipstation_warehouse(params)
@@ -113,11 +125,12 @@ class DealersImporterDataAgent
     request = Net::HTTP::Post.new(url)
     request['Content-Type'] = 'application/json'
     request['api-key'] = Rails.application.credentials[Rails.env.to_sym][:shipstation_v2_api_key]
-    request.body = {
+    request_body = {
       is_default: false,
-      name: params["name"],
+      name: "Parts Department",
       origin_address: {
-        name: params["name"],
+        name: "Parts Department",
+        company_name: params["dealership_name"],
         phone: params["phone"],
         address_line1: params["address_line1"],
         address_line2: params["address_line2"],
@@ -128,7 +141,8 @@ class DealersImporterDataAgent
         country_code: params["country_code"]
       },
       return_address: {
-        name: params["name"],
+        name: "Parts Department",
+        company_name: params["dealership_name"],
         phone: params["phone"],
         address_line1: params["address_line1"],
         address_line2: params["address_line2"],
@@ -138,14 +152,19 @@ class DealersImporterDataAgent
         postal_code: params["postal_code"],
         country_code: params["country_code"]
       }
-    }.to_json
+    }
+    request.body = request_body.to_json
     response = http.request(request)
     body = response.body
-    logger_info("ShipStation Create API Response: #{body}")
+    logger_info("ShipStation Create API Response #{response.code}: #{body}")
     result = JSON.parse(body)
 
     warehouse_id = result['warehouse_id'] || nil
-    return warehouse_id
+    return { 
+      warehouse_id: warehouse_id,
+      request: "ShipStation Create API Request: #{request_body}",
+      response: "ShipStation Create API Response #{response.code}: #{body}"
+    }
   end
 
   def get_dealers_data
