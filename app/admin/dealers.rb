@@ -2,7 +2,7 @@
 
 ActiveAdmin.register Dealer do
   permit_params :dealer_name, :abbreviation, :enabled, :sm_dealer_id, user_ids: [], service_code_ids: []
-  actions :index, :show, :edit
+  actions :index, :show, :edit, :update
 
   index do
     selectable_column
@@ -77,7 +77,7 @@ ActiveAdmin.register Dealer do
         multiple: true,
         collection: ServiceCode.includes(:carrier)
         .order('carriers.shipstation_friendly_name, service_codes.shipstation_name')
-      end
+    end
 
       # f.inputs "User Access" do
       #   f.input :users, as: :check_boxes, collection: User.order(:email), hint: "Uncheck a user to immediately remove access to this dealer's purchase orders."

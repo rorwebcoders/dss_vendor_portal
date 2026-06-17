@@ -32,6 +32,9 @@ ActiveAdmin.register PurchaseOrder do
     column :shipping_firstname
     column :po_number
     column :tracking_number
+    column :skuvault_marketplace_id
+    column :shipstation_shipment_id
+    column :shipstation_store_id
     column("Response") do |purchase_order|
       if purchase_order.dealer_response.present?
         status_tag(purchase_order.dealer_response.titleize)
