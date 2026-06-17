@@ -10,6 +10,9 @@ ActiveAdmin.register Dealer do
     column :dealer_name
     column :abbreviation
     column :sm_dealer_id
+    column :dealership_name
+    column :shipstation_service_codes
+    column :shipstation_warehouse_id
     column :enabled
     column("Users") { |dealer| dealer.users.order(:email).pluck(:email).join(", ") }
     actions
@@ -18,6 +21,7 @@ ActiveAdmin.register Dealer do
   filter :dealer_name
   filter :abbreviation
   filter :sm_dealer_id
+  filter :shipstation_warehouse_id
   filter :enabled
   filter :users
 
@@ -28,6 +32,19 @@ ActiveAdmin.register Dealer do
       row :abbreviation
       row :sm_dealer_id
       row :enabled
+      row :address_line1
+      row :address_line2
+      row :address_line3
+      row :city_locality
+      row :state_province
+      row :postal_code
+      row :country_code
+      row :dealership_name
+      row :phone
+      row :shipstation_service_codes
+      row :shipstation_warehouse_id
+      row :shipstation_request
+      row :shipstation_response
       row :created_at
       row :updated_at
     end

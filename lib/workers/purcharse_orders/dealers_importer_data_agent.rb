@@ -38,7 +38,7 @@ class DealersImporterDataAgent
           dealer.country_code = dealer_data["country_code"]
           dealer.phone = dealer_data["phone"]
           dealer.dealership_name = dealer_data["dealership_name"]
-          dealer.shipstation_carrier_codes = dealer_data["shipstation_carrier_codes"]
+          dealer.shipstation_service_codes = dealer_data["shipstation_service_codes"]
           dealer.enabled = true
 
           address_changed = WAREHOUSE_ADDRESS_FIELDS.any? do |field|

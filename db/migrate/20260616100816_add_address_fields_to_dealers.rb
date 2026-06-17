@@ -9,7 +9,7 @@ class AddAddressFieldsToDealers < ActiveRecord::Migration[8.0]
     add_column :dealers, :country_code, :string
     add_column :dealers, :dealership_name, :string
     add_column :dealers, :phone, :string
-    add_column :dealers, :shipstation_carrier_codes, :json
+    add_column :dealers, :shipstation_service_codes, :json
     add_column :dealers, :shipstation_warehouse_id, :string
     add_column :dealers, :shipstation_request, :text
     add_column :dealers, :shipstation_response, :text
