@@ -64,10 +64,8 @@ class SkuvaultPurchaseOrderImporterAgent
   end
 
   def get_sales_from_skuvault
-
     skuvault_tenant_token = Rails.application.credentials[Rails.env.to_sym][:skuvault_tenant_token]
     skuvault_user_token = Rails.application.credentials[Rails.env.to_sym][:skuvault_user_token]
-
     uri = URI.parse("#{Rails.application.credentials[Rails.env.to_sym][:skuvault_get_sales_api]}")
     request = Net::HTTP::Post.new(uri)
     request.content_type = "application/json"

@@ -29,6 +29,7 @@ class UpdateShipmentIdsForPurchaseOrdersAgent
         shipments.each do |shipment|
           shipment_id = shipment['shipment_id']
           external_shipment_id = shipment['external_shipment_id']
+          shipstation_store_id = shipment["store_id"]
           logger_info("Processing Shipment Id: #{shipment_id}")
 
           next if external_shipment_id.blank?
@@ -37,6 +38,7 @@ class UpdateShipmentIdsForPurchaseOrdersAgent
           next unless purchase_order
 
           purchase_order.update!(
+            shipstation_store_id: shipstation_store_id,
             shipstation_shipment_id: shipment_id
           )
           logger_info("Matched Order #{purchase_order.id} -> Shipment #{shipment_id}")
