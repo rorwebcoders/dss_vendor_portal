@@ -1,24 +1,16 @@
-# README
+Worker Flow:
+# Run 1: DealersImporterDataAgent – (Import dealer data)
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+# Run 2: CarrierAndServiceCodesImporterAgent – (Import carrier and service codes)
 
-Things you may want to cover:
+# Run 3: SkuvaultPurchaseOrderImporterAgent – (Import purchase orders from SkuVault)
 
-* Ruby version
+# Run 4: UpdateShipmentIdsForPurchaseOrdersAgent – (Fetch and update shipment_id from ShipStation)
 
-* System dependencies
+# Run 5: PurchaseOrderProcessorAgent – (Determine whether orders are dropshipping or non-dropshipping.)
 
-* Configuration
+# Run 6: SkuvaultPurchaseOrderUpdaterAgent – (Update purchase order status from SkuVault)
 
-* Database creation
+# Run 7: CreateShipstationLabelAgent – (Create shipping labels in ShipStation)
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+# Run 8: AutoRejectUnattendedDealerOrders – (Automatically reject dealer orders with no response after 24 hours)

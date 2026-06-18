@@ -20,7 +20,7 @@ class PurchaseOrderProcessorAgent
   def start_processing
     begin
       logger_info("Script started at #{Time.now}")
-      purchase_orders = PurchaseOrder.where(status: :pending)
+      purchase_orders = PurchaseOrder.where.not(shipstation_shipment_id: [nil, '']).where(status: :pending)
       dealer_data = Dealer.pluck(:id, :sm_dealer_id, :abbreviation).to_h do |id, sm_dealer_id, abbreviation|
                      [sm_dealer_id, { our_dealer_id: id, abbreviation: abbreviation }]
                    end

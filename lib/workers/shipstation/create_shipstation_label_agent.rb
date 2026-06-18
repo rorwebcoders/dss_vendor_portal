@@ -20,7 +20,7 @@ class CreateShipstationLabelAgent
     begin
       logger_info("Script started at #{Time.now}")
 
-      purchase_orders_data = PurchaseOrder.where.not(shipstation_shipment_id: [nil, ''])
+      purchase_orders_data = PurchaseOrder.where.not(shipstation_shipment_id: [nil, ''], dealer_response: :accepted)
       purchase_orders_data.each do |purchase_order|
         begin
           logger_info("Processing PurchaseOrder Id: #{purchase_order.id}")
