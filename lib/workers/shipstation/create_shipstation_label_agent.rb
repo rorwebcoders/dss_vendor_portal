@@ -36,9 +36,13 @@ class CreateShipstationLabelAgent
               )
               service_codes = service_code_records.pluck(:shipstation_service_code)
               carrier_ids = Carrier.where(id: service_code_records.select(:carrier_id)).pluck(:shipstation_carrier_id)
-            else
+            elsif dealer.service_codes.present?
               service_codes = dealer.service_codes.pluck(:shipstation_service_code)
               carrier_ids = dealer.carriers.pluck(:shipstation_carrier_id)
+            else
+              service_code_records = ServiceCode.where(is_global: true)
+              service_codes = service_code_records.pluck(:shipstation_service_code)
+              carrier_ids = Carrier.where(id: service_code_records.select(:carrier_id)).pluck(:shipstation_carrier_id)
             end
             request_body = {
               shipment_id: shipstation_shipment_id,
