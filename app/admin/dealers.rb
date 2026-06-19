@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 ActiveAdmin.register Dealer do
-  permit_params :dealer_name, :abbreviation, :enabled, :sm_dealer_id, user_ids: [], service_code_ids: []
+  permit_params :dealer_name, :abbreviation, :enabled, :sm_dealer_id, user_ids: []
   actions :index, :show, :edit, :update
 
   index do
@@ -99,11 +99,6 @@ ActiveAdmin.register Dealer do
       f.input :abbreviation, input_html: { disabled: true, readonly: true }
       f.input :sm_dealer_id, input_html: { disabled: true, readonly: true }
       f.input :enabled
-      f.input :service_codes,
-        as: :searchable_select,
-        multiple: true,
-        collection: ServiceCode.includes(:carrier)
-        .order('carriers.shipstation_friendly_name, service_codes.shipstation_name')
     end
 
       # f.inputs "User Access" do
