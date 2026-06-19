@@ -9,5 +9,6 @@ class CreateCarriers < ActiveRecord::Migration[8.0]
       t.timestamps
     end
     add_index :carriers, :shipstation_carrier_id, unique: true
+    add_index :carriers, :enabled
   end
 end

@@ -10,5 +10,6 @@ class CreateServiceCodes < ActiveRecord::Migration[8.0]
       t.timestamps
     end
     add_index :service_codes, :shipstation_service_code, unique: true
+    add_index :service_codes, :enabled
   end
 end
