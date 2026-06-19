@@ -54,6 +54,18 @@ class SkuvaultPurchaseOrderImporterAgent
               quantity: skuvault_line_item["Quantity"]
             )
           end
+
+          entry["SaleKits"].each do |skuvault_kit_item|
+            skuvault_kit_item["KitItems"].each do |sku, component_quantity|
+              quantity = component_quantity.to_i * skuvault_kit_item["Quantity"].to_i
+              line_item = purchase_order.line_items.find_or_initialize_by(
+                sku: sku,
+                cost: skuvault_kit_item["UnitPrice"]["a"]
+              )
+              line_item.quantity = line_item.quantity.to_i + quantity
+              line_item.save!
+            end
+          end
         end
       end
       logger_info("Script completed at #{Time.now}")
