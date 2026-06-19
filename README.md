@@ -5,12 +5,8 @@ Worker Flow:
 
 # Run 3: SkuvaultPurchaseOrderImporterAgent – (Import purchase orders from SkuVault)
 
-# Run 4: UpdateShipmentIdsForPurchaseOrdersAgent – (Fetch and update shipment_id from ShipStation)
+# Run 4: PurchaseOrderProcessorAgent – (Determine whether orders are dropshipping or non-dropshipping.)
 
-# Run 5: PurchaseOrderProcessorAgent – (Determine whether orders are dropshipping or non-dropshipping.)
+# Run 5: SkuvaultPurchaseOrderUpdaterAgent – (Update purchase order status from SkuVault)
 
-# Run 6: SkuvaultPurchaseOrderUpdaterAgent – (Update purchase order status from SkuVault)
-
-# Run 7: CreateShipstationLabelAgent – (Create shipping labels in ShipStation)
-
-# Run 8: AutoRejectUnattendedDealerOrders – (Automatically reject dealer orders with no response after 24 hours)
+# Run 6: AutoRejectUnattendedDealerOrders – (Automatically reject dealer orders with no response after 24 hours)
