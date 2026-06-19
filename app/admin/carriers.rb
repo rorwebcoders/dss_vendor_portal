@@ -21,6 +21,7 @@ ActiveAdmin.register Carrier do
     column :shipstation_carrier_id
     column :shipstation_carrier_code 
     column :shipstation_friendly_name 
+    column :enabled 
     # column :shipstation_account_number 
     actions
   end
@@ -32,7 +33,7 @@ ActiveAdmin.register Carrier do
       row :shipstation_carrier_code 
       row :shipstation_friendly_name 
       # row :shipstation_account_number 
-      # row :enabled 
+      row :enabled 
       row :created_at
       row :updated_at
     end
@@ -53,7 +54,7 @@ ActiveAdmin.register Carrier do
       f.input :shipstation_carrier_code, input_html: { disabled: true, readonly: true }
       f.input :shipstation_friendly_name, input_html: { disabled: true, readonly: true }
       # f.input :shipstation_account_number, input_html: { disabled: true, readonly: true }
-      # f.input :enabled, input_html: { disabled: true, readonly: true }
+      f.input :enabled, as: :boolean
     end
     f.inputs "Service Codes" do
       f.has_many :service_codes, allow_destroy: false, new_record: false do |sc|
