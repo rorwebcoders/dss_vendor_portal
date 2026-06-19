@@ -5,7 +5,7 @@ class CreateCarriers < ActiveRecord::Migration[8.0]
       t.string :shipstation_carrier_code
       t.string :shipstation_friendly_name
       t.string :shipstation_account_number
-      t.boolean :enabled, default: true
+      t.boolean :enabled, default: true, null: false
       t.timestamps
     end
     add_index :carriers, :shipstation_carrier_id, unique: true

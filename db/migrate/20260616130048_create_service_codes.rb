@@ -5,6 +5,7 @@ class CreateServiceCodes < ActiveRecord::Migration[8.0]
       t.string :shipstation_name
       t.boolean :domestic
       t.boolean :international
+      t.boolean :enabled, default: true, null: false
       t.references :carrier, null: false, foreign_key: true
       t.timestamps
     end

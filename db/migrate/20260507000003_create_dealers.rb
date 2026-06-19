@@ -7,6 +7,19 @@ class CreateDealers < ActiveRecord::Migration[8.0]
       t.string :abbreviation, null: false
       t.string :dealer_name, null: false
       t.string :dealer_address
+      t.string :address_line1
+      t.string :address_line2
+      t.string :address_line3
+      t.string :city_locality
+      t.string :state_province
+      t.string :postal_code
+      t.string :country_code
+      t.string :dealership_name
+      t.string :phone
+      t.json :shipstation_service_codes
+      t.string :shipstation_warehouse_id
+      t.text :shipstation_request
+      t.text :shipstation_response
       t.boolean :enabled, null: false, default: true
       t.timestamps null: false
     end

@@ -28,6 +28,10 @@ class CreatePurchaseOrders < ActiveRecord::Migration[8.0]
       t.string :length
       t.string :width
       t.string :height
+      t.string :shipstation_id
+      t.string :shipstation_store_id
+      t.string :shipstation_shipment_id
+      t.datetime :dealer_assigned_at
       t.json :notified_sm_request
       t.json :read_to_ship_response
       t.json :others_response
