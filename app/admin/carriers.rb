@@ -5,7 +5,7 @@ ActiveAdmin.register Carrier do
   #
   # Uncomment all parameters which should be permitted for assignment
   #
-  permit_params :shipstation_carrier_id, :shipstation_carrier_code, :shipstation_friendly_name, :shipstation_account_number, service_codes_attributes: [:id, :is_global, :shipstation_service_code, :shipstation_name, :domestic, :international, :_destroy]
+  permit_params :shipstation_carrier_id, :shipstation_carrier_code, :shipstation_friendly_name, :shipstation_account_number, service_codes_attributes: [:id, :enabled, :shipstation_service_code, :shipstation_name, :domestic, :international, :_destroy]
   #
   # or
   #
@@ -41,7 +41,7 @@ ActiveAdmin.register Carrier do
       table_for carrier.service_codes.order(:id) do
         column :shipstation_service_code
         column :shipstation_name
-        column :is_global
+        column :enabled
         column :created_at
       end
     end
@@ -61,7 +61,7 @@ ActiveAdmin.register Carrier do
         sc.input :shipstation_name, input_html: { disabled: true, readonly: true }
         # sc.input :domestic, input_html: { disabled: true, readonly: true }
         # sc.input :international, input_html: { disabled: true, readonly: true }
-        sc.input :is_global
+        sc.input :enabled, as: :boolean
       end
     end
 

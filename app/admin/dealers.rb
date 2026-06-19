@@ -26,6 +26,33 @@ ActiveAdmin.register Dealer do
   filter :users
 
   show do
+    if resource.shipstation_response.present?
+      begin
+        json_part = resource.shipstation_response.sub(/\AShipStation Create API Response \d+:\s*/, "")
+        data = JSON.parse(json_part)
+
+        reasons = data.fetch("errors", []).map { |e| e["message"] }.uniq
+
+        if reasons.any?
+          panel "ShipStation Error" do
+            div style: "background:#f8d7da;
+                        color:#721c24;
+                        border:1px solid #f5c6cb;
+                        padding:15px;
+                        border-radius:4px;" do
+
+              para "⚠ Warehouse creation failed."
+
+              para do
+                strong "Reason: "
+                text_node reasons.join(", ")
+              end
+            end
+          end
+        end
+      rescue JSON::ParserError
+      end
+    end
     attributes_table do
       row :id
       row :dealer_name
