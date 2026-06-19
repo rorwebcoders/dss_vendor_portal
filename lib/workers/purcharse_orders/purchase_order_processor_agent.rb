@@ -146,7 +146,7 @@ class PurchaseOrderProcessorAgent
           shipment_id = shipment['shipment_id']
           external_shipment_id = shipment['external_shipment_id']
           shipstation_store_id = shipment["store_id"]
-          logger_info("Processing Shipment Id: #{shipment_id}")
+          logger_info("Processing Shipment Id: #{shipment_id}, ExternalShipmentId: #{external_shipment_id}")
 
           next if external_shipment_id.blank?
 

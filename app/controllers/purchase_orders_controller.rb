@@ -87,6 +87,7 @@ class PurchaseOrdersController < ApplicationController
     purchase_order.accept_by_dealer!
 
     if purchase_order.update(shipping_params)
+      CreateShipstationLabelJob.perform_later(purchase_order.id)
       redirect_to purchase_order_path(purchase_order), notice: "Purchase order accepted. Label generation has been queued."
     else
       render :edit, status: :unprocessable_entity
