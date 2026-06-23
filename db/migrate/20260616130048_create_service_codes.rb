@@ -9,7 +9,7 @@ class CreateServiceCodes < ActiveRecord::Migration[8.0]
       t.references :carrier, null: false, foreign_key: true
       t.timestamps
     end
-    add_index :service_codes, :shipstation_service_code, unique: true
+    add_index :service_codes, [:carrier_id, :shipstation_service_code], unique: true
     add_index :service_codes, :enabled
   end
 end
