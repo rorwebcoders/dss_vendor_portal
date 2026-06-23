@@ -29,7 +29,7 @@ class CarrierAndServiceCodesImporterAgent
         carrier.shipstation_carrier_code = carrier_data["carrier_code"]
         carrier.shipstation_account_number = carrier_data["account_number"]
         carrier.shipstation_friendly_name = carrier_data["friendly_name"]
-        if carrier.save!
+        if carrier.save
           carrier_data["services"].each do |service_data|
             shipstation_service_code = service_data["service_code"]
             logger_info("Processing Service Code: #{shipstation_service_code}")
@@ -37,7 +37,7 @@ class CarrierAndServiceCodesImporterAgent
             service_code.shipstation_name = service_data["name"]
             service_code.domestic = service_data["domestic"]
             service_code.international = service_data["international"]
-            service_code.save!
+            service_code.save
           end
         end
       end
