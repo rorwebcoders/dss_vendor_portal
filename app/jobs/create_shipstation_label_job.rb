@@ -123,7 +123,7 @@ class CreateShipstationLabelJob < ApplicationJob
     ship_to["country_code"] = purchase_order.shipping_country
 
     ship_from = get_shipment_params["ship_from"]
-    ship_from["name"] = "Parts Department"
+    ship_from["name"] = purchase_order.dealer.dealer_name
     ship_from["phone"] = purchase_order.dealer.phone
     ship_from["company_name"] = purchase_order.dealer.dealership_name
     ship_from["address_line1"] = purchase_order.dealer.address_line1
@@ -135,16 +135,16 @@ class CreateShipstationLabelJob < ApplicationJob
     ship_from["country_code"] = purchase_order.dealer.country_code
 
     return_to = get_shipment_params["return_to"]
-    return_to["name"] = "Parts Department"
-    return_to["phone"] = purchase_order.dealer.phone
-    return_to["company_name"] = purchase_order.dealer.dealership_name
-    return_to["address_line1"] = purchase_order.dealer.address_line1
-    return_to["address_line2"] = purchase_order.dealer.address_line2
-    return_to["address_line3"] = purchase_order.dealer.address_line3
-    return_to["city_locality"] = purchase_order.dealer.city_locality
-    return_to["state_province"] = purchase_order.dealer.state_province
-    return_to["postal_code"] = purchase_order.dealer.postal_code
-    return_to["country_code"] = purchase_order.dealer.country_code
+    return_to["name"] = "Shipping Department"
+    return_to["phone"] = "(800) 670-1150"
+    return_to["company_name"] = "Parts Department"
+    return_to["address_line1"] = "4563 Judge Road"
+    return_to["address_line2"] = "Suite 100"
+    return_to["address_line3"] = ""
+    return_to["city_locality"] = "Orlando"
+    return_to["state_province"] = "FL"
+    return_to["postal_code"] = "32812"
+    return_to["country_code"] = "US"
 
     packages = get_shipment_params["packages"].first
     packages["package_id"] = purchase_order.po_number.to_s
