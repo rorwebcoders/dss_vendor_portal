@@ -4,6 +4,18 @@ ActiveAdmin.register Dealer do
   permit_params :dealer_name, :abbreviation, :enabled, :sm_dealer_id, user_ids: []
   actions :index, :show, :edit, :update
 
+  scope :all, default: true
+
+  scope :enabled
+
+  scope "Disabled" do |dealers|
+    dealers.where(enabled: false)
+  end
+
+  scope "Import Errors" do |dealers|
+    dealers.where.not(error_message: [nil, ""])
+  end
+
   index do
     selectable_column
     id_column
@@ -13,6 +25,7 @@ ActiveAdmin.register Dealer do
     column :dealership_name
     column :shipstation_service_codes
     column :shipstation_warehouse_id
+    column :error_message
     column :enabled
     column("Users") { |dealer| dealer.users.order(:email).pluck(:email).join(", ") }
     actions
@@ -26,6 +39,20 @@ ActiveAdmin.register Dealer do
   filter :users
 
   show do
+    if resource.error_message.present?
+      panel "Dealer Error" do
+        div style: "background:#f8d7da;
+                    color:#721c24;
+                    border:1px solid #f5c6cb;
+                    padding:15px;
+                    border-radius:4px;" do
+          para do
+            strong "Reason: "
+            text_node resource.error_message
+          end
+        end
+      end
+    end
     if resource.shipstation_response.present?
       begin
         json_part = resource.shipstation_response.sub(/\AShipStation Create API Response \d+:\s*/, "")
