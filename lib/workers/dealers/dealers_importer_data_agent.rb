@@ -41,21 +41,35 @@ class DealersImporterDataAgent
           dealer.shipstation_service_codes = dealer_data["shipstation_service_codes"]
           dealer.enabled = true
 
-          address_changed = WAREHOUSE_ADDRESS_FIELDS.any? do |field|
-            dealer.will_save_change_to_attribute?(field)
+          error_message = []
+          WAREHOUSE_ADDRESS_FIELDS.each do |field|
+            if dealer_data[field].to_s == "" && !["address_line2", "address_line3"].include?(field)
+              error_message << "#{field} cannot be blank"
+            end
+          end          
+          if error_message.blank?
+            address_changed = WAREHOUSE_ADDRESS_FIELDS.any? do |field|
+              dealer.will_save_change_to_attribute?(field)
+            end
+            if dealer.shipstation_warehouse_id.blank?
+              response = create_shipstation_warehouse(dealer_data)
+              if response[:warehouse_id].present?
+                dealer.shipstation_warehouse_id = response[:warehouse_id] 
+              else
+                dealer.enabled = false
+              end
+              dealer.shipstation_request = response[:request] if response[:request].present?
+              dealer.shipstation_response = response[:response] if response[:response].present?
+            elsif dealer.shipstation_warehouse_id.present? && address_changed
+              dealer_data["warehouse_id"] = dealer.shipstation_warehouse_id
+              response = update_shipstation_warehouse(dealer_data)
+              dealer.shipstation_request = response[:request] if response[:request].present?
+              dealer.shipstation_response = response[:response] if response[:response].present?
+            end
+          else
+            dealer.enabled = false
           end
-          if dealer.shipstation_warehouse_id.blank?
-            response = create_shipstation_warehouse(dealer_data)
-            dealer.shipstation_warehouse_id = response[:warehouse_id] if response[:warehouse_id].present?
-            dealer.shipstation_request = response[:request] if response[:request].present?
-            dealer.shipstation_response = response[:response] if response[:response].present?
-          elsif dealer.shipstation_warehouse_id.present? && address_changed
-            dealer_data["warehouse_id"] = dealer.shipstation_warehouse_id
-            response = update_shipstation_warehouse(dealer_data)
-            dealer.shipstation_request = response[:request] if response[:request].present?
-            dealer.shipstation_response = response[:response] if response[:response].present?
-          end
-
+          dealer.error_message = error_message.join(", ")
           dealer.save
           active_ids << dealer_data["id"]
           logger_info("Stored Dealer: #{dealer_name}")
@@ -110,11 +124,11 @@ class DealersImporterDataAgent
     }
     request.body = request_body.to_json
     response = http.request(request)
-    logger_info("Shipstaion Update API Response Code: #{response.code}, Response: #{response.read_body}")
+    logger_info("Shipstaion Update Warehouse API Response Code: #{response.code}, Response: #{response.read_body}")
 
     return { 
-      request: "ShipStation Update API Request: #{request_body}",
-      response: "Shipstaion Update API Response Code: #{response.code}, Response: #{response.read_body}"
+      request: "ShipStation Update Warehouse API Request: #{request_body}",
+      response: "Shipstaion Update Warehouse API Response Code: #{response.code}, Response: #{response.read_body}"
     }
   end
 
@@ -162,8 +176,8 @@ class DealersImporterDataAgent
     warehouse_id = result['warehouse_id'] || nil
     return { 
       warehouse_id: warehouse_id,
-      request: "ShipStation Create API Request: #{request_body}",
-      response: "ShipStation Create API Response #{response.code}: #{body}"
+      request: "ShipStation Create Warehouse API Request: #{request_body}",
+      response: "ShipStation Create Warehouse API Response #{response.code}: #{body}"
     }
   end
 
