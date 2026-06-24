@@ -144,13 +144,12 @@ class PurchaseOrderProcessorAgent
 
         shipments.each do |shipment|
           shipment_id = shipment['shipment_id']
-          external_shipment_id = shipment['external_shipment_id']
+          shipment_number = shipment['shipment_number']
           shipstation_store_id = shipment["store_id"]
-          logger_info("Processing Shipment Id: #{shipment_id}, ExternalShipmentId: #{external_shipment_id}")
+          next if shipment_number.blank?
+          logger_info("Processing Shipment Id: #{shipment_id}, ShipmentNumber: #{shipment_number}")
 
-          next if external_shipment_id.blank?
-
-          purchase_order = PurchaseOrder.find_by(skuvault_marketplace_id: external_shipment_id)
+          purchase_order = PurchaseOrder.find_by(skuvault_marketplace_id: shipment_number)
           next unless purchase_order
 
           purchase_order.update!(
