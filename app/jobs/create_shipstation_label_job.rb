@@ -8,7 +8,7 @@ class CreateShipstationLabelJob < ApplicationJob
   def perform(purchase_order_id)
     purchase_order = PurchaseOrder.find_by(id: purchase_order_id)
     return unless purchase_order
-    # return if purchase_order.label_created?
+    # return if purchase_order.label_created_status?
 
     begin
       shipstation_shipment_id = purchase_order.shipstation_shipment_id
@@ -32,16 +32,10 @@ class CreateShipstationLabelJob < ApplicationJob
           service_codes = service_code_records.pluck(:shipstation_service_code)
           carrier_ids = Carrier.where(id: service_code_records.select(:carrier_id), enabled: true).pluck(:shipstation_carrier_id)
         end
-        request_body = {
+        request_body = { 
           shipment_id: shipstation_shipment_id,
-          rate_options: {
-            carrier_ids: carrier_ids.compact.uniq,
-            package_types: ['package'],
-            service_codes: service_codes.compact.uniq,
-            calculate_tax_amount: false,
-            preferred_currency: 'USD',
-            is_return: false
-          }
+          carrier_ids: carrier_ids.compact.uniq,
+          service_codes: service_codes.compact.uniq
         }
         rate_id, min_amount = get_shipping_rate_from_shipstation(request_body)
         if rate_id.present?
@@ -56,12 +50,11 @@ class CreateShipstationLabelJob < ApplicationJob
     rescue StandardError => e
       logger_error(e.message)
       logger_error(e.backtrace.join("\n"))
-      raise e
     end
   end
 
   def get_shipment_from_shipstation(shipment_id)
-    url = URI('https://api.shipstation.com/v2/shipments/' + shipment_id)
+    url = URI("#{Rails.application.credentials[Rails.env.to_sym][:shipstation_v2_shipments_api_url]}/#{shipment_id}")
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true
     request = Net::HTTP::Get.new(url)
@@ -79,7 +72,7 @@ class CreateShipstationLabelJob < ApplicationJob
       tracking_url = "https://www.fedex.com/fedextrack/?action=track&trackingnumber=1234"
       return tracking_number, tracking_url
     else
-      url = URI('https://api.shipstation.com/v2/labels/rates/' + rate_id)
+      url = URI("#{Rails.application.credentials[Rails.env.to_sym][:shipstation_v2_create_shipstation_label_api_url]}/#{rate_id}")
     end
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true
@@ -135,16 +128,16 @@ class CreateShipstationLabelJob < ApplicationJob
     ship_from["country_code"] = purchase_order.dealer.country_code
 
     return_to = get_shipment_params["return_to"]
-    return_to["name"] = "Shipping Department"
-    return_to["phone"] = "(800) 670-1150"
-    return_to["company_name"] = "Parts Department"
-    return_to["address_line1"] = "4563 Judge Road"
-    return_to["address_line2"] = "Suite 100"
-    return_to["address_line3"] = ""
-    return_to["city_locality"] = "Orlando"
-    return_to["state_province"] = "FL"
-    return_to["postal_code"] = "32812"
-    return_to["country_code"] = "US"
+    return_to["name"] = Rails.application.credentials[Rails.env.to_sym][:shipstation_return_address_name]
+    return_to["phone"] = Rails.application.credentials[Rails.env.to_sym][:shipstation_return_address_phone]
+    return_to["company_name"] = Rails.application.credentials[Rails.env.to_sym][:shipstation_return_address_company_name]
+    return_to["address_line1"] = Rails.application.credentials[Rails.env.to_sym][:shipstation_return_address_address_line1]
+    return_to["address_line2"] = Rails.application.credentials[Rails.env.to_sym][:shipstation_return_address_address_line2]
+    return_to["address_line3"] = Rails.application.credentials[Rails.env.to_sym][:shipstation_return_address_address_line3]
+    return_to["city_locality"] = Rails.application.credentials[Rails.env.to_sym][:shipstation_return_address_city_locality]
+    return_to["state_province"] = Rails.application.credentials[Rails.env.to_sym][:shipstation_return_address_state_province]
+    return_to["postal_code"] = Rails.application.credentials[Rails.env.to_sym][:shipstation_return_address_postal_code]
+    return_to["country_code"] = Rails.application.credentials[Rails.env.to_sym][:shipstation_return_address_country_code]
 
     packages = get_shipment_params["packages"].first
     packages["package_id"] = purchase_order.po_number.to_s
@@ -166,18 +159,28 @@ class CreateShipstationLabelJob < ApplicationJob
     return result["errors"].empty? ? true : false
   end
 
-  def get_shipping_rate_from_shipstation(body)
+  def get_shipping_rate_from_shipstation(params)
     url = URI(Rails.application.credentials[Rails.env.to_sym][:shipstation_v2_get_rates_api_url])
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true
     request = Net::HTTP::Post.new(url)
     request['Content-Type'] = 'application/json'
     request['api-key'] = Rails.application.credentials[Rails.env.to_sym][:shipstation_v2_api_key]
-    request.body = body.to_json
+    request.body = {
+      shipment_id: params[:shipment_id],
+      rate_options: {
+        carrier_ids: params[:carrier_ids],
+        package_types: ['package'],
+        service_codes: params[:service_codes],
+        calculate_tax_amount: false,
+        preferred_currency: 'USD',
+        is_return: false
+      }
+    }.to_json
     response = http.request(request)
     body = response.body
-    logger_info("Shipstaion Shipping Rate API Response Code: #{response.code}, Response: #{body}")
-    result = JSON.parse(body)
+    result = JSON.parse(body.force_encoding('UTF-8'))
+    logger_info("Shipstaion Shipping Rate API Response Code: #{response.code}, Response: #{result}")
       
     rates = result["rate_response"]["rates"] || []
     return [nil, nil] if rates.empty?
