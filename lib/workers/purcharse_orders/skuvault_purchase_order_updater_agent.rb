@@ -1,3 +1,10 @@
+# Fetch sales data from SkuVault using the GetSales API with status = ReadyToShip.
+
+# Update PO status when changes are detected for all non-drop-shipping purchase orders,
+# to ensure already-processed records are not resent to SkuMonster via API.
+
+# The script processes records in batches of 10,000 IDs per API call due to SkuVault API limitations.
+
 require 'logger'
 require 'net/http'
 require 'json'
