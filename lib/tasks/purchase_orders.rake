@@ -9,7 +9,7 @@ namespace :skuvault_purchase_order_importer_agent do
     if skuvault_purchase_order_importer_agent_pgrep_output.empty?
       skuvault_purchase_order_importer_agent_logger.info "Process is not running so lets start the process"
       puts "Process is not running so lets start the process"
-      system("RAILS_ENV=development nohup bundle exec ruby #{Rails.root}/lib/workers/purcharse_orders/skuvault_purchase_order_importer_agent.rb >  #{Rails.root}/lib/workers/purcharse_orders/logs/skuvault_purchase_order_importer_agent_nohup.log 2>&1 &")
+      system("RAILS_ENV=production nohup bundle exec ruby #{Rails.root}/lib/workers/purcharse_orders/skuvault_purchase_order_importer_agent.rb >  #{Rails.root}/lib/workers/purcharse_orders/logs/skuvault_purchase_order_importer_agent_nohup.log 2>&1 &")
       puts 'Process started'
       skuvault_purchase_order_importer_agent_logger.info 'Process started'
     else
@@ -30,7 +30,7 @@ namespace :skuvault_purchase_order_updater_agent do
     if skuvault_purchase_order_updater_agent_pgrep_output.empty?
       skuvault_purchase_order_updater_agent_logger.info "Process is not running so lets start the process"
       puts "Process is not running so lets start the process"
-      system("RAILS_ENV=development nohup bundle exec ruby #{Rails.root}/lib/workers/purcharse_orders/skuvault_purchase_order_updater_agent.rb >  #{Rails.root}/lib/workers/purcharse_orders/logs/skuvault_purchase_order_updater_agent_nohup.log 2>&1 &")
+      system("RAILS_ENV=production nohup bundle exec ruby #{Rails.root}/lib/workers/purcharse_orders/skuvault_purchase_order_updater_agent.rb >  #{Rails.root}/lib/workers/purcharse_orders/logs/skuvault_purchase_order_updater_agent_nohup.log 2>&1 &")
       puts 'Process started'
       skuvault_purchase_order_updater_agent_logger.info 'Process started'
     else
@@ -50,7 +50,7 @@ namespace :purchase_order_processor_agent do
     if purchase_order_processor_agent_pgrep_output.empty?
       purchase_order_processor_agent_logger.info "Process is not running so lets start the process"
       puts "Process is not running so lets start the process"
-      system("RAILS_ENV=development nohup bundle exec ruby #{Rails.root}/lib/workers/purcharse_orders/purchase_order_processor_agent.rb >  #{Rails.root}/lib/workers/purcharse_orders/logs/purchase_order_processor_agent_nohup.log 2>&1 &")
+      system("RAILS_ENV=production nohup bundle exec ruby #{Rails.root}/lib/workers/purcharse_orders/purchase_order_processor_agent.rb >  #{Rails.root}/lib/workers/purcharse_orders/logs/purchase_order_processor_agent_nohup.log 2>&1 &")
       puts 'Process started'
       purchase_order_processor_agent_logger.info 'Process started'
     else
@@ -70,7 +70,7 @@ namespace :dealers_importer_data_agent do
     if dealers_importer_data_agent_pgrep_output.empty?
       dealers_importer_data_agent_logger.info "Process is not running so lets start the process"
       puts "Process is not running so lets start the process"
-      system("RAILS_ENV=development nohup bundle exec ruby #{Rails.root}/lib/workers/purcharse_orders/dealers_importer_data_agent.rb >  #{Rails.root}/lib/workers/purcharse_orders/logs/dealers_importer_data_agent_nohup.log 2>&1 &")
+      system("RAILS_ENV=production nohup bundle exec ruby #{Rails.root}/lib/workers/purcharse_orders/dealers_importer_data_agent.rb >  #{Rails.root}/lib/workers/purcharse_orders/logs/dealers_importer_data_agent_nohup.log 2>&1 &")
       puts 'Process started'
       dealers_importer_data_agent_logger.info 'Process started'
     else
@@ -90,7 +90,7 @@ namespace :auto_reject_unattended_dealer_orders do
     if auto_reject_unattended_dealer_orders_pgrep_output.empty?
       auto_reject_unattended_dealer_orders_logger.info "Process is not running so lets start the process"
       puts "Process is not running so lets start the process"
-      system("RAILS_ENV=development nohup bundle exec ruby #{Rails.root}/lib/workers/purcharse_orders/auto_reject_unattended_dealer_orders.rb >  #{Rails.root}/lib/workers/purcharse_orders/logs/auto_reject_unattended_dealer_orders_nohup.log 2>&1 &")
+      system("RAILS_ENV=production nohup bundle exec ruby #{Rails.root}/lib/workers/purcharse_orders/auto_reject_unattended_dealer_orders.rb >  #{Rails.root}/lib/workers/purcharse_orders/logs/auto_reject_unattended_dealer_orders_nohup.log 2>&1 &")
       puts 'Process started'
       auto_reject_unattended_dealer_orders_logger.info 'Process started'
     else
