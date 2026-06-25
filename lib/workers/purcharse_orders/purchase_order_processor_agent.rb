@@ -108,8 +108,13 @@ class PurchaseOrderProcessorAgent
 
               dealer = dealer_data[dealer_id.to_i]
               our_dealer_id = dealer[:our_dealer_id]
-              abbreviation = dealer[:abbreviation]
-              po_number = "#{abbreviation}-#{Time.current.strftime('%d%m%y-%H%M%S-%3N')}"
+              # abbreviation = dealer[:abbreviation]
+              # po_number = "#{abbreviation}-#{Time.current.strftime('%d%m%y-%H%M%S-%3N')}"
+
+              po_number = PurchaseOrder.maximum(:po_number)
+              po_number = ("%04d" % (po_number.to_i + 1))
+              po_number = 1001 if po_number.to_i == 1
+
               purchase_order.update(po_number: po_number, dealer_assigned_at: Time.zone.now, dealer_id: our_dealer_id, status: :dropshipping, notified_sm_request: notify_dealer_request_body)
               dropshipping = true
               break
