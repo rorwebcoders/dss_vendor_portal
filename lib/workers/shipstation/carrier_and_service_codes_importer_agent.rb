@@ -1,3 +1,6 @@
+#Step 1: Fetches carrier and service codes data from ShipStation.
+#Step 2: Process the fetched carrier data and the respective service codes and stores in DB.
+
 require 'logger'
 require 'net/http'
 require 'json'
