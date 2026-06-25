@@ -72,7 +72,7 @@ class CreateShipstationLabelJob < ApplicationJob
       tracking_number = "Test-782758401696"
       tracking_url = "https://www.fedex.com/fedextrack/?action=track&trackingnumber=1234"
       label_pdf_url = "https://api.shipstation.com/v2/downloads/6/p5OJGi7mmkuTDWxWS3gPIw/label-919147992.pdf"
-      return tracking_number, tracking_url
+      return tracking_number, tracking_url, label_pdf_url
     else
       url = URI("#{Rails.application.credentials[Rails.env.to_sym][:shipstation_v2_create_shipstation_label_api_url]}/#{rate_id}")
     end
