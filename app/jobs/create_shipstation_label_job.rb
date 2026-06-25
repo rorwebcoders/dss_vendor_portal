@@ -39,10 +39,11 @@ class CreateShipstationLabelJob < ApplicationJob
         }
         rate_id, min_amount = get_shipping_rate_from_shipstation(request_body)
         if rate_id.present?
-          tracking_number, tracking_url = create_shipstation_label(rate_id)
+          tracking_number, tracking_url, label_pdf_url = create_shipstation_label(rate_id)
           purchase_order.update!(
             tracking_number: tracking_number,
             shipstation_label_url: tracking_url,
+            shipstation_label_pdf_url: label_pdf_url,
             status: :label_created
           )
         end
@@ -70,6 +71,7 @@ class CreateShipstationLabelJob < ApplicationJob
     if Rails.env.development?
       tracking_number = "Test-782758401696"
       tracking_url = "https://www.fedex.com/fedextrack/?action=track&trackingnumber=1234"
+      label_pdf_url = "https://api.shipstation.com/v2/downloads/6/p5OJGi7mmkuTDWxWS3gPIw/label-919147992.pdf"
       return tracking_number, tracking_url
     else
       url = URI("#{Rails.application.credentials[Rails.env.to_sym][:shipstation_v2_create_shipstation_label_api_url]}/#{rate_id}")
@@ -91,6 +93,7 @@ class CreateShipstationLabelJob < ApplicationJob
     result = JSON.parse(response.body)
     tracking_number = result["tracking_number"]
     tracking_url = result["tracking_url"]
+    label_pdf_url = result['label_download']["pdf"]
     return tracking_number, tracking_url
   end
 

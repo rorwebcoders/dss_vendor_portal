@@ -61,27 +61,53 @@
 
               <!-- Tracking -->
               <% if @purchase_order.weight.to_s != "" %>
-                <div class="text-end">
-                  <small class="text-muted d-block">Tracking Number</small>
+              <div class="">
+                <h6 class="mb-1 fw-bold"> Tracking Number:</h6>
 
-                  <% if @purchase_order.tracking_number.present? %>
+                
+
+                <% if @purchase_order.tracking_number.present? %>
+                  <div class="tracking-box">
+
                     <% if @purchase_order.shipstation_label_url.present? %>
                       <%= link_to @purchase_order.tracking_number,
                             @purchase_order.shipstation_label_url,
                             target: "_blank",
-                            class: "fw-semibold text-primary text-decoration-none" %>
+                            class: "tracking-number text-decoration-none",
+                            id: "tracking-number-#{@purchase_order.id}" %>
                     <% else %>
-                      <span class="fw-semibold text-dark">
+                      <span class="tracking-number"
+                            id="tracking-number-<%= @purchase_order.id %>">
                         <%= @purchase_order.tracking_number %>
                       </span>
                     <% end %>
-                  <% else %>
-                    <span class="badge bg-warning text-dark">
-                      Label Generating...
-                    </span>
-                  <% end %>
-                </div>
-              <% end %>
+
+                    <div class="tracking-actions">
+
+                      <button type="button"
+                        class="tracking-action-btn"
+                        onclick="copyTrackingNumber('<%= @purchase_order.id %>')">
+                      📋
+                    </button>
+
+                      <% if @purchase_order.shipstation_label_pdf_url.present? %>
+                        <%= link_to @purchase_order.shipstation_label_pdf_url,
+                          target: "_blank",
+                          class: "tracking-action-btn" do %>
+                      ⬇️
+                    <% end %>
+                      <% end %>
+
+                    </div>
+
+                  </div>
+                <% else %>
+                  <span class="badge bg-warning text-dark">
+                    Label Generating...
+                  </span>
+                <% end %>
+              </div>
+            <% end %>
             </div>
           </div>
 
@@ -155,7 +181,7 @@
       <div class="row g-4">
 
         <!-- Left Side - Line Items -->
-        <div class="col-lg-8">
+        <div class="col-lg-12">
           <div class="card border-0 shadow-sm">
             <div class="card-header bg-white py-2">
               <div class="d-flex justify-content-between align-items-center">
@@ -206,66 +232,26 @@
           </div>
         </div>
 
-        <!-- Right Side - Shipping Address -->
-        <div class="col-lg-4">
-          <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white">
-              <h5 class="mb-0 fw-bold text-primary">Shipping Address</h5>
-            </div>
-            <div class="card-body">
-              <div class="mb-3">
-                <strong>
-                  <%= @purchase_order.shipping_firstname %>
-                  <%= @purchase_order.shipping_lastname %>
-                </strong>
-              </div>
-
-              <div class="text-muted">
-                <div><%= @purchase_order.shipping_address1 %></div>
-
-                <div>
-                  <%= @purchase_order.shipping_city %>,
-                  <%= @purchase_order.shipping_state %>
-                  <%= @purchase_order.shipping_zip %>
-                </div>
-
-                <div><%= @purchase_order.shipping_country %></div>
-              </div>
-
-              <hr>
-
-              <% if @purchase_order.shipping_phone.present? %>
-                <div class="mb-2">
-                  <strong>Phone</strong><br>
-                  <span class="text-muted">
-                    <%= @purchase_order.shipping_phone %>
-                  </span>
-                </div>
-              <% end %>
-
-              <% if @purchase_order.shipping_company.present? %>
-                <div class="mb-2">
-                  <strong>Company</strong><br>
-                  <span class="text-muted">
-                    <%= @purchase_order.shipping_company %>
-                  </span>
-                </div>
-              <% end %>
-
-              <% if @purchase_order.shipping_email.present? %>
-                <div>
-                  <strong>Email</strong><br>
-                  <span class="text-muted">
-                    <%= @purchase_order.shipping_email %>
-                  </span>
-                </div>
-              <% end %>
-            </div>
-          </div>
-        </div>
+        
       </div>
     </div>
   </div>
+  <div class="toast-container position-fixed top-0 end-0 p-3">
+  <div id="copyToast"
+       class="toast align-items-center text-bg-success border-0"
+       data-bs-delay="2000"
+       role="alert">
+    <div class="d-flex">
+      <div class="toast-body">
+        Tracking number copied!
+      </div>
+      <button type="button"
+              class="btn-close btn-close-white me-2 m-auto"
+              data-bs-dismiss="toast">
+      </button>
+    </div>
+  </div>
+</div>
 </div>
 
 <script>
@@ -344,7 +330,18 @@
 
     observer.observe(sentinel)
   })
-</script>
+
+  function copyTrackingNumber(id) {
+    const text = document.getElementById(`tracking-number-${id}`).innerText;
+
+    navigator.clipboard.writeText(text).then(() => {
+      const toastElement = document.getElementById('copyToast');
+      const toast = new bootstrap.Toast(toastElement);
+
+      toast.show();
+    });
+  }
+  </script>
 
 <style>
   .purchase-order-show .table td,
@@ -356,4 +353,47 @@
   .purchase-order-show .badge {
     font-weight: 500;
   }
+
+  .tracking-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 10px 14px;
+  min-width: 260px;
+}
+
+.tracking-number {
+  font-weight: 600;
+  color: #0d6efd;
+  font-size: 15px;
+}
+
+.tracking-actions {
+  display: flex;
+  gap: 8px;
+}
+
+
+.tracking-action-btn {
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+  text-decoration: none;
+  transition: all .2s;
+}
+
+.tracking-action-btn:hover {
+  background: #0d6efd;
+  color: white;
+}
 </style>
