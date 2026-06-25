@@ -84,22 +84,33 @@
 
                     <div class="tracking-actions">
 
+                      <!-- Copy Tracking Number -->
                       <button type="button"
-                        class="tracking-action-btn"
-                        onclick="copyTrackingNumber('<%= @purchase_order.id %>')">
-                      📋
-                    </button>
+                              class="tracking-action-btn"
+                              onclick="copyTrackingNumber('<%= @purchase_order.id %>')"
+                              title="Copy Tracking Number">
+                        📋
+                      </button>
 
+                      <!-- Download PDF -->
                       <% if @purchase_order.shipstation_label_pdf_url.present? %>
-                        <%= link_to @purchase_order.shipstation_label_pdf_url,
-                          target: "_blank",
-                          class: "tracking-action-btn" do %>
-                      <span style="font-size: 24px;">⭳</span>
+                        <%= link_to download_label_purchase_order_path(@purchase_order),
+                          class: "tracking-action-btn",
+                          title: "Download Label" do %>
+                      ⭳
                     <% end %>
                       <% end %>
 
-                    </div>
+                      <!-- Print/View PDF -->
+                      <% if @purchase_order.shipstation_label_pdf_url.present? %>
+                        <button type="button"
+                            class="tracking-action-btn"
+                            onclick="printLabel('<%= print_label_purchase_order_path(@purchase_order) %>')">
+                      🖨️
+                    </button>
+                      <% end %>
 
+                    </div>
                   </div>
                 <% else %>
                   <span class="badge bg-warning text-dark">
@@ -112,7 +123,9 @@
           </div>
 
           <div class="card-body">
-            <%= form_with model: @purchase_order, local: true do |f| %>
+            <%= form_with model: @purchase_order,
+              local: true,
+              id: "purchase-order-form" do |f| %>
               <div class="row g-3 align-items-end">
                 <div class="col-12 col-md-2">
                   <label class="form-label text-muted small">Weight</label>
@@ -162,8 +175,7 @@
                 <% if @purchase_order.weight.blank? %>
                   <div class="col-12 col-md-2 d-grid">
                     <label class="form-label invisible">submit</label>
-                    <%= f.submit "Accept & Create Label",
-                          class: "btn btn-success btn-sm w-100 py-2" %>
+                    <%= f.submit "Accept & Create Label", class: "btn btn-success btn-sm w-100 py-2" %>
                   </div>
                 <% end %>
 
@@ -252,9 +264,35 @@
     </div>
   </div>
 </div>
+<div id="page-loader" style="display: none;">
+  <div class="loader-content">
+    <div class="spinner-border text-light" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div class="mt-3 text-white">
+      Creating shipping label...
+    </div>
+  </div>
+</div>
 </div>
 
 <script>
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("purchase-order-form");
+
+    if (form) {
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        document.getElementById("page-loader").style.display = "block";
+
+        setTimeout(() => {
+          form.submit();
+        }, 100);
+      });
+    }
+  });
   document.addEventListener("DOMContentLoaded", () => {
     const loadingEl = document.getElementById("loading")
     const sentinel = document.getElementById("scroll-sentinel")
@@ -341,6 +379,14 @@
       toast.show();
     });
   }
+
+  function printLabel(url) {
+    const win = window.open(url, '_blank');
+
+    win.onload = function () {
+      win.print();
+    };
+  }
   </script>
 
 <style>
@@ -395,5 +441,23 @@
 .tracking-action-btn:hover {
   background: #0d6efd;
   color: white;
+}
+
+#page-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+}
+
+.loader-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
 }
 </style>

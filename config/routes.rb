@@ -15,6 +15,8 @@ Rails.application.routes.draw do
       patch :accept
       patch :reject
       patch :update
+      get :print_label
+      get :download_label
     end
   end
 

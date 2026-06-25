@@ -1,3 +1,4 @@
+require "open-uri"
 class PurchaseOrdersController < ApplicationController
   before_action :authenticate_user!
   before_action :set_accessible_purchase_order, only: %i[show reject]
@@ -100,6 +101,23 @@ class PurchaseOrdersController < ApplicationController
     redirect_to purchase_orders_path, notice: "Purchase order rejected, unassigned, and cleared for reassignment."
   end
 
+  def print_label
+    purchase_order = PurchaseOrder.find(params[:id])
+    pdf = URI.open(purchase_order.shipstation_label_pdf_url).read
+    send_data pdf,
+              type: "application/pdf",
+              disposition: "inline"
+  end
+
+  def download_label
+    purchase_order = PurchaseOrder.find(params[:id])
+    pdf = URI.open(purchase_order.shipstation_label_pdf_url).read
+    send_data pdf,
+              filename: "label_#{purchase_order.tracking_number}.pdf",
+              type: "application/pdf",
+              disposition: "attachment"
+  end
+
 private
   def shipping_params 
     params.require(:purchase_order).permit(:weight, :units, :length, :width, :height)
@@ -160,4 +178,6 @@ private
       @purchase_order = PurchaseOrder.includes(:line_items).find_by(id: params[:id])
     end
   end
+
+
 end
