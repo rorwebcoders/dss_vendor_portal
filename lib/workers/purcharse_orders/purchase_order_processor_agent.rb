@@ -1,3 +1,10 @@
+# Processes pending Purchase Orders (POs) and assigns them to dropshipping dealers.
+# Syncs tracking data by pulling pending shipments from the ShipStation API.
+# Identifies pending POs and sorts them by largest total quantity first.
+# Queries SkuMonster API to check dealer priority and reserved stock availability.
+# Matches POs to the highest priority eligible dealer and updates status to 'dropshipping'.
+# Marks POs as 'non_dropshipping' if no eligible dealer has available stock.
+
 require 'logger'
 require 'net/http'
 require 'uri'
@@ -25,8 +32,8 @@ class PurchaseOrderProcessorAgent
 
       purchase_orders = PurchaseOrder.where.not(shipstation_shipment_id: [nil, '']).where(status: :pending)
       dealer_data = Dealer.pluck(:id, :sm_dealer_id, :abbreviation).to_h do |id, sm_dealer_id, abbreviation|
-                     [sm_dealer_id, { our_dealer_id: id, abbreviation: abbreviation }]
-                   end
+        [sm_dealer_id, { our_dealer_id: id, abbreviation: abbreviation }]
+      end
       purchase_orders_data = purchase_orders.map do |purchase_order|
         sku_quantities = purchase_order.line_items.each_with_object(Hash.new(0)) do |line_item, hash|
           hash[line_item.sku] += line_item.quantity.to_i
@@ -129,7 +136,7 @@ class PurchaseOrderProcessorAgent
           logger_error(e.message)
           logger_error(e.backtrace.join("\n"))
         end
-        
+
       end
 
       logger_info("Script completed at #{Time.now}")
@@ -203,10 +210,10 @@ class PurchaseOrderProcessorAgent
     request.body = request_body
     response = http.request(request)
     logger_info("Notify Orders Response: #{response.body}")
-   
+
     return response.body
   end
-  
+
   def fetch_reserved_quantity_from_skumonster(line_items)
     reserved_quantity_api_url = Rails.application.credentials[Rails.env.to_sym][:reserved_quantity_api_url]
     skumonster_api_token = Rails.application.credentials[Rails.env.to_sym][:skumonster_api_token]
