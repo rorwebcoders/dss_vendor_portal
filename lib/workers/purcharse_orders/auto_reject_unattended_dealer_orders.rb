@@ -1,3 +1,8 @@
+# The script fetches POs that are in Pending status.
+# It checks whether a PO assigned to a dealer has exceeded 24 hours.
+# If the assigned time exceeds 24 hours, the script automatically rejects the PO for that dealer,
+# allowing it to be reassigned to a different dealer when the PO is processed again.
+
 require 'logger'
 require 'net/http'
 require 'uri'
@@ -24,7 +29,6 @@ class AutoRejectUnattendedDealerOrders
       purchase_orders = PurchaseOrder.where(status: :pending).where.not(dealer_id: nil)
       purchase_orders.find_each do |purchase_order|
         logger_info("Processing Po Id: #{purchase_order.id}")
-        
         dealer_assigned_at = purchase_order.dealer_assigned_at
         next if dealer_assigned_at.blank?
         if dealer_assigned_at <= 24.hours.ago
@@ -41,7 +45,6 @@ class AutoRejectUnattendedDealerOrders
           )
           purchase_order.update!(dealer_response: nil, dealer: nil, po_number: nil, status: :pending)
           DealerDecisionJob.perform_later(purchase_order.id, "reject")
-          
           logger_info("Auto-rejected PO ID: #{purchase_order.id}")
         end
       end
