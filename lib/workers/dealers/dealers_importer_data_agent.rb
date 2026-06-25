@@ -64,7 +64,7 @@ class DealersImporterDataAgent
               dealer.shipstation_request = response[:request] if response[:request].present?
               dealer.shipstation_response = response[:response] if response[:response].present?
             elsif dealer.shipstation_warehouse_id.present? && address_changed
-              dealer_data["warehouse_id"] = dealer.shipstation_warehouse_id
+              dealer_data["warehouse_id"] = dealer.shipstation_warehouse_id.to_s.sub('se-', '').to_i
               # response = update_warehouse_in_shipstation_v2(dealer_data)
               response = update_warehouse_in_shipstation_v1(dealer_data)
               dealer.shipstation_request = response[:request] if response[:request].present?
@@ -92,15 +92,15 @@ class DealersImporterDataAgent
   
   def update_warehouse_in_shipstation_v1(params)
     warehouse_id = params["warehouse_id"]
-    url = URI(Rails.application.credentials[Rails.env.to_sym][:shipstation_v1_update_warehouse_api_url])
+    url = URI("#{Rails.application.credentials[Rails.env.to_sym][:shipstation_v1_update_warehouse_api_url]}/#{warehouse_id}")
     https = Net::HTTP.new(url.host, url.port);
     https.use_ssl = true
     request = Net::HTTP::Put.new(url)
     request["Host"] = "ssapi.shipstation.com"
-    request["Authorization"] = Rails.application.credentials[Rails.env.to_sym][:shipstation_v1_api_key]
+    request["Authorization"] = "Basic #{Rails.application.credentials[Rails.env.to_sym][:shipstation_v1_api_key]}"
     request["Content-Type"] = "application/json"
     request_body = {
-      warehouseId: warehouse_id,
+      warehouseId: warehouse_id.to_i,
       warehouseName: "Parts Department",
      originAddress: {
        name: "Parts Department",
@@ -178,7 +178,7 @@ class DealersImporterDataAgent
     https.use_ssl = true
     request = Net::HTTP::Post.new(url)
     request["Host"] = "ssapi.shipstation.com"
-    request["Authorization"] = Rails.application.credentials[Rails.env.to_sym][:shipstation_v1_api_key]
+    request["Authorization"] = "Basic #{Rails.application.credentials[Rails.env.to_sym][:shipstation_v1_api_key]}"
     request["Content-Type"] = "application/json"
     request_body = {
       warehouseName: "Parts Department",
