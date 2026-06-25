@@ -1,3 +1,7 @@
+#--------  Get sales data with the status as ReadyToShip from Skuvault using the GetSales API.
+#--------  Processes the sales data and stores in PurchaseOrder table.
+#-------- The respective LineItem for the PO is stored in the LineItem table refering the PO's id
+
 require 'logger'
 require 'net/http'
 require 'json'
@@ -19,7 +23,7 @@ class SkuvaultPurchaseOrderImporterAgent
   def start_processing
     begin
       logger_info("Script started at #{Time.now}")
-      skuvault_purchase_orders = get_sales_from_skuvault    
+      skuvault_purchase_orders = get_sales_from_skuvault
 
       skuvault_purchase_orders.each do |entry|
         skuvault_id = entry["Id"]
@@ -83,9 +87,9 @@ class SkuvaultPurchaseOrderImporterAgent
     request.content_type = "application/json"
     request["Accept"] = "application/json"
     request.body = JSON.dump({
-     "Status" => "ReadyToShip",
-     "TenantToken" => skuvault_tenant_token,
-     "UserToken" => skuvault_user_token
+                               "Status" => "ReadyToShip",
+                               "TenantToken" => skuvault_tenant_token,
+                               "UserToken" => skuvault_user_token
     })
     req_options = { use_ssl: uri.scheme == "https" }
     response = Net::HTTP.start(uri.hostname, uri.port, req_options) do |http|
