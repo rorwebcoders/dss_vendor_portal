@@ -52,9 +52,12 @@ class DealersImporterDataAgent
               dealer.will_save_change_to_attribute?(field)
             end
             if dealer.shipstation_warehouse_id.blank?
-              response = create_shipstation_warehouse(dealer_data)
-              if response[:warehouse_id].present?
-                dealer.shipstation_warehouse_id = response[:warehouse_id] 
+              # response = create_warehouse_in_shipstation_v2(dealer_data)
+              response = create_warehouse_in_shipstation_v1(dealer_data)
+              warehouse_id = response[:warehouse_id]
+              if warehouse_id.present?
+                warehouse_id = "se-#{warehouse_id}" # Prefix required when using only the ShipEngine (v1) API
+                dealer.shipstation_warehouse_id = warehouse_id 
               else
                 dealer.enabled = false
               end
@@ -62,7 +65,8 @@ class DealersImporterDataAgent
               dealer.shipstation_response = response[:response] if response[:response].present?
             elsif dealer.shipstation_warehouse_id.present? && address_changed
               dealer_data["warehouse_id"] = dealer.shipstation_warehouse_id
-              response = update_shipstation_warehouse(dealer_data)
+              # response = update_warehouse_in_shipstation_v2(dealer_data)
+              response = update_warehouse_in_shipstation_v1(dealer_data)
               dealer.shipstation_request = response[:request] if response[:request].present?
               dealer.shipstation_response = response[:response] if response[:response].present?
             end
@@ -85,8 +89,44 @@ class DealersImporterDataAgent
       logger_error(e.backtrace.join("\n"))
     end
   end
+  
+  def update_warehouse_in_shipstation_v1(params)
+    warehouse_id = params["warehouse_id"]
+    url = URI(Rails.application.credentials[Rails.env.to_sym][:shipstation_v1_update_warehouse_api_url])
+    https = Net::HTTP.new(url.host, url.port);
+    https.use_ssl = true
+    request = Net::HTTP::Put.new(url)
+    request["Host"] = "ssapi.shipstation.com"
+    request["Authorization"] = Rails.application.credentials[Rails.env.to_sym][:shipstation_v1_api_key]
+    request["Content-Type"] = "application/json"
+    request_body = {
+      warehouseId: warehouse_id,
+      warehouseName: "Parts Department",
+     originAddress: {
+       name: "Parts Department",
+       company: params["dealership_name"],
+       street1: params["address_line1"],
+       street2: params["address_line2"],
+       street3: params["address_line3"],
+       city: params["city_locality"],
+       state: params["state_province"],
+       postalCode: params["postal_code"],
+       country: params["country_code"],
+       phone: params["phone"]
+     },
+     isDefault: false
+    }
+    request.body = request_body.to_json
+    response = https.request(request)
+    logger_info("Shipstaion Update Warehouse V1 API Response Code: #{response.code}, Response: #{response.read_body}")
 
-  def update_shipstation_warehouse(params)
+    return { 
+      request: "ShipStation Update Warehouse V1 API Request: #{request_body}",
+      response: "Shipstaion Update Warehouse V1 API Response Code: #{response.code}, Response: #{response.read_body}"
+    }
+  end
+
+  def update_warehouse_in_shipstation_v2(params)
     warehouse_id = params["warehouse_id"]
     url = URI("#{Rails.application.credentials[Rails.env.to_sym][:shipstation_v2_warehouses_api_url]}/#{warehouse_id}")
     http = Net::HTTP.new(url.host, url.port)
@@ -124,15 +164,53 @@ class DealersImporterDataAgent
     }
     request.body = request_body.to_json
     response = http.request(request)
-    logger_info("Shipstaion Update Warehouse API Response Code: #{response.code}, Response: #{response.read_body}")
+    logger_info("Shipstaion Update Warehouse V2 API Response Code: #{response.code}, Response: #{response.read_body}")
 
     return { 
-      request: "ShipStation Update Warehouse API Request: #{request_body}",
-      response: "Shipstaion Update Warehouse API Response Code: #{response.code}, Response: #{response.read_body}"
+      request: "ShipStation Update Warehouse V2 API Request: #{request_body}",
+      response: "Shipstaion Update Warehouse V2 API Response Code: #{response.code}, Response: #{response.read_body}"
     }
   end
 
-  def create_shipstation_warehouse(params)
+  def create_warehouse_in_shipstation_v1(params)
+    url = URI(Rails.application.credentials[Rails.env.to_sym][:shipstation_v1_create_warehouse_api_url])
+    https = Net::HTTP.new(url.host, url.port);
+    https.use_ssl = true
+    request = Net::HTTP::Post.new(url)
+    request["Host"] = "ssapi.shipstation.com"
+    request["Authorization"] = Rails.application.credentials[Rails.env.to_sym][:shipstation_v1_api_key]
+    request["Content-Type"] = "application/json"
+    request_body = {
+      warehouseName: "Parts Department",
+      originAddress: {
+       name: "Parts Department",
+       company: params["dealership_name"],
+       street1: params["address_line1"],
+       street2: params["address_line2"],
+       street3: params["address_line3"],
+       city: params["city_locality"],
+       state: params["state_province"],
+       postalCode: params["postal_code"],
+       country: params["country_code"],
+       phone: params["phone"]
+      },
+     returnAddress: nil,
+     isDefault: false
+    }
+    request.body = request_body.to_json
+    response = https.request(request)
+    body = response.body
+    logger_info("ShipStation Create V1 API Response #{response.code}: #{body}")
+    result = JSON.parse(body) rescue {}
+    warehouse_id = result['warehouseId'] || nil
+    return { 
+      warehouse_id: warehouse_id,
+      request: "ShipStation Create Warehouse V1 API Request: #{request_body}",
+      response: "ShipStation Create Warehouse V1 API Response #{response.code}: #{body}"
+    }
+  end
+
+  def create_warehouse_in_shipstation_v2(params)
     url = URI(Rails.application.credentials[Rails.env.to_sym][:shipstation_v2_warehouses_api_url])
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true
@@ -170,14 +248,14 @@ class DealersImporterDataAgent
     request.body = request_body.to_json
     response = http.request(request)
     body = response.body
-    logger_info("ShipStation Create API Response #{response.code}: #{body}")
+    logger_info("ShipStation Create V2 API Response #{response.code}: #{body}")
     result = JSON.parse(body)
 
     warehouse_id = result['warehouse_id'] || nil
     return { 
       warehouse_id: warehouse_id,
-      request: "ShipStation Create Warehouse API Request: #{request_body}",
-      response: "ShipStation Create Warehouse API Response #{response.code}: #{body}"
+      request: "ShipStation Create Warehouse V2 API Request: #{request_body}",
+      response: "ShipStation Create Warehouse V2 API Response #{response.code}: #{body}"
     }
   end
 
